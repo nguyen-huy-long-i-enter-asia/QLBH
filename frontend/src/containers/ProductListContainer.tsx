@@ -1,56 +1,14 @@
 /* eslint-disable camelcase */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Pagination from "components/atoms/Pagination";
+import Cookies from "js-cookie";
+
 import { useDisclosure, Box, Flex, VStack } from "@chakra-ui/react";
 import MenuBarTemplate from "components/organisms/MenuBarTemplate";
 import TableTemplate from "components/organisms/Products/TableTemplate";
 import FilterTemplate from "components/organisms/Products/FilterTemplate";
 import Header, { CategoriesList } from "components/organisms/Products/Header";
-import Pagination from "components/atoms/Pagination";
-
-const menuList = [
-  {
-    menuName: "OverView",
-
-    buttonLink: "/login",
-  },
-  {
-    menuName: "Product",
-    buttonLink: "/login",
-  },
-  {
-    menuName: "Transaction",
-    buttonLink: "/login",
-  },
-  {
-    menuName: "Warehouse",
-    childrenMenus: ["Manufacture", "Import Management"],
-    links: {
-      Manufacture: "/login",
-      "Import Management": "/login",
-    },
-  },
-  {
-    menuName: "Customer",
-    buttonLink: "/login",
-  },
-  {
-    menuName: "Staff",
-    buttonLink: "/login",
-  },
-  {
-    menuName: "History",
-    buttonLink: "/login",
-  },
-  {
-    menuName: "Statistic",
-    buttonLink: "/login",
-  },
-  {
-    menuName: "Sale",
-    buttonLink: "/login",
-  },
-];
 
 type Filter = {
   filterName: string;
@@ -90,6 +48,7 @@ type Products = {
 }[];
 
 const ProductListContainer: React.FC = () => {
+  const position = Cookies.get("position");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [products, setProducts] = useState<any[]>([]);
   const [keyWord, setKeyWord] = useState("");
@@ -335,9 +294,6 @@ const ProductListContainer: React.FC = () => {
   };
   return (
     <div>
-      <Box>
-        <MenuBarTemplate menuList={menuList} menuWidth="11.1%" />
-      </Box>
       <Flex>
         <VStack>
           <Box>Product</Box>
