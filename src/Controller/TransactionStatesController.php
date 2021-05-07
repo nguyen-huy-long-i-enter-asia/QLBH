@@ -18,9 +18,10 @@ class TransactionStatesController extends AppController
      */
     public function index()
     {
-        $transactionStates = $this->paginate($this->TransactionStates);
-
-        $this->set(compact('transactionStates'));
+        $result = $this->TransactionStates->find()->toArray();
+        $this->response = $this->response->withStringBody(json_encode($result));
+        $this->response = $this->response->withType('json');
+        return $this->response;
     }
 
     /**

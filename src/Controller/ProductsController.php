@@ -6,6 +6,9 @@ use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\Model\Table\ColorsProductsSizes;
 use Cake\Model\Table\CategoriesProducts;
 use Cake\Filesystem\File;
+use Cake\Datasource\ConnectionManager;
+use Cake\ORM\Query;
+
 /**
  * Products Controller
  *
@@ -27,7 +30,6 @@ class ProductsController extends AppController
         // $data = file_get_contents($path);
         // $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
         // echo $base64;
-        $a = [];
 
         $this->loadModel('ColorsProductsSizes');
         $this->loadModel("CategoriesProducts");
@@ -246,4 +248,55 @@ class ProductsController extends AppController
     public function info($id = null) {
 
     }
-}
+    public function find() {
+        $keyword = $this->request->getData('keyword');
+        $selectedManufacturer = $this->request->getData('selectedManufacturer');
+
+        // $result = $this->Products->find()
+
+        //             ->where([
+        //                 'manufacturer_id' => (int)$selectedManufacturer,
+        //                 'OR' =>[['id ' => (int)$keyword], ['name LIKE' => '%'.$keyword.'%']]
+        //             ])
+        //             ->contain(['ColorsProductsSizes' => function ($q)
+        //             {
+        //                 return $q->select([ 'ColorsProductsSizes.product_id','count' => 'SUM(ColorsProductsSizes.count)'])->group(['ColorsProductsSizes.product_id'])
+        //                         ;
+        //             }
+        //             ])
+        //            ->toArray();
+
+        //
+
+        $dsn = 'mysql://root:1234@localhost/projectDB';
+        ConnectionManager::drop('default');
+        ConnectionManager::setConfig('default', ['url' => $dsn]);
+        $connection = ConnectionManager::get('default');
+        if(is_numeric($keyword)){
+            $query = "Select products.id, name,original_price,image,SUM(colors_products_sizes.count) as count
+            FROM products, colors_products_sizes
+            WHERE manufacturer_id = ?
+            AND products.id = ?
+            AND products.id = colors_products_sizes.product_id
+            GROUP BY products.id";
+            $result = $connection->execute($query,[(int)$selectedManufacturer,(int)$keyword])->fetchAll('assoc');
+        }
+        else {
+            $query = "Select products.id, name,original_price,image,SUM(colors_products_sizes.count) as count
+            FROM products, colors_products_sizes
+            WHERE manufacturer_id = ?
+            AND name LIKE ?
+            AND products.id = colors_products_sizes.product_id
+            GROUP BY products.id";
+            $result = $connection->execute($query,[(int)$selectedManufacturer, "%".$keyword."%"])->fetchAll('assoc');
+            }
+
+        $this->response = $this->response->withStringBody(json_encode( $result));
+        $this->response = $this->response->withType('json');
+        return $this->response;
+    }
+ }
+
+
+
+

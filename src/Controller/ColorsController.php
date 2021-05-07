@@ -18,9 +18,10 @@ class ColorsController extends AppController
      */
     public function index()
     {
-        $colors = $this->paginate($this->Colors);
-
-        $this->set(compact('colors'));
+        $result = $this->Colors->find()->toArray();
+        $this->response = $this->response->withStringBody(json_encode($result));
+        $this->response = $this->response->withType('json');
+        return $this->response;
     }
 
     /**

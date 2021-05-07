@@ -18,9 +18,10 @@ class SizesController extends AppController
      */
     public function index()
     {
-        $sizes = $this->paginate($this->Sizes);
-
-        $this->set(compact('sizes'));
+        $result = $this->Sizes->find()->toArray();
+        $this->response = $this->response->withStringBody(json_encode($result));
+        $this->response = $this->response->withType('json');
+        return $this->response;
     }
 
     /**
