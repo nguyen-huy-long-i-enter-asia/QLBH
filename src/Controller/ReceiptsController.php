@@ -122,38 +122,37 @@ class ReceiptsController extends AppController
         $receipt->staff_id = $user->id;
         $receipt->total = (int)$this->request->getData('total');
         $receipt->note = $this->request->getData('note');
-        // $receipt->created = FrozenTime::now();
-        // $receipt->modified = FrozenTime::now();
-        debug( $receipt->manufacturer_id);
+        // // $receipt->created = FrozenTime::now();
+        // // $receipt->modified = FrozenTime::now();
         $this->Receipts->save($receipt);
-        // $receipt_id= $receipt->id;
+        $receipt_id= $receipt->id;
 
 
-        // foreach($receipt_details as $rd){
-        //     $receipt_detail = $this->ReceiptDetails->newEmptyEntity();
-        //     $receipt_detail->$receipt_id;
-        //     $receipt_detail->product_id = (int)$rd->id;
-        //     $receipt_detail->size_id = (int)$rd->size_id;
-        //     $receipt_detail->color_id = (int)$rd->color_id;
-        //     $receipt_detail->count = (int)$rd->count;
-        //     $this->ReceiptDetails->save($receipt);
+        foreach($receipt_details as $rd){
+            $receipt_detail = $this->ReceiptDetails->newEmptyEntity();
+            $receipt_detail->$receipt_id;
+            $receipt_detail->product_id = (int)$rd->id;
+            $receipt_detail->size_id = (int)$rd->size_id;
+            $receipt_detail->color_id = (int)$rd->color_id;
+            $receipt_detail->count = (int)$rd->count;
+            $this->ReceiptDetails->save($receipt);
 
-        //     $color_product_size = $this->ColorsProductsSizes->find()->where(['product_id' => (int)$rd->id, 'size_id'=>(int)$rd->size_id, 'color_id' => (int)$rd->color_id ])->first();
-        //     if($color_product_size) {
-        //         $color_product_size->count = $color_product_size->count + (int)$rd->count;
+            $color_product_size = $this->ColorsProductsSizes->find()->where(['product_id' => (int)$rd->id, 'size_id'=>(int)$rd->size_id, 'color_id' => (int)$rd->color_id ])->first();
+            if($color_product_size) {
+                $color_product_size->count = $color_product_size->count + (int)$rd->count;
 
-        //     }
-        //     else {
-        //         $color_product_size = $this->ColorsProductsSizes->newEmptyEntity();
-        //         $color_product_size->product_id = (int)$rd->id;
-        //         $color_product_size->size_id = (int)$rd->size_id;
-        //         $color_product_size->color_id = (int)$rd->color_id;
-        //         $color_product_size->count = (int)$rd->count;
-        //         $this->ColorsProductsSizes->save($color_product_size);
-        //     }
+            }
+            else {
+                $color_product_size = $this->ColorsProductsSizes->newEmptyEntity();
+                $color_product_size->product_id = (int)$rd->id;
+                $color_product_size->size_id = (int)$rd->size_id;
+                $color_product_size->color_id = (int)$rd->color_id;
+                $color_product_size->count = (int)$rd->count;
+                $this->ColorsProductsSizes->save($color_product_size);
+            }
 
 
-        // }
+        }
         $response = $this->response->withType('application/json')
                     ->withStringBody(json_encode(['status' => "success"]));
 

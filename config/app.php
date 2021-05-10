@@ -294,7 +294,10 @@ return [
             'driver' => Mysql::class,
             'persistent' => false,
             'timezone' => 'UTC',
-
+            'host' => 'localhost',
+            'username' => 'long7aclass',
+            'password' => 'Long7aclass@',
+            'database' => 'projectDB',
             /*
              * For MariaDB/MySQL the internal default changed from utf8 to utf8mb4, aka full utf-8 support, in CakePHP 3.6
              */

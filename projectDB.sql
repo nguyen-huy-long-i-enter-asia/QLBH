@@ -92,7 +92,7 @@ CREATE TABLE receipts(
     manufacturer_id INT,
     staff_id INT,
     total INT,
-    note INT,
+    note VARCHAR(255),
     state_id INT,
     created DATETIME,
     modified DATETIME,

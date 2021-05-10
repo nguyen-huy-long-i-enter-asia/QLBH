@@ -268,7 +268,7 @@ class ProductsController extends AppController
 
         //
 
-        $dsn = 'mysql://root:1234@localhost/projectDB';
+        $dsn = 'mysql://long7aclass:Long7aclass@@localhost/projectDB';
         ConnectionManager::drop('default');
         ConnectionManager::setConfig('default', ['url' => $dsn]);
         $connection = ConnectionManager::get('default');

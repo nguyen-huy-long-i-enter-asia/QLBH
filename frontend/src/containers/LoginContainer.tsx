@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import CustomInput from "components/atoms/CustomInput";
 import CustomButton from "components/atoms/CustomButton";
 import axios from "axios";
-
 import {
   Input,
   Button,
@@ -28,12 +27,13 @@ import {
   Textarea,
   TabsProvider,
 } from "@chakra-ui/react";
-import { css } from "@emotion/react";
+import { css, SerializedStyles } from "@emotion/react";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom";
 
-const login = css`
-  color: green;
+const loginCss = css`
+  background-color: white;
+  border-radius: 30px;
 `;
 const input = css`
   width: 500px;
@@ -80,31 +80,33 @@ const LoginContainer: React.FC = () => {
     }
   };
   return (
-    <form onSubmit={handleSubmit}>
-      <Table>
-        <Tbody>
-          <Tr>
-            <Td>Email</Td>
-            <Td>
-              <Input name="email" value={email} onChange={changeEmail} />
-            </Td>
-          </Tr>
-          <Tr>
-            <Td>Password</Td>
-            <Td>
-              <Input
-                name="password"
-                type="password"
-                value={password}
-                onChange={changePassword}
-              />
-            </Td>
-          </Tr>
-        </Tbody>
-      </Table>
+    <Box css={loginCss}>
+      <form onSubmit={handleSubmit}>
+        <Table>
+          <Tbody>
+            <Tr>
+              <Td>Email</Td>
+              <Td>
+                <Input name="email" value={email} onChange={changeEmail} />
+              </Td>
+            </Tr>
+            <Tr>
+              <Td>Password</Td>
+              <Td>
+                <Input
+                  name="password"
+                  type="password"
+                  value={password}
+                  onChange={changePassword}
+                />
+              </Td>
+            </Tr>
+          </Tbody>
+        </Table>
 
-      <Input type="submit" value="Submit" />
-    </form>
+        <Input type="submit" value="Submit" />
+      </form>
+    </Box>
   );
 };
 
