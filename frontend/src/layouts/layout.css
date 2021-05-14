@@ -1,0 +1,35 @@
+.body {
+  background-color: #f1f1f1;
+  height: 100%;
+}
+
+.left-column {
+  width: 25%;
+  padding-right: 2%;
+}
+
+.right-column {
+  width: 75%;
+  padding-left: 2%;
+}
+
+.filter-list {
+  width: 100%;
+}
+.page-title {
+  display: flex;
+  align-items: center;
+  width: 60%;
+  float: right;
+  height: 5vh;
+}
+.filter-box {
+  background-color: white;
+  width: 60%;
+  float: right;
+  margin-bottom: 3%;
+  border-radius: 5px;
+}
+.button {
+  background-color: aqua;
+}

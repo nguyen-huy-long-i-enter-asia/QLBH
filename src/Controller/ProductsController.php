@@ -144,12 +144,12 @@ class ProductsController extends AppController
         $product->discount = (int)$this->request->getData('discount');
         $product->original_price = (int)$this->request->getData('original_price');
         $product->sell_price = (int)$this->request->getData('sell_price');
-        $product->state = (int)$this->request->getData('state');
+        $product->state_id = (int)$this->request->getData('state_id');
         $product->note = $this->request->getData('note');
         $categories = json_decode($this->request->getData('categories'),true);
         $product->image = $imageName;
         $this->Products->save($product);
-        $id = $product->id;
+        $id = $product->id; 
         foreach($categories as $category){
             $category_product = $this->CategoriesProducts->newEmptyEntity();
             $category_product->product_id = $id;
@@ -250,7 +250,7 @@ class ProductsController extends AppController
     }
     public function find() {
         $keyword = $this->request->getData('keyword');
-        $selectedManufacturer = $this->request->getData('selectedManufacturer');
+        $manufacturer_id = $this->request->getData('id');
 
         // $result = $this->Products->find()
 
@@ -279,7 +279,7 @@ class ProductsController extends AppController
             AND products.id = ?
             AND products.id = colors_products_sizes.product_id
             GROUP BY products.id";
-            $result = $connection->execute($query,[(int)$selectedManufacturer,(int)$keyword])->fetchAll('assoc');
+            $result = $connection->execute($query,[(int)$manufacturer_id,(int)$keyword])->fetchAll('assoc');
         }
         else {
             $query = "Select products.id, name,original_price,image,SUM(colors_products_sizes.count) as count
@@ -288,7 +288,7 @@ class ProductsController extends AppController
             AND name LIKE ?
             AND products.id = colors_products_sizes.product_id
             GROUP BY products.id";
-            $result = $connection->execute($query,[(int)$selectedManufacturer, "%".$keyword."%"])->fetchAll('assoc');
+            $result = $connection->execute($query,[(int)$manufacturer_id, "%".$keyword."%"])->fetchAll('assoc');
             }
 
         $this->response = $this->response->withStringBody(json_encode( $result));

@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, VStack, Checkbox } from "@chakra-ui/react";
+import { Box, Checkbox, Text } from "@chakra-ui/react";
+import "components/molecules/filter/filter.css";
 
 type Props = {
   filterName: string;
@@ -7,7 +8,7 @@ type Props = {
     name: string;
     isChecked: boolean;
   }[];
-  handleOnclick: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleOnclick?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 const CheckBoxFilter: React.FC<Props> = ({
   filterName,
@@ -15,11 +16,17 @@ const CheckBoxFilter: React.FC<Props> = ({
   handleOnclick,
 }) => {
   return (
-    <Box>
-      <Box bg="#99ffff">{filterName}</Box>
-      <VStack>
+    <Box className="filter-box" p="4% 0">
+      <Box className="filter-name" p="0 4%">
+        <Text fontSize="16px" fontWeight="bold">
+          {filterName}
+        </Text>
+      </Box>
+      <Box className="filter-conditions" p="4% 4% 0">
         {filterConditions.map((condition) => (
           <Checkbox
+            d="block"
+            className="checkbox"
             key={`condition${condition.name}`}
             name={filterName}
             isChecked={condition.isChecked}
@@ -29,7 +36,7 @@ const CheckBoxFilter: React.FC<Props> = ({
             {condition.name}
           </Checkbox>
         ))}
-      </VStack>
+      </Box>
     </Box>
   );
 };

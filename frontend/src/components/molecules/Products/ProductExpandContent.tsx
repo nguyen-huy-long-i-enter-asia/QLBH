@@ -24,6 +24,10 @@ type ManufacturersList = {
   id: number;
   name: string;
 }[];
+type ProductExpandContentProps = {
+  categoriesList: CategoriesList | undefined;
+  manufacturersList: ManufacturersList | undefined;
+};
 type Props = {
   product: {
     id: string;
@@ -50,14 +54,12 @@ type Props = {
       }[];
     }[];
   };
-  categoriesList: CategoriesList;
-  manufacturersList: ManufacturersList;
+  productExpandContentProps: ProductExpandContentProps | undefined;
 };
 
 const ProductExpandContent: React.FC<Props> = ({
   product,
-  categoriesList,
-  manufacturersList,
+  productExpandContentProps,
 }) => {
   const {
     id,
@@ -68,13 +70,12 @@ const ProductExpandContent: React.FC<Props> = ({
     image,
     note,
     manufacturer,
-    state,
+
     categories,
     inventory,
   } = product;
-  const history = useHistory();
+
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(id);
     const result = await axios.post(
       `${process.env.REACT_APP_SERVER}products/delete`,
       { id }
@@ -115,9 +116,13 @@ const ProductExpandContent: React.FC<Props> = ({
               <Box>Description</Box>
               <Box>{note}</Box>
               <Box>Categories</Box>
-              {categories.map((category) => (
-                <Box key={category.name}>{category.name}</Box>
-              ))}
+              {categories !== undefined ? (
+                categories.map((category) => (
+                  <Box key={category.name}>{category.name}</Box>
+                ))
+              ) : (
+                <> </>
+              )}
             </Box>
           </Flex>
 
@@ -128,17 +133,21 @@ const ProductExpandContent: React.FC<Props> = ({
               <Td>Count</Td>
             </Thead>
             <Tbody>
-              {inventory.map((itemSize) => {
-                return itemSize.colors.map((itemColor) => {
-                  return (
-                    <Tr key={itemSize.size + itemColor.color}>
-                      <td>{itemSize.size}</td>
-                      <td>{itemColor.color}</td>
-                      <td>{itemColor.count}</td>
-                    </Tr>
-                  );
-                });
-              })}
+              {inventory !== undefined ? (
+                inventory.map((itemSize) => {
+                  return itemSize.colors.map((itemColor) => {
+                    return (
+                      <Tr key={itemSize.size + itemColor.color}>
+                        <td>{itemSize.size}</td>
+                        <td>{itemColor.color}</td>
+                        <td>{itemColor.count}</td>
+                      </Tr>
+                    );
+                  });
+                })
+              ) : (
+                <></>
+              )}
             </Tbody>
           </Table>
         </Box>
@@ -146,8 +155,16 @@ const ProductExpandContent: React.FC<Props> = ({
       <Flex>
         <Button>Import</Button>
         <ProductForm
-          categoriesList={categoriesList}
-          manufacturersList={manufacturersList}
+          categoriesList={
+            productExpandContentProps
+              ? productExpandContentProps.categoriesList
+              : undefined
+          }
+          manufacturersList={
+            productExpandContentProps
+              ? productExpandContentProps.manufacturersList
+              : undefined
+          }
           action="edit"
           selectedProduct={product}
         />

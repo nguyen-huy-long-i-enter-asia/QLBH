@@ -1,10 +1,11 @@
 /* eslint-disable camelcase */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import { useDisclosure, Box, Flex, VStack } from "@chakra-ui/react";
 import MenuBarTemplate from "components/organisms/MenuBarTemplate";
-import TableTemplate from "components/organisms/Products/TableTemplate";
-import FilterTemplate from "components/organisms/Products/FilterTemplate";
+import TableTemplate from "components/organisms/TableTemplate";
+import FilterTemplate from "components/organisms/FilterTemplate";
 import Header, { CategoriesList } from "components/organisms/Products/Header";
 import Pagination from "components/atoms/Pagination";
 
@@ -90,6 +91,7 @@ type Products = {
 }[];
 
 const ProductListContainer: React.FC = () => {
+  const position = Cookies.get("position");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [products, setProducts] = useState<any[]>([]);
   const [keyWord, setKeyWord] = useState("");
@@ -263,18 +265,20 @@ const ProductListContainer: React.FC = () => {
       <Flex>
         <VStack>
           <Box>Product</Box>
-          <FilterTemplate
+          {/* <FilterTemplate
+            pageTitle="Order"
             checkboxFilters={checkBoxFilters}
             handleOnclick={handleCheckBoxClick}
-          />
+          /> */}
         </VStack>
         <VStack>
           <Header
+            position={position}
             handleSearch={searchProduct}
             categoriesList={categories}
             manufacturersList={manufacturers}
           />
-          <TableTemplate
+          {/* <TableTemplate
             fields={["id", "name", "original_price", "sell_price", "state"]}
             dataList={displayList}
             itemType="product"
@@ -282,7 +286,7 @@ const ProductListContainer: React.FC = () => {
             handleClick={handleProductClick}
             categoriesList={categories}
             manufacturersList={manufacturers}
-          />
+          /> */}
         </VStack>
       </Flex>
       <Pagination items={filteredList} onChangePage={handlePagination} />

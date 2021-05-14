@@ -37,13 +37,13 @@ class UsersController extends AppController
                     ->withStringBody(json_encode(['status' => "success"]));
     return $response;
 }
-public function auth(){
-    $email = $this->request->getData('email');
-    $session =$this->request->getSession();
-    $isAuth = $email === $session->read('email')?true : false;
-    $response = $this->response->withType('application/json')->withStringBody(json_encode(['isAuth' => $isAuth]));
-    return $response;
-}
+    public function auth(){
+        $email = $this->request->getData('email');
+        $session =$this->request->getSession();
+        $isAuth = $email === $session->read('email')?true : false;
+        $response = $this->response->withType('application/json')->withStringBody(json_encode(['isAuth' => $isAuth]));
+        return $response;
+    }
     /**
      * Index method
      *
@@ -54,6 +54,13 @@ public function auth(){
         $users = $this->paginate($this->Users);
 
         $this->set(compact('users'));
+    }
+
+    public function staffs()
+    {
+        $staffs = $this->Users->find('all')->where(['OR'=> [['position'=> 1], ['position' => 2]]])->toArray();
+        $response = $this->response->withType('application/json')->withStringBody(json_encode($staffs));
+        return $response;
     }
 
     /**

@@ -52,9 +52,6 @@ class ReceiptsTable extends Table
         $this->belongsTo('Manufacturers', [
             'foreignKey' => 'manufacturer_id',
         ]);
-        $this->belongsTo('TransactionStates', [
-            'foreignKey' => 'state_id',
-        ]);
         $this->belongsTo('Users', [
             'foreignKey' => 'staff_id',
         ]);
@@ -83,9 +80,7 @@ class ReceiptsTable extends Table
             ->integer('note')
             ->allowEmptyString('note');
 
-        $validator
-            ->integer('state')
-            ->allowEmptyString('state');
+
 
         return $validator;
     }

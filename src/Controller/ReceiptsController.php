@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Controller;
-use Cake\I18n\FrozenTime;
+use Cake\I18n\Time;
 /**
  * Receipts Controller
  *
@@ -18,12 +18,49 @@ class ReceiptsController extends AppController
      */
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['Manufacturers', 'Users'],
-        ];
-        $receipts = $this->paginate($this->Receipts);
+        $this->loadModel('ReceiptDetails');
+        $this->loadModel("Products");
+        $this->loadModel("Manufacturers");
+        $this->loadModel('Colors');
+        $this->loadModel('Sizes');
+        $this->loadModel('Users');
 
-        $this->set(compact('receipts'));
+        $receiptMapFunc = function($receipt) {
+            $receiptDetailMapFunc = function($receiptDetail) {
+                $product = $this->Products->get($receiptDetail->product_id);
+                $receiptDetail["product"] = ['id'=> $product->id, 'name' =>$product->name, 'original_price' => $product->original_price];
+                unset($receiptDetail['product_id']);
+                $size= $this->Sizes->get($receiptDetail->size_id);
+                $receiptDetail["size"] = $size;
+                unset($receiptDetail['size_id']);
+                $color = $this->Colors->get($receiptDetail->color_id);
+                $receiptDetail['color'] = $color;
+                unset($receiptDetail['color_id']);
+                unset($receiptDetail['created']);
+                unset($receiptDetail['modified']);
+                unset($receiptDetail['receipt_id']);
+
+                return $receiptDetail;
+
+            };
+
+            $staff = $this->Users->get($receipt->staff_id);
+            $manufacturer = $this->Manufacturers->get($receipt->manufacturer_id);
+            $receipt['staff'] = ['id' => $staff->id, 'name' => $staff->name];
+            $receipt['manufacturer'] = ['id' => $manufacturer->id, 'name' => $manufacturer->name];
+            $receipt->created = $receipt->created->format('Y-m-d');
+            unset($receipt['staff_id']);
+            unset($receipt['manufacturer_id']);
+            $receiptDetails = array_map($receiptDetailMapFunc, $receipt['receipt_details']);
+            $receipt['receipt_details'] = $receiptDetails;
+            return $receipt;
+        };
+
+        $receipts = $this->Receipts->find('all')->contain('ReceiptDetails')->toArray();
+
+        $this->response = $this->response->withStringBody(json_encode(array_map($receiptMapFunc,$receipts)));
+        $this->response = $this->response->withType('json');
+        return $this->response;
     }
 
     /**
@@ -122,25 +159,26 @@ class ReceiptsController extends AppController
         $receipt->staff_id = $user->id;
         $receipt->total = (int)$this->request->getData('total');
         $receipt->note = $this->request->getData('note');
-        // // $receipt->created = FrozenTime::now();
-        // // $receipt->modified = FrozenTime::now();
+        $receipt->created = Time::now();
+        $receipt->modified = Time::now();
         $this->Receipts->save($receipt);
         $receipt_id= $receipt->id;
 
 
         foreach($receipt_details as $rd){
             $receipt_detail = $this->ReceiptDetails->newEmptyEntity();
-            $receipt_detail->$receipt_id;
+            $receipt_detail->receipt_id = $receipt_id;
             $receipt_detail->product_id = (int)$rd->id;
             $receipt_detail->size_id = (int)$rd->size_id;
             $receipt_detail->color_id = (int)$rd->color_id;
             $receipt_detail->count = (int)$rd->count;
-            $this->ReceiptDetails->save($receipt);
+            $this->ReceiptDetails->save($receipt_detail);
 
             $color_product_size = $this->ColorsProductsSizes->find()->where(['product_id' => (int)$rd->id, 'size_id'=>(int)$rd->size_id, 'color_id' => (int)$rd->color_id ])->first();
             if($color_product_size) {
-                $color_product_size->count = $color_product_size->count + (int)$rd->count;
 
+                $color_product_size->count = $color_product_size->count + (int)$rd->count;
+                $this->ColorsProductsSizes->save($color_product_size);
             }
             else {
                 $color_product_size = $this->ColorsProductsSizes->newEmptyEntity();

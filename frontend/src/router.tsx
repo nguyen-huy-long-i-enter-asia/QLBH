@@ -4,14 +4,14 @@ import ProductListPage from "pages/ProductListPage";
 import LoginPage from "pages/LoginPage";
 import axios from "axios";
 import Cookies from "js-cookie";
-import ImportProductPage from "pages/WareHouse/ImportProductPage";
+import ImportProductPage from "pages/Receipts/ImportProductPage";
+import ReceiptListPage from "pages/Receipts/ReceiptListPage";
 
 export const Router: React.FC = () => {
   const [isAuth, setIsAuth] = useState(true);
   useEffect(() => {
     const checkLogged = async () => {
       const email = Cookies.get("email");
-
       if (!email) {
         setIsAuth(false);
       } else {
@@ -36,8 +36,11 @@ export const Router: React.FC = () => {
       <Route path="/products" exact>
         <ProductListPage isAuth={isAuth} />
       </Route>
-      <Route path="/warehouse/add" exact>
+      <Route path="/receipts/add" exact>
         <ImportProductPage isAuth={isAuth} />
+      </Route>
+      <Route path="/receipts" exact>
+        <ReceiptListPage isAuth={isAuth} />
       </Route>
       <Route path="/orders" exact />
     </Switch>

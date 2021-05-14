@@ -1,1 +1,1 @@
-source /Users/huylong/DoAn/projectDB.sql
+source /Users/huylong/DoAn/backend/projectDB.sql

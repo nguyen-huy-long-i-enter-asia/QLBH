@@ -2,7 +2,7 @@ import React from "react";
 import { css, SerializedStyles } from "@emotion/react";
 import { Table, Tbody, Tr, Td } from "@chakra-ui/react";
 import CustomThead from "components/atoms/CustomThead";
-import ProductExpandContent from "components/molecules/Products/ProductExpandContent";
+import ReceiptExpandContent from "components/molecules/Receipts/ReceiptExpandContent";
 
 const tableStyle = css`
   border: groove;
@@ -16,6 +16,11 @@ type ManufacturersList = {
   id: number;
   name: string;
 }[];
+type ProductExpandContentProps = {
+  categoriesList: CategoriesList;
+  manufacturersList: ManufacturersList;
+};
+
 type Props = {
   fields: string[];
 
@@ -24,8 +29,7 @@ type Props = {
   expandList: { id: number; display: boolean }[];
   handleClick: (e: React.MouseEvent<HTMLTableRowElement>) => void;
 
-  categoriesList: CategoriesList;
-  manufacturersList: ManufacturersList;
+  productExpandContentProps: ProductExpandContentProps;
 };
 
 const TableTemplate: React.FC<Props> = ({
@@ -35,8 +39,7 @@ const TableTemplate: React.FC<Props> = ({
   itemType,
   expandList,
   handleClick,
-  categoriesList,
-  manufacturersList,
+  productExpandContentProps,
 }) => {
   return (
     <Table>
@@ -67,11 +70,7 @@ const TableTemplate: React.FC<Props> = ({
               >
                 <Td colSpan={fields.length}>
                   {itemType === "product" ? (
-                    <ProductExpandContent
-                      product={item}
-                      categoriesList={categoriesList}
-                      manufacturersList={manufacturersList}
-                    />
+                    <ReceiptExpandContent receipt={item} />
                   ) : (
                     1
                   )}

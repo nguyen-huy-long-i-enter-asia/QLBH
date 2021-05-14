@@ -37,7 +37,6 @@ class Receipt extends Entity
         'staff_id' => true,
         'total' => true,
         'note' => true,
-        'state' => true,
         'created' => true,
         'modified' => true,
         'manufacturer' => true,

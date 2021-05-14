@@ -1,6 +1,5 @@
 import React from "react";
-
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import CustomMenu from "components/atoms/CustomMenu";
 import { Button } from "@chakra-ui/react";
 import Cookies from "js-cookie";
@@ -22,10 +21,7 @@ const MenuBarTemplate: React.FC<Props> = ({ menuList, menuWidth }) => {
       const email = Cookies.get("email");
       Cookies.remove("email");
       Cookies.remove("position");
-      console.log(process.env.REACT_APP_SERVER);
       await axios.post(`${process.env.REACT_APP_SERVER}users/logout`, email);
-      console.log("aaa");
-
       history.push("/login");
     };
     logoutBackEnd();

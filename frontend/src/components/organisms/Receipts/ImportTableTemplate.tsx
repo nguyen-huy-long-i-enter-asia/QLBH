@@ -12,6 +12,7 @@ import {
   Select,
   Input,
 } from "@chakra-ui/react";
+import { useHistory } from "react-router-dom";
 import { DeleteIcon } from "@chakra-ui/icons";
 import CustomThead from "components/atoms/CustomThead";
 import ProductExpandContent from "components/molecules/Products/ProductExpandContent";
@@ -52,13 +53,6 @@ const ImportTableTemplate: React.FC<Props> = ({
   handleColorChange,
   handleCountChange,
 }) => {
-  // const [importData, setImportData] = useState<any[]>([]);
-  // useEffect(() => {
-  //   setImportData(importList);
-  // }, [importList]);
-
-  // console.log(importList);
-
   return (
     <Table>
       <Thead>
@@ -109,7 +103,7 @@ const ImportTableTemplate: React.FC<Props> = ({
               <Input
                 id={importItem.id}
                 name="count"
-                value={importItem.count}
+                value={importItem.count.toString()}
                 type="number"
                 onChange={handleCountChange}
               />

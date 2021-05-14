@@ -4,12 +4,10 @@ import axios from "axios";
 import {
   Input,
   Button,
-  Box,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   useDisclosure,
@@ -32,11 +30,13 @@ type CategoriesList = {
   isChecked: boolean | false;
 }[];
 type Props = {
-  categoriesList: CategoriesList;
-  manufacturersList: {
-    id: number;
-    name: string;
-  }[];
+  categoriesList: CategoriesList | undefined;
+  manufacturersList:
+    | {
+        id: number;
+        name: string;
+      }[]
+    | undefined;
   selectedProduct?: {
     id: string;
     name: string;
@@ -78,7 +78,7 @@ const ProductForm: React.FC<Props> = ({
   const [discount, setDiscount] = useState<string>(
     selectedProduct ? selectedProduct.discount : ""
   );
-  const [state, setState] = useState<string>(
+  const [stateId, setStateId] = useState<string>(
     selectedProduct ? selectedProduct.state : "1"
   );
   const [originalPrice, setOriginalPrice] = useState<string>(
@@ -107,27 +107,30 @@ const ProductForm: React.FC<Props> = ({
   // }
 
   useEffect(() => {
-    if (selectedProduct) {
-      const productCategories = selectedProduct.categories.map(
-        (item) => item.id
-      );
-      // console.log(
-      //   categoriesList.map((category) => ({
-      //     id: category.id,
-      //     name: category.name,
-      //     isChecked: !!productCategories.includes(category.id),
-      //   }))
-      // );
-      setCategories(
-        categoriesList.map((category) => ({
-          id: category.id,
-          name: category.name,
-          isChecked: !!productCategories.includes(category.id),
-        }))
-      );
-    } else {
-      setCategories(categoriesList);
+    if (categoriesList) {
+      if (selectedProduct) {
+        const productCategories = selectedProduct.categories.map(
+          (item) => item.id
+        );
+        // console.log(
+        //   categoriesList.map((category) => ({
+        //     id: category.id,
+        //     name: category.name,
+        //     isChecked: !!productCategories.includes(category.id),
+        //   }))
+        // );
+        setCategories(
+          categoriesList.map((category) => ({
+            id: category.id,
+            name: category.name,
+            isChecked: !!productCategories.includes(category.id),
+          }))
+        );
+      } else {
+        setCategories(categoriesList);
+      }
     }
+
     // console.log(image);
   }, [categoriesList]);
 
@@ -143,10 +146,10 @@ const ProductForm: React.FC<Props> = ({
     const { value } = e.currentTarget;
     setDiscount(value);
   };
-  const changeState = (e: React.FormEvent<HTMLSelectElement>) => {
+  const changeStateId = (e: React.FormEvent<HTMLSelectElement>) => {
     const { value } = e.currentTarget;
 
-    setState(value);
+    setStateId(value);
   };
   const changeOriginalPrice = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
@@ -180,21 +183,13 @@ const ProductForm: React.FC<Props> = ({
     if (e.target) {
       if (e.target.files) {
         setImage(e.target.files[0]);
-        console.log(e.target.files[0]);
+
         setImageLink(URL.createObjectURL(e.target.files[0]));
       }
     }
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // console.log(name);
-    // console.log(manufacturer);
-    // console.log(discount);
-    // console.log(state);
-    // console.log(originalPrice);
-    // console.log(sellPrice);
-    // console.log(categories);
-    // console.log(image);
 
     const formData = new FormData();
     if (action === "edit" && selectedProduct) {
@@ -203,7 +198,7 @@ const ProductForm: React.FC<Props> = ({
     formData.append("name", name);
     formData.append("manufacturer", manufacturer);
     formData.append("discount", discount);
-    formData.append("state", state);
+    formData.append("state_id", stateId);
     formData.append("original_price", originalPrice);
     formData.append("sell_price", sellPrice);
     // console.log(
@@ -244,10 +239,10 @@ const ProductForm: React.FC<Props> = ({
 
     window.location.reload(false);
   };
-  // console.log(categories);
+
   return (
     <>
-      <Button onClick={onOpen}>{`${
+      <Button className="button " onClick={onOpen}>{`${
         action.charAt(0).toUpperCase() + action.slice(1)
       } Product`}</Button>
       <Modal isOpen={isOpen} onClose={onClose} size="full">
@@ -275,11 +270,15 @@ const ProductForm: React.FC<Props> = ({
                           onChange={changeManufacturer}
                           value={manufacturer}
                         >
-                          {manufacturersList.map((item) => (
-                            <option key={item.id} value={item.id}>
-                              {item.name}
-                            </option>
-                          ))}
+                          {manufacturersList ? (
+                            manufacturersList.map((item) => (
+                              <option key={item.id} value={item.id}>
+                                {item.name}
+                              </option>
+                            ))
+                          ) : (
+                            <></>
+                          )}
                         </Select>
                       </Td>
                     </Tr>
@@ -299,7 +298,11 @@ const ProductForm: React.FC<Props> = ({
                     <Tr>
                       <Td>State</Td>
                       <Td>
-                        <Select name="state" onChange={changeState}>
+                        <Select
+                          name="state"
+                          onChange={changeStateId}
+                          value={stateId}
+                        >
                           <option value={1}>1</option>
                           <option value={2}>2</option>
                           <option value={3}>3</option>

@@ -104,7 +104,8 @@ const LoginContainer: React.FC = () => {
           </Tbody>
         </Table>
 
-        <Input type="submit" value="Submit" />
+        <Input type="submit" value="Manager" />
+        <Button>Customer</Button>
       </form>
     </Box>
   );

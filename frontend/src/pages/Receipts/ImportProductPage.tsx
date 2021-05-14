@@ -1,21 +1,21 @@
 import React from "react";
 import MainLayout from "layouts/MainLayout";
-import WareHouseContainer from "containers/WareHouses/WareHouseContainer";
+import ImportProductContainer from "containers/Receipts/ImportProductContainer";
 
 import { Redirect } from "react-router-dom";
 
 type Props = {
   isAuth: boolean;
 };
-const WareHousePage: React.FC<Props> = ({ isAuth }) => {
+const ImportProductPage: React.FC<Props> = ({ isAuth }) => {
   if (isAuth) {
     return (
       <MainLayout>
-        <WareHouseContainer />
+        <ImportProductContainer />
       </MainLayout>
     );
   }
   return <Redirect to="login" />;
 };
 
-export default WareHousePage;
+export default ImportProductPage;

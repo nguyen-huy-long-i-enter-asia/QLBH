@@ -93,14 +93,11 @@ CREATE TABLE receipts(
     staff_id INT,
     total INT,
     note VARCHAR(255),
-    state_id INT,
     created DATETIME,
     modified DATETIME,
     FOREIGN KEY (manufacturer_id) REFERENCES manufacturers(id) ON DELETE CASCADE,
-    FOREIGN KEY (staff_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (state_id) REFERENCES transaction_states(id) ON DELETE CASCADE
+    FOREIGN KEY (staff_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 CREATE TABLE receipt_details(
     id INT AUTO_INCREMENT PRIMARY KEY,
     receipt_id INT,

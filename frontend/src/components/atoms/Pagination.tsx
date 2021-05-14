@@ -31,8 +31,13 @@ const Pagination: React.FC<Props> = ({ items, onChangePage }) => {
   });
 
   useEffect(() => {
-    if (items && items.length) {
+    if (items && items.length > 0) {
       setPage(1);
+    } else {
+      const newPager = pager;
+      newPager.pages = [];
+      setPager(newPager);
+      onChangePage([]);
     }
   }, [items]);
 
@@ -95,7 +100,8 @@ const Pagination: React.FC<Props> = ({ items, onChangePage }) => {
     const pages = [...Array(endPage + 1 - startPage).keys()].map(
       (i) => startPage + i
     );
-
+    // console.log("a");
+    // console.log(items);
     // return object with all pager properties required by the view
     return {
       totalItems,
@@ -111,7 +117,7 @@ const Pagination: React.FC<Props> = ({ items, onChangePage }) => {
   };
 
   if (!pager.pages || pager.pages.length <= 1) {
-    // don't display pager if there is only 1 page
+    // don't display pager if there is only 1 pag
     return null;
   }
 
@@ -121,28 +127,24 @@ const Pagination: React.FC<Props> = ({ items, onChangePage }) => {
         <div className="block-27">
           <Flex>
             <Button
-              onClick={(e) => {
+              onClick={() => {
                 setPage(1);
               }}
             >
               &lt; &lt;
             </Button>
 
-            <Button onClick={(e) => setPage(pager.currentPage - 1)}>
-              &lt;
-            </Button>
+            <Button onClick={() => setPage(pager.currentPage - 1)}>&lt;</Button>
 
-            {pager.pages.map((page, index) => (
-              <Button key={page} onClick={(e) => setPage(page)}>
+            {pager.pages.map((page) => (
+              <Button key={page} onClick={() => setPage(page)}>
                 {page}
               </Button>
             ))}
 
-            <Button onClick={(e) => setPage(pager.currentPage + 1)}>
-              &gt;
-            </Button>
+            <Button onClick={() => setPage(pager.currentPage + 1)}>&gt;</Button>
 
-            <Button onClick={(e) => setPage(pager.totalPages)}>&gt;&gt;</Button>
+            <Button onClick={() => setPage(pager.totalPages)}>&gt;&gt;</Button>
           </Flex>
         </div>
       </div>

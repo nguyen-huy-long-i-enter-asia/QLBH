@@ -6,9 +6,10 @@ import Cookies from "js-cookie";
 
 import { useDisclosure, Box, Flex, VStack } from "@chakra-ui/react";
 import MenuBarTemplate from "components/organisms/MenuBarTemplate";
-import TableTemplate from "components/organisms/Products/TableTemplate";
-import FilterTemplate from "components/organisms/Products/FilterTemplate";
+import TableTemplate from "components/organisms/TableTemplate";
+import FilterTemplate from "components/organisms/FilterTemplate";
 import Header, { CategoriesList } from "components/organisms/Products/Header";
+import "layouts/layout.css";
 
 type Filter = {
   filterName: string;
@@ -211,14 +212,14 @@ const ProductListContainer: React.FC = () => {
 
     // CheckState
     let newFilteredList;
-    if (checkedFilters.length !== 0) {
+    if (checkedFilters.length !== 0 && products.length > 0) {
       if (checkedFilters[0].filterConditions.length === 0) {
         newFilteredList = products;
       } else {
         newFilteredList = products.filter((item) =>
-          checkedFilters[0].filterConditions.some(
-            (condition) => condition.id === item.product_state.id
-          )
+          checkedFilters[0].filterConditions.some((condition) => {
+            return condition.id === item.product_state.id;
+          })
         );
       }
 
@@ -245,13 +246,13 @@ const ProductListContainer: React.FC = () => {
           );
         });
       }
-
+      console.log(newFilteredList);
       if (keyWord !== "") {
         newFilteredList = newFilteredList.filter((item) =>
           item.name.includes(keyWord)
         );
       }
-      console.log(newFilteredList);
+
       setFilteredList(newFilteredList);
     }
   }, [checkBoxFilters]);
@@ -283,43 +284,45 @@ const ProductListContainer: React.FC = () => {
             }),
           };
     });
-
+    // console.log(newCBFilter);
     setCheckBoxFilters(newCBFilter);
   };
   const handlePagination = (newDisplayList: Products) => {
     setDisplayList(newDisplayList);
+    // console.log(newDisplayList);
   };
   const searchProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyWord(e.currentTarget.value);
   };
   return (
     <div>
-      <Flex>
-        <VStack>
-          <Box>Product</Box>
+      <Flex className="body">
+        <Box className="left-column">
           <FilterTemplate
+            pageTitle="Product"
             checkboxFilters={checkBoxFilters}
             handleOnclick={handleCheckBoxClick}
           />
-        </VStack>
-        <VStack>
+        </Box>
+        <VStack className="right-column">
           <Header
             handleSearch={searchProduct}
             categoriesList={categories}
             manufacturersList={manufacturers}
+            position={position}
           />
           <TableTemplate
             fields={["id", "name", "original_price", "sell_price", "state"]}
             dataList={displayList}
             itemType="product"
-            expandList={expandList}
-            handleClick={handleProductClick}
-            categoriesList={categories}
-            manufacturersList={manufacturers}
+            productExpandContentProps={{
+              categoriesList: categories,
+              manufacturersList: manufacturers,
+            }}
           />
+          <Pagination items={filteredList} onChangePage={handlePagination} />
         </VStack>
       </Flex>
-      <Pagination items={filteredList} onChangePage={handlePagination} />
     </div>
   );
 };

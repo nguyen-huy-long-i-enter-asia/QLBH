@@ -3,10 +3,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Pagination from "components/atoms/Pagination";
 import Cookies from "js-cookie";
+import { useHistory } from "react-router-dom";
 import { Flex, Box, VStack, Input, Table } from "@chakra-ui/react";
-import ImportTableTemplate from "components/organisms/WareHouse/ImportTableTemplate";
-import ReceiptOverViewTemplate from "components/organisms/WareHouse/ReceiptOverViewTemplate";
-import SearchResultTemplate from "components/organisms/WareHouse/SearchResultTemplate";
+import ImportTableTemplate from "components/organisms/Receipts/ImportTableTemplate";
+import ReceiptOverViewTemplate from "components/organisms/Receipts/ReceiptOverViewTemplate";
+import SearchResultTemplate from "components/organisms/Receipts/SearchResultTemplate";
 
 type searchResultType = {
   id: string;
@@ -26,6 +27,7 @@ type importListType = {
   total: number;
 }[];
 const ImportProductContainer: React.FC = () => {
+  const history = useHistory();
   const [manufacturers, setManufacturers] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
@@ -59,7 +61,7 @@ const ImportProductContainer: React.FC = () => {
     const findData = async () => {
       const formData = new FormData();
       formData.append("keyword", keyword);
-      formData.append("selectedManufacturer", selectedManufacturer);
+      formData.append("id", selectedManufacturer);
       const result = await axios.post(
         `${process.env.REACT_APP_SERVER}products/find`,
         formData,
@@ -74,6 +76,8 @@ const ImportProductContainer: React.FC = () => {
     };
     if (keyword !== "") {
       findData();
+    } else {
+      setSearchResult([]);
     }
   }, [keyword, selectedManufacturer]);
   useEffect(() => {
@@ -96,6 +100,7 @@ const ImportProductContainer: React.FC = () => {
 
   const handProductClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const { id } = e.currentTarget;
+
     const selectedProduct = searchResult.filter((item) => item.id === id);
     // const importedProduct = {
     //   ...selectedProduct[0],
@@ -110,6 +115,7 @@ const ImportProductContainer: React.FC = () => {
     // // console.log(selectedProduct);
 
     // newImportList.push(importedProduct);
+
     setImportList([
       ...importList,
       {
@@ -129,31 +135,35 @@ const ImportProductContainer: React.FC = () => {
       if (item.id === productId) {
         return {
           ...item,
-          size: value,
+          size_id: value,
         };
       }
       return item;
     });
+
     setImportList(newImportList);
   };
   const handleColorChange = (e: React.FormEvent<HTMLSelectElement>) => {
     const productId = e.currentTarget.id;
     const { value } = e.currentTarget;
+
     const newImportList = importList.map((item) => {
+      console.log(item.id === productId);
       if (item.id === productId) {
         return {
           ...item,
-          color: value,
+          color_id: value,
         };
       }
       return item;
     });
+    console.log(newImportList);
     setImportList(newImportList);
   };
   const handleCountChange = (e: React.FormEvent<HTMLInputElement>) => {
     const productId = e.currentTarget.id;
     const { value } = e.currentTarget;
-    console.log(value);
+
     const newImportList = importList.map((item) => {
       if (item.id === productId) {
         return {
@@ -191,6 +201,7 @@ const ImportProductContainer: React.FC = () => {
 
       if (result.data.status) {
         alert("Add product successfull");
+        history.push("/receipts");
       }
     } catch (error) {
       console.log(error);
