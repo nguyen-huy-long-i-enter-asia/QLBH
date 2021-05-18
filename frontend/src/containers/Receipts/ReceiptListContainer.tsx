@@ -10,7 +10,6 @@ import TableTemplate from "components/organisms/TableTemplate";
 import FilterTemplate from "components/organisms/FilterTemplate";
 import Header from "components/organisms/Receipts/Header";
 import "layouts/layout.css";
-import { TimePicker } from "@syncfusion/ej2-calendars";
 
 type Filter = {
   filterName: string;

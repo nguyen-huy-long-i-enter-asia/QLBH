@@ -2,11 +2,7 @@ import React from "react";
 import LoginLayout from "layouts/LoginLayout";
 import LoginContainer from "containers/LoginContainer";
 
-type Props = {
-  isAuth: boolean;
-};
-
-const LoginPage: React.FC<Props> = ({ isAuth: bolean }) => {
+const LoginPage: React.FC = () => {
   return (
     <LoginLayout>
       <LoginContainer />

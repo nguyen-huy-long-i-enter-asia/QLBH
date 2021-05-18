@@ -4,27 +4,21 @@ import ReceiptFormContainer from "containers/Receipts/ReceiptFormContainer";
 
 import { Redirect, useParams } from "react-router-dom";
 
-type Props = {
-  isAuth: boolean;
-};
-const ReceiptFormPage: React.FC<Props> = ({ isAuth }) => {
+const ReceiptFormPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
-  if (isAuth) {
-    if (id) {
-      return (
-        <MainLayout>
-          <ReceiptFormContainer receiptId={id} />
-        </MainLayout>
-      );
-    }
+  if (id) {
     return (
       <MainLayout>
-        <ReceiptFormContainer />
+        <ReceiptFormContainer receiptId={id} />
       </MainLayout>
     );
   }
-  return <Redirect to="login" />;
+  return (
+    <MainLayout>
+      <ReceiptFormContainer />
+    </MainLayout>
+  );
 };
 
 export default ReceiptFormPage;

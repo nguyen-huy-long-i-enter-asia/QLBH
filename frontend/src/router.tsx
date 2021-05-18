@@ -6,47 +6,34 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import ReceiptFormPage from "pages/Receipts/ReceiptFormPage";
 import ReceiptListPage from "pages/Receipts/ReceiptListPage";
+import OrderListPage from "pages/Orders/OrderListPage";
+import ManagerAuth from "components/auth/ManagerAuth";
+import StaffAuth from "components/auth/StaffAuth";
+import CustomerAuth from "components/auth/CustomerAuth";
 
 export const Router: React.FC = () => {
-  const [isAuth, setIsAuth] = useState(true);
-  useEffect(() => {
-    const checkLogged = async () => {
-      const email = Cookies.get("email");
-      if (!email) {
-        setIsAuth(false);
-      } else {
-        const result = await axios.post(
-          `${process.env.REACT_APP_SERVER}users/auth`,
-          email
-        );
-        if (result.data.isAuth) {
-          setIsAuth(true);
-        } else {
-          setIsAuth(false);
-        }
-      }
-    };
-    checkLogged();
-  }, []);
   return (
     <Switch>
       <Route path="/login" exact>
-        <LoginPage isAuth={isAuth} />
+        <LoginPage />
       </Route>
-      <Route path="/products" exact>
-        <ProductListPage isAuth={isAuth} />
-      </Route>
-      <Route path="/receipts/add" exact>
-        <ReceiptFormPage isAuth={isAuth} />
-      </Route>
-      <Route path="/receipts/update/:id" exact>
-        <ReceiptFormPage isAuth={isAuth} />
-      </Route>
+      <ManagerAuth path="/products">
+        <ProductListPage />
+      </ManagerAuth>
 
-      <Route path="/receipts" exact>
-        <ReceiptListPage isAuth={isAuth} />
-      </Route>
-      <Route path="/orders" exact />
+      <StaffAuth path="/receipts/add">
+        <ReceiptFormPage />
+      </StaffAuth>
+      <StaffAuth path="/receipts/update/:id">
+        <ReceiptFormPage />
+      </StaffAuth>
+
+      <StaffAuth path="/receipts">
+        <ReceiptListPage />
+      </StaffAuth>
+      <StaffAuth path="/orders">
+        <OrderListPage />
+      </StaffAuth>
     </Switch>
   );
 };

@@ -55,7 +55,10 @@ const staffMenuList = [
 
     buttonLink: "/login",
   },
-
+  {
+    menuName: "Product",
+    buttonLink: "/products",
+  },
   {
     menuName: "Orders",
     buttonLink: "/orders",
@@ -65,7 +68,7 @@ const staffMenuList = [
     childrenMenus: ["Manufacture", "Receipts Management"],
     links: {
       Manufacture: "/login",
-      "Import Management": "/receipts",
+      "Receipts Management": "/receipts",
     },
   },
   {

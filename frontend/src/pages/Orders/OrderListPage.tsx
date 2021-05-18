@@ -4,7 +4,7 @@ import ReceiptListContainer from "containers/Receipts/ReceiptListContainer";
 
 import { Redirect } from "react-router-dom";
 
-const ReceiptListPage: React.FC = () => {
+const OrderListPage: React.FC = () => {
   return (
     <MainLayout>
       <ReceiptListContainer />
@@ -12,4 +12,4 @@ const ReceiptListPage: React.FC = () => {
   );
 };
 
-export default ReceiptListPage;
+export default OrderListPage;
