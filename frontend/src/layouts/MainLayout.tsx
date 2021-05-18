@@ -14,18 +14,18 @@ const managerMenuList = [
   },
   {
     menuName: "Product",
-    buttonLink: "/login",
+    buttonLink: "/products",
   },
   {
-    menuName: "Transaction",
-    buttonLink: "/login",
+    menuName: "Orders",
+    buttonLink: "/orders",
   },
   {
     menuName: "Warehouse",
-    childrenMenus: ["Manufacture", "Import Management"],
+    childrenMenus: ["Manufacture", "Receipts Management"],
     links: {
       Manufacture: "/login",
-      "Import Management": "/login",
+      "Receipts Management": "/receipts",
     },
   },
   {
@@ -57,15 +57,15 @@ const staffMenuList = [
   },
 
   {
-    menuName: "Transaction",
-    buttonLink: "/login",
+    menuName: "Orders",
+    buttonLink: "/orders",
   },
   {
     menuName: "Warehouse",
-    childrenMenus: ["Manufacture", "Import Management"],
+    childrenMenus: ["Manufacture", "Receipts Management"],
     links: {
       Manufacture: "/login",
-      "Import Management": "/login",
+      "Import Management": "/receipts",
     },
   },
   {

@@ -22,20 +22,23 @@ type ProductExpandContentProps = {
   manufacturersList: ManufacturersList;
 };
 
+type ReceiptExpandContentProps = {
+  handleDeleteReceipt: (e: React.MouseEvent<HTMLButtonElement>) => void;
+};
 type Props = {
   fields: string[];
   dataList: any;
   itemType: string;
   productExpandContentProps?: ProductExpandContentProps;
+  receiptExpandContentProps?: ReceiptExpandContentProps;
 };
 
 const TableTemplate: React.FC<Props> = ({
   fields,
-
   dataList,
   itemType,
-
   productExpandContentProps,
+  receiptExpandContentProps,
 }) => {
   const [expandList, setExpandList] = useState<
     { id: number; display: boolean }[]
@@ -77,6 +80,7 @@ const TableTemplate: React.FC<Props> = ({
               </Tr>
 
               <Tr
+                bg="white"
                 id={`${item.id}-content`}
                 style={{
                   display:
@@ -96,7 +100,12 @@ const TableTemplate: React.FC<Props> = ({
                       );
                     }
                     if (itemType === "receipt") {
-                      return <ReceiptExpandContent receipt={item} />;
+                      return (
+                        <ReceiptExpandContent
+                          receipt={item}
+                          receiptExpandContentProps={receiptExpandContentProps}
+                        />
+                      );
                     }
                     return <></>;
                   })()}

@@ -11,6 +11,8 @@ import {
   Th,
   Select,
   Input,
+  Button,
+  Box,
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 import { DeleteIcon } from "@chakra-ui/icons";
@@ -34,7 +36,6 @@ type Props = {
     id: string;
     name: string;
     original_price: number;
-    image: string;
     count: number;
     size_id: string;
     color_id: string;
@@ -43,6 +44,7 @@ type Props = {
   handleSizeChange: (e: React.FormEvent<HTMLSelectElement>) => void;
   handleColorChange: (e: React.FormEvent<HTMLSelectElement>) => void;
   handleCountChange: (e: React.FormEvent<HTMLInputElement>) => void;
+  handleDeleteRD: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const ImportTableTemplate: React.FC<Props> = ({
@@ -52,6 +54,7 @@ const ImportTableTemplate: React.FC<Props> = ({
   handleSizeChange,
   handleColorChange,
   handleCountChange,
+  handleDeleteRD,
 }) => {
   return (
     <Table>
@@ -111,7 +114,13 @@ const ImportTableTemplate: React.FC<Props> = ({
             <Td>{importItem.original_price}</Td>
             <Td>{importItem.total}</Td>
             <Td>
-              <DeleteIcon />
+              <Button
+                bgColor="transparent"
+                id={index.toString()}
+                onClick={handleDeleteRD}
+              >
+                <DeleteIcon />
+              </Button>
             </Td>
           </Tr>
         ))}

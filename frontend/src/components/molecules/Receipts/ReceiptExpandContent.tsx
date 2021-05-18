@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import ProductForm from "components/atoms/Products/ProductForm";
 import axios from "axios";
-import { useHistory, Redirect } from "react-router-dom";
+import { useHistory, Redirect, Link } from "react-router-dom";
 
 type CategoriesList = {
   id: string;
@@ -61,13 +61,24 @@ type Props = {
       name: string;
     };
   };
+  receiptExpandContentProps:
+    | {
+        handleDeleteReceipt: (e: React.MouseEvent<HTMLButtonElement>) => void;
+      }
+    | undefined;
 };
 
-const ProductExpandContent: React.FC<Props> = ({ receipt }) => {
+const ProductExpandContent: React.FC<Props> = ({
+  receipt,
+  receiptExpandContentProps,
+}) => {
   const history = useHistory();
 
   const handleReceiptUpdate = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("a");
+    // history.push({
+    //   pathname: '/receipts/update/'+'',
+    //   search: ''
+    // })
   };
   return (
     <Box>
@@ -127,8 +138,19 @@ const ProductExpandContent: React.FC<Props> = ({ receipt }) => {
       <Box>{receipt.total}</Box>
 
       <Flex>
-        <Button>Return Products</Button>
-        <Button onClick={handleReceiptUpdate}>Update</Button>
+        <Button
+          id={receipt.id}
+          onClick={
+            receiptExpandContentProps
+              ? receiptExpandContentProps.handleDeleteReceipt
+              : undefined
+          }
+        >
+          Return Products
+        </Button>
+        <Button>
+          <Link to={`/receipts/update/${receipt.id}`}>Update Products</Link>
+        </Button>
       </Flex>
     </Box>
   );

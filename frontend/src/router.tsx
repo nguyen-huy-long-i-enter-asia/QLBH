@@ -4,7 +4,7 @@ import ProductListPage from "pages/ProductListPage";
 import LoginPage from "pages/LoginPage";
 import axios from "axios";
 import Cookies from "js-cookie";
-import ImportProductPage from "pages/Receipts/ImportProductPage";
+import ReceiptFormPage from "pages/Receipts/ReceiptFormPage";
 import ReceiptListPage from "pages/Receipts/ReceiptListPage";
 
 export const Router: React.FC = () => {
@@ -37,8 +37,12 @@ export const Router: React.FC = () => {
         <ProductListPage isAuth={isAuth} />
       </Route>
       <Route path="/receipts/add" exact>
-        <ImportProductPage isAuth={isAuth} />
+        <ReceiptFormPage isAuth={isAuth} />
       </Route>
+      <Route path="/receipts/update/:id" exact>
+        <ReceiptFormPage isAuth={isAuth} />
+      </Route>
+
       <Route path="/receipts" exact>
         <ReceiptListPage isAuth={isAuth} />
       </Route>

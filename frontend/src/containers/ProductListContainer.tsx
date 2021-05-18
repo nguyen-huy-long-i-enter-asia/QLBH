@@ -255,7 +255,7 @@ const ProductListContainer: React.FC = () => {
 
       setFilteredList(newFilteredList);
     }
-  }, [checkBoxFilters]);
+  }, [checkBoxFilters, keyWord]);
   const handleProductClick = (e: React.MouseEvent<HTMLTableRowElement>) => {
     const newExpandList = expandList.map((item: any) =>
       String(item.id) === e.currentTarget.id

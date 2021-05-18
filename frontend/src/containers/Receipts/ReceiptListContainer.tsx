@@ -20,7 +20,10 @@ type Filter = {
     isChecked: boolean;
   }[];
 };
-
+type dateRangeType = {
+  startDate: Date;
+  endDate: Date;
+};
 const ReceiptListContainer: React.FC = () => {
   const position = Cookies.get("position");
   const [receipts, setReceipts] = useState<any[]>([]);
@@ -33,7 +36,7 @@ const ReceiptListContainer: React.FC = () => {
   const [manufacturers, setManufacturers] = useState<any>([]);
   const [timeOption, setTimeOption] = useState<string>("datePicker");
   const [datePicker, setDatePicker] = useState<string>("This month");
-  const [dateRange, setDateRange] = useState<any>({
+  const [dateRange, setDateRange] = useState<dateRangeType>({
     startDate: new Date(
       new Date().getFullYear(),
       new Date().getMonth(),
@@ -156,7 +159,7 @@ const ReceiptListContainer: React.FC = () => {
                 const itemMonth = new Date(item.created).getMonth();
                 return currentMonth === itemMonth;
               });
-              console.log(newFilteredList);
+              // console.log(newFilteredList);
 
               break;
             }
@@ -175,18 +178,23 @@ const ReceiptListContainer: React.FC = () => {
               break;
           }
         } else {
-          console.log("b");
+          newFilteredList = newFilteredList.filter((item) => {
+            const itemTime = new Date(item.created);
+            return (
+              dateRange.startDate <= itemTime && dateRange.endDate >= itemTime
+            );
+          });
         }
       }
       if (keyWord !== "") {
         newFilteredList = newFilteredList.filter((item) =>
-          item.id.includes(keyWord)
+          item.id.toString().includes(keyWord)
         );
       }
 
       setFilteredList(newFilteredList);
     }
-  }, [checkBoxFilters, timeOption, datePicker, dateRange]);
+  }, [checkBoxFilters, timeOption, datePicker, dateRange, keyWord]);
 
   const handleProductClick = (e: React.MouseEvent<HTMLTableRowElement>) => {
     const newExpandList = expandList.map((item: any) =>
@@ -201,6 +209,8 @@ const ReceiptListContainer: React.FC = () => {
     setDisplayList(newDisplayList);
   };
   const searchReceipts = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.currentTarget.value);
+
     setKeyWord(e.currentTarget.value);
   };
   const handleCheckBoxClick = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -231,13 +241,29 @@ const ReceiptListContainer: React.FC = () => {
     setTimeOption(value);
   };
   const handleTimePicker = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(e.currentTarget.value);
     setTimeOption("datePicker");
     setDatePicker(e.currentTarget.value);
   };
   const handleRangeTimeChange = (args: any) => {
-    console.log(args.startDate);
     setDateRange({ startDate: args.startDate, endDate: args.endDate });
+  };
+  const handleDeleteReceipt = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const { id } = e.currentTarget;
+    console.log(id);
+    const deleteReceipt = async () => {
+      const url = `${process.env.REACT_APP_SERVER}receipts/delete/${id}`;
+      console.log(url);
+      const result = await axios.get(url);
+      if (result.data.status === "success") {
+        alert("Delete Succes");
+        const newFilteredList = filteredList.filter((item) => {
+          console.log(item.id.toString() !== id);
+          return item.id.toString !== id;
+        });
+        setFilteredList(newFilteredList);
+      }
+    };
+    deleteReceipt();
   };
   return (
     <div>
@@ -263,6 +289,7 @@ const ReceiptListContainer: React.FC = () => {
             fields={["id", "created", "manufacturer", "staff", "total"]}
             dataList={displayList}
             itemType="receipt"
+            receiptExpandContentProps={{ handleDeleteReceipt }}
           />
           <Pagination items={filteredList} onChangePage={handlePagination} />
         </VStack>

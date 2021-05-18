@@ -17,22 +17,24 @@ type searchResultType = {
   count: number;
 }[];
 type importListType = {
-  id: string;
+  id: string; // id san pham
   name: string;
   original_price: number;
-  image: string;
   count: number;
   size_id: string;
   color_id: string;
   total: number;
 }[];
-const ImportProductContainer: React.FC = () => {
+type Props = {
+  receiptId?: string;
+};
+const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
   const history = useHistory();
   const [manufacturers, setManufacturers] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
   const [transactionStates, setTransactionStates] = useState([]);
-  const staffEmail = Cookies.get("email");
+  const [staffEmail, setStaffEmail] = useState(Cookies.get("email"));
   const [selectedManufacturer, setSelectedManufacturer] = useState("1");
   const [keyword, setKeyword] = useState("");
   const [searchResult, setSearchResult] = useState<searchResultType>([]);
@@ -41,6 +43,26 @@ const ImportProductContainer: React.FC = () => {
   const [sum, setSum] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
+      if (receiptId) {
+        const receiptData = await axios.get(
+          `${process.env.REACT_APP_SERVER}receipts/find/${receiptId}`
+        );
+        const oldImportedList = receiptData.data.receipt_details.map(
+          (item: any) => ({
+            id: item.product.id.toString(),
+            name: item.product.name,
+            original_price: item.product.original_price,
+            count: item.count,
+            size_id: item.size.id.toString(),
+            color_id: item.color.id.toString(),
+            total: item.count * item.product.original_price,
+            note: item.note,
+          })
+        );
+        setImportList(oldImportedList);
+        setNote(receiptData.data.note);
+        setStaffEmail(receiptData.data.user.email);
+      }
       const manufacturersData = await axios.get(
         `${process.env.REACT_APP_SERVER}manufacturers/index`
       );
@@ -102,19 +124,6 @@ const ImportProductContainer: React.FC = () => {
     const { id } = e.currentTarget;
 
     const selectedProduct = searchResult.filter((item) => item.id === id);
-    // const importedProduct = {
-    //   ...selectedProduct[0],
-    //   count: 0,
-    //   size: "",
-    //   color: "",
-    //   total: 0,
-    // };
-
-    // importedProduct.count = 0;
-    // const newImportList = importList;
-    // // console.log(selectedProduct);
-
-    // newImportList.push(importedProduct);
 
     setImportList([
       ...importList,
@@ -146,18 +155,19 @@ const ImportProductContainer: React.FC = () => {
   const handleColorChange = (e: React.FormEvent<HTMLSelectElement>) => {
     const productId = e.currentTarget.id;
     const { value } = e.currentTarget;
-
+    console.log(productId);
+    console.log(importList);
     const newImportList = importList.map((item) => {
-      console.log(item.id === productId);
-      if (item.id === productId) {
+      if (item.id === productId.toString()) {
+        console.log("aa");
         return {
           ...item,
-          color_id: value,
+          color_id: value.toString(),
         };
       }
       return item;
     });
-    console.log(newImportList);
+
     setImportList(newImportList);
   };
   const handleCountChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -165,7 +175,7 @@ const ImportProductContainer: React.FC = () => {
     const { value } = e.currentTarget;
 
     const newImportList = importList.map((item) => {
-      if (item.id === productId) {
+      if (item.id === productId.toString()) {
         return {
           ...item,
           count: value === "" ? 0 : parseInt(value, 10),
@@ -177,11 +187,19 @@ const ImportProductContainer: React.FC = () => {
     setImportList(newImportList);
     // console.log(newImportList);
   };
+  const handleDeleteRD = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const selectedIndex = parseInt(e.currentTarget.id, 10);
+    const newImportList = importList.filter(
+      (value, index) => index !== selectedIndex
+    );
+    setImportList(newImportList);
+  };
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.currentTarget;
     setNote(value);
   };
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    let url = "";
     const formData = new FormData();
     formData.append("receipt_details", JSON.stringify(importList));
     if (staffEmail !== undefined) {
@@ -192,17 +210,20 @@ const ImportProductContainer: React.FC = () => {
     formData.append("note", note);
     console.log(JSON.stringify(importList));
     try {
-      const url = `http://localhost:8765/receipts/import`;
+      if (receiptId) {
+        formData.append("receipt_id", receiptId);
+        url = `http://localhost:8765/receipts/edit/`;
+      } else {
+        url = `http://localhost:8765/receipts/import`;
+      }
+
       const result = await axios.post(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      if (result.data.status) {
-        alert("Add product successfull");
-        history.push("/receipts");
-      }
+      history.push("/receipts");
     } catch (error) {
       console.log(error);
     }
@@ -232,6 +253,7 @@ const ImportProductContainer: React.FC = () => {
           handleColorChange={handleColorChange}
           handleSizeChange={handleSizeChange}
           handleCountChange={handleCountChange}
+          handleDeleteRD={handleDeleteRD}
         />
       </VStack>
       <ReceiptOverViewTemplate
@@ -247,4 +269,4 @@ const ImportProductContainer: React.FC = () => {
     </Flex>
   );
 };
-export default ImportProductContainer;
+export default ReceiptFormContainer;
