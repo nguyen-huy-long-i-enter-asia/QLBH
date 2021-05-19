@@ -24,8 +24,8 @@ const Header: React.FC<Props> = ({ handleSearch }) => {
         bgColor="white"
       />
 
-      <Button>
-        <Link to="/receipts/add"> Add </Link>
+      <Button bgColor="#3399ff" color="white">
+        <Link to="/receipts/add"> Import </Link>
       </Button>
     </Flex>
   );

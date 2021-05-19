@@ -16,6 +16,10 @@ type Props = {
     id: number;
     name: string;
   }[];
+  productStatesList: {
+    id: string;
+    name: string;
+  }[];
   position: string | undefined;
   handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
@@ -23,6 +27,7 @@ type Props = {
 const Header: React.FC<Props> = ({
   categoriesList,
   manufacturersList,
+  productStatesList,
   position,
   handleSearch,
 }) => {
@@ -40,6 +45,7 @@ const Header: React.FC<Props> = ({
           <ProductForm
             categoriesList={categoriesList}
             manufacturersList={manufacturersList}
+            productStatesList={productStatesList}
             action="add"
           />
         </Box>

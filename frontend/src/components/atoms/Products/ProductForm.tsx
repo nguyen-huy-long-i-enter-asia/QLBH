@@ -4,6 +4,7 @@ import axios from "axios";
 import {
   Input,
   Button,
+  Box,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -18,6 +19,7 @@ import {
   Select,
   Checkbox,
   Table,
+  Text,
   Tr,
   Td,
   Tbody,
@@ -62,12 +64,19 @@ type Props = {
       }[];
     }[];
   };
+  productStatesList:
+    | {
+        id: string;
+        name: string;
+      }[]
+    | undefined;
   action: string;
 };
 const ProductForm: React.FC<Props> = ({
   categoriesList,
   manufacturersList,
   selectedProduct,
+  productStatesList,
   action,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -242,13 +251,16 @@ const ProductForm: React.FC<Props> = ({
 
   return (
     <>
-      <Button className="button " onClick={onOpen}>{`${
-        action.charAt(0).toUpperCase() + action.slice(1)
-      } Product`}</Button>
+      <Button
+        className="button "
+        onClick={onOpen}
+        bgColor="#3399ff"
+        color="white"
+      >{`${action.charAt(0).toUpperCase() + action.slice(1)} Product`}</Button>
       <Modal isOpen={isOpen} onClose={onClose} size="full">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add new Product</ModalHeader>
+          <ModalHeader bgColor="#ededed">Add new Product</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <form onSubmit={handleSubmit}>
@@ -256,14 +268,14 @@ const ProductForm: React.FC<Props> = ({
                 <Table>
                   <Tbody>
                     <Tr>
-                      <Td>Name</Td>
+                      <Td fontWeight="bold">Name</Td>
                       <Td>
                         <Input name="name" value={name} onChange={changeName} />
                       </Td>
                     </Tr>
 
                     <Tr>
-                      <Td>Manufacturer</Td>
+                      <Td fontWeight="bold">Manufacturer</Td>
                       <Td>
                         <Select
                           name="manufacturer"
@@ -284,7 +296,7 @@ const ProductForm: React.FC<Props> = ({
                     </Tr>
 
                     <Tr>
-                      <Td>Discount</Td>
+                      <Td fontWeight="bold">Discount</Td>
                       <Td>
                         <Input
                           name="discount"
@@ -296,16 +308,20 @@ const ProductForm: React.FC<Props> = ({
                     </Tr>
 
                     <Tr>
-                      <Td>State</Td>
+                      <Td fontWeight="bold">State</Td>
                       <Td>
                         <Select
                           name="state"
                           onChange={changeStateId}
                           value={stateId}
                         >
-                          <option value={1}>1</option>
-                          <option value={2}>2</option>
-                          <option value={3}>3</option>
+                          {productStatesList !== undefined ? (
+                            productStatesList.map((state) => (
+                              <option value={state.id}>{state.name} </option>
+                            ))
+                          ) : (
+                            <></>
+                          )}
                         </Select>
                       </Td>
                     </Tr>
@@ -314,7 +330,7 @@ const ProductForm: React.FC<Props> = ({
                 <Table>
                   <Tbody>
                     <Tr>
-                      <Td>Original Price</Td>
+                      <Td fontWeight="bold">Original Price</Td>
                       <Td>
                         <Input
                           name="original_price"
@@ -325,7 +341,7 @@ const ProductForm: React.FC<Props> = ({
                       </Td>
                     </Tr>
                     <Tr>
-                      <Td>Sell Price</Td>
+                      <Td fontWeight="bold">Sell Price</Td>
                       <Td>
                         <Input
                           name="sell_price"
@@ -336,7 +352,7 @@ const ProductForm: React.FC<Props> = ({
                       </Td>
                     </Tr>
                     <Tr>
-                      <Td>Categories</Td>
+                      <Td fontWeight="bold">Categories</Td>
                       <Td>
                         <VStack>
                           {categories.map((item) => (
@@ -356,12 +372,33 @@ const ProductForm: React.FC<Props> = ({
                   </Tbody>
                 </Table>
               </Flex>
+              <Box w="100%">
+                <Box pl="1.5rem">
+                  <Text fontWeight="bold">Note</Text>
+                </Box>
+                <Box pl="1.5rem" w="100%">
+                  <Textarea name="note" onChange={changeNote} value={note} />
+                </Box>
+              </Box>
               <Flex>
-                <FormLabel>Note</FormLabel>
-                <Textarea name="note" onChange={changeNote} value={note} />
+                <FormLabel pl="1.5rem">
+                  <Input
+                    display="none"
+                    name="image"
+                    type="file"
+                    onChange={changeImage}
+                    border="none"
+                  />
+                  <Image
+                    src={`${process.env.PUBLIC_URL}/image_upload.png`}
+                    cursor="pointer"
+                    boxSize="10rem"
+                  />
+                </FormLabel>
+                <Box>
+                  <Image src={imageLink} boxSize="15rem" />
+                </Box>
               </Flex>
-              <Input name="image" type="file" onChange={changeImage} />
-              <Image src={imageLink} />
               <Input type="submit" value="Submit" />
             </form>
           </ModalBody>

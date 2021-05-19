@@ -254,7 +254,7 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
           <Flex align="center" ml="3%">
             <p>{receiptId ? "Update" : "Import"}</p>
           </Flex>
-          <Box bgColor="white" mr="2%" >
+          <Box bgColor="white" mr="2%">
             <Input
               placeholder="Type product id or name"
               value={keyword}

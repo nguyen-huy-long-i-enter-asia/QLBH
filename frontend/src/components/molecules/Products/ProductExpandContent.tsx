@@ -27,6 +27,7 @@ type ManufacturersList = {
 type ProductExpandContentProps = {
   categoriesList: CategoriesList | undefined;
   manufacturersList: ManufacturersList | undefined;
+  productStatesList: { id: string; name: string }[];
 };
 type Props = {
   product: {
@@ -163,6 +164,11 @@ const ProductExpandContent: React.FC<Props> = ({
           manufacturersList={
             productExpandContentProps
               ? productExpandContentProps.manufacturersList
+              : undefined
+          }
+          productStatesList={
+            productExpandContentProps
+              ? productExpandContentProps.productStatesList
               : undefined
           }
           action="edit"

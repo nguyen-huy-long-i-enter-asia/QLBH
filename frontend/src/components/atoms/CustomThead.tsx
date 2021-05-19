@@ -9,7 +9,7 @@ const CustomThead: React.FC<Props> = ({ fields }) => {
     <Thead bgColor="#3399ff">
       <Tr>
         {fields.map((item) => (
-          <Th key={item} id={item}>
+          <Th key={item} id={item} color="white">
             {item.charAt(0).toUpperCase() + item.slice(1).replace("_", " ")}
           </Th>
         ))}

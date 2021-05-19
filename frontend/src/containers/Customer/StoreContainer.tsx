@@ -251,20 +251,10 @@ const StoreContainer: React.FC = () => {
           />
         </Box>
         <VStack className="right-column">
-          <Header
-            handleSearch={searchProduct}
-            categoriesList={categories}
-            manufacturersList={manufacturers}
-            position={position}
-          />
           <TableTemplate
             fields={["id", "name", "original_price", "sell_price", "state"]}
             dataList={displayList}
             itemType="product"
-            productExpandContentProps={{
-              categoriesList: categories,
-              manufacturersList: manufacturers,
-            }}
           />
           <Pagination items={filteredList} onChangePage={handlePagination} />
         </VStack>

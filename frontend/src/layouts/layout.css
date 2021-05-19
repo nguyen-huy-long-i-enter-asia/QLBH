@@ -7,18 +7,19 @@
   height: 100vh;
 }
 .content {
-  width: 80%;
+  width: 90%;
   margin: auto;
+  margin-top: 1%;
 }
 
 .left-column {
   width: 13%;
-  padding-right: 2%;
+  padding-right: 1%;
 }
 
 .right-column {
   width: 86%;
-  padding-left: 2%;
+  padding-left: 1%;
 }
 
 .filter-list {

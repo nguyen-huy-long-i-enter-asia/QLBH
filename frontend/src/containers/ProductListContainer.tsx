@@ -58,7 +58,7 @@ const ProductListContainer: React.FC = () => {
   const [displayList, setDisplayList] = useState<any[]>([]);
   const [checkBoxFilters, setCheckBoxFilters] = useState<Filter[]>([]);
   const [categories, setCategories] = useState<CategoriesList>([]);
-  const [productStates, setProductStates] = useState([{ id: 0, name: "" }]);
+  const [productStates, setProductStates] = useState([{ id: "0", name: "" }]);
   const [manufacturers, setManufacturers] = useState<any>([]);
 
   // Fetch ProductsList and CategoriesList, Manufacturers List
@@ -232,6 +232,7 @@ const ProductListContainer: React.FC = () => {
             categoriesList={categories}
             manufacturersList={manufacturers}
             position={position}
+            productStatesList={productStates}
           />
           <TableTemplate
             fields={[
@@ -246,6 +247,7 @@ const ProductListContainer: React.FC = () => {
             productExpandContentProps={{
               categoriesList: categories,
               manufacturersList: manufacturers,
+              productStatesList: productStates,
             }}
           />
           <Pagination items={filteredList} onChangePage={handlePagination} />

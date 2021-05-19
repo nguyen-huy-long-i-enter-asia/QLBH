@@ -272,12 +272,12 @@ const ProductListContainer: React.FC = () => {
           /> */}
         </VStack>
         <VStack>
-          <Header
+          {/* <Header
             position={position}
             handleSearch={searchProduct}
             categoriesList={categories}
             manufacturersList={manufacturers}
-          />
+          /> */}
           {/* <TableTemplate
             fields={["id", "name", "original_price", "sell_price", "state"]}
             dataList={displayList}

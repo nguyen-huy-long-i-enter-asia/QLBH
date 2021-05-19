@@ -11,6 +11,7 @@ import {
   MenuList,
   MenuItem,
   Button,
+  Text,
   MenuOptionGroup,
   MenuItemOption,
   IconButton,
@@ -84,10 +85,10 @@ const FilterTemplate: React.FC<Props> = ({
   return (
     <Box className="filter-list">
       <Box className="page-title">
-        <p>{pageTitle}</p>
+        <Text fontSize="3xl">{pageTitle}</Text>
       </Box>
       {timeFilter !== undefined ? (
-        <Box className="filter-box" >
+        <Box className="filter-box">
           <RadioGroup value={timeFilter.option}>
             <Stack>
               <Radio

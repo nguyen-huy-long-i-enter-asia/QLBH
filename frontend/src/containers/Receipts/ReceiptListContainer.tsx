@@ -266,10 +266,10 @@ const ReceiptListContainer: React.FC = () => {
   };
   return (
     <div>
-      <Flex className="body">
+      <Flex className="content">
         <Box className="left-column">
           <FilterTemplate
-            pageTitle="Product"
+            pageTitle="Receipts"
             checkboxFilters={checkBoxFilters}
             handleOnclick={handleCheckBoxClick}
             timeFilter={{
