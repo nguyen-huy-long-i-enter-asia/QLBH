@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef } from "react";
 import {
   Box,
@@ -17,9 +18,20 @@ import {
 import { UpDownIcon } from "@chakra-ui/icons";
 import CheckBoxFilter from "components/molecules/filter/CheckBoxFilter";
 import TextFilter from "components/molecules/filter/TextFilter";
+import RangeFilter from "components/molecules/filter/RangeFilter";
 import "layouts/layout.css";
 import { DateRangePickerComponent } from "@syncfusion/ej2-react-calendars";
+import { isTemplateExpression } from "typescript";
 
+type RangeFilter = {
+  filterName: string;
+  smallest: number;
+  biggest: number;
+  handleSet: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleUnset: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleSmallestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleBiggestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
 type Props = {
   pageTitle: string;
   checkboxFilters?: {
@@ -49,7 +61,7 @@ type Props = {
     handleTimeOptionChange: (e: any) => void;
     handleTimePicker: (e: React.MouseEvent<HTMLButtonElement>) => void;
   };
-
+  rangeFilters?: RangeFilter[];
   handleSelectChange?: (e: React.FormEvent<HTMLSelectElement>) => void;
 
   handleOnclick?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -59,6 +71,7 @@ const FilterTemplate: React.FC<Props> = ({
   checkboxFilters,
   selectFilters,
   timeFilter,
+  rangeFilters,
   handleSelectChange,
   handleOnclick,
 }) => {
@@ -74,7 +87,7 @@ const FilterTemplate: React.FC<Props> = ({
         <p>{pageTitle}</p>
       </Box>
       {timeFilter !== undefined ? (
-        <Box className="filter-box" p="4% 0">
+        <Box className="filter-box" >
           <RadioGroup value={timeFilter.option}>
             <Stack>
               <Radio
@@ -171,6 +184,11 @@ const FilterTemplate: React.FC<Props> = ({
       {/* {textFilters.map((filter) => (
         <TextFilter key={filter.filterName} filterName={filter.filterName} />
       ))} */}
+      {rangeFilters !== undefined ? (
+        rangeFilters.map((filter) => <RangeFilter {...filter} />)
+      ) : (
+        <> </>
+      )}
     </Box>
   );
 };

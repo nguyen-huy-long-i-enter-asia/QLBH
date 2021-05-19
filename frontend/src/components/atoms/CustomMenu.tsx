@@ -20,11 +20,23 @@ const CustomMenu: React.FC<Props> = ({
   return (
     <Menu>
       {buttonLink ? (
-        <Button w={menuWidth}>
+        <Button
+          w={menuWidth}
+          bgColor="#3cc7bd"
+          _hover={{ bg: "#3ca9c7" }}
+          border="0px"
+        >
           <Link to={buttonLink}>{menuName}</Link>
         </Button>
       ) : (
-        <MenuButton as={Button}>{menuName}</MenuButton>
+        <MenuButton
+          bgColor="#3cc7bd"
+          as={Button}
+          _hover={{ bg: "#3ca9c7" }}
+          border="0px"
+        >
+          {menuName}
+        </MenuButton>
       )}
 
       {childrenMenus ? (

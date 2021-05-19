@@ -29,11 +29,11 @@ const Pagination: React.FC<Props> = ({ items, onChangePage }) => {
     endIndex: 1,
     pages: [],
   });
+  console.log(items);
 
   useEffect(() => {
     if (items && items.length > 0) {
       setPage(1);
-      console.log(items);
     } else {
       const newPager = pager;
       newPager.pages = [];

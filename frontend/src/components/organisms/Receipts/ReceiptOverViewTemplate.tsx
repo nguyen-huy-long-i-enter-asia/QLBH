@@ -62,7 +62,7 @@ const ReceiptOverViewTemplate: React.FC<Props> = ({
   handleSubmit,
 }) => {
   return (
-    <VStack>
+    <VStack w="20%" bgColor="white">
       <Box>{staffEmail}</Box>
       <Select
         name="manufacturer"
@@ -76,7 +76,7 @@ const ReceiptOverViewTemplate: React.FC<Props> = ({
         ))}
       </Select>
       <Box>{`Sum:  ${sum}`}</Box>
-      <Box>Note</Box>
+      {/* <Box>Note</Box> */}
       <Textarea name="note" onChange={handleNoteChange} value={note} />
       <Button onClick={handleSubmit}>Submit</Button>
     </VStack>

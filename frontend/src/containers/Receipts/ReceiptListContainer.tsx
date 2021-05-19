@@ -248,17 +248,17 @@ const ReceiptListContainer: React.FC = () => {
   };
   const handleDeleteReceipt = (e: React.MouseEvent<HTMLButtonElement>) => {
     const { id } = e.currentTarget;
-    console.log(id);
+
     const deleteReceipt = async () => {
       const url = `${process.env.REACT_APP_SERVER}receipts/delete/${id}`;
-      console.log(url);
+
       const result = await axios.get(url);
       if (result.data.status === "success") {
         alert("Delete Succes");
         const newFilteredList = filteredList.filter((item) => {
-          console.log(item.id.toString() !== id);
-          return item.id.toString !== id;
+          return item.id.toString() !== id;
         });
+
         setFilteredList(newFilteredList);
       }
     };

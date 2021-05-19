@@ -1,7 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import CustomMenu from "components/atoms/CustomMenu";
-import { Button } from "@chakra-ui/react";
+import { Button, Box, Flex } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
@@ -27,19 +27,27 @@ const MenuBarTemplate: React.FC<Props> = ({ menuList, menuWidth }) => {
     logoutBackEnd();
   };
   return (
-    <>
-      {menuList.map((menu) => (
-        <CustomMenu
-          key={menu.menuName}
-          menuName={menu.menuName}
-          childrenMenus={menu.childrenMenus}
-          links={menu.links}
-          buttonLink={menu.buttonLink ? menu.buttonLink : undefined}
-          menuWidth={menuWidth}
-        />
-      ))}
-      <Button onClick={handleLogout}>Log Out</Button>
-    </>
+    <Flex w="80%" m="auto" justify="space-between">
+      <Box>
+        {menuList.map((menu) => (
+          <CustomMenu
+            key={menu.menuName}
+            menuName={menu.menuName}
+            childrenMenus={menu.childrenMenus}
+            links={menu.links}
+            buttonLink={menu.buttonLink ? menu.buttonLink : undefined}
+            menuWidth={menuWidth}
+          />
+        ))}
+      </Box>
+      <Button
+        onClick={handleLogout}
+        bgColor="#3cc7bd"
+        _hover={{ bg: "#3ca9c7" }}
+      >
+        Log Out
+      </Button>
+    </Flex>
   );
 };
 export default MenuBarTemplate;

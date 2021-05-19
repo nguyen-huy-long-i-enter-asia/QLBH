@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import Cookies from "js-cookie";
 import MenuBarTemplate from "components/organisms/MenuBarTemplate";
 import { Box } from "@chakra-ui/react";
+import "layouts/layout.css";
 
 type LayoutProps = {
   children?: ReactNode;
@@ -36,16 +37,9 @@ const managerMenuList = [
     menuName: "Staff",
     buttonLink: "/login",
   },
-  {
-    menuName: "History",
-    buttonLink: "/login",
-  },
+
   {
     menuName: "Statistic",
-    buttonLink: "/login",
-  },
-  {
-    menuName: "Sale",
     buttonLink: "/login",
   },
 ];
@@ -75,31 +69,22 @@ const staffMenuList = [
     menuName: "Customer",
     buttonLink: "/login",
   },
-  {
-    menuName: "Staff",
-    buttonLink: "/login",
-  },
-  {
-    menuName: "History",
-    buttonLink: "/login",
-  },
-  {
-    menuName: "Sale",
-    buttonLink: "/login",
-  },
 ];
 
 const MainLayout: React.FC<LayoutProps> = ({ children }) => {
   const position = Cookies.get("position");
   return (
     <>
-      <Box>
-        <MenuBarTemplate
-          menuList={position === "1" ? managerMenuList : staffMenuList}
-          menuWidth="11.1%"
-        />
+      <Box className="body" w="100%">
+        <Box bgColor="#3cc7bd" w="100%">
+          <MenuBarTemplate
+            menuList={position === "1" ? managerMenuList : staffMenuList}
+            menuWidth="11.1%"
+          />
+        </Box>
+
+        {children}
       </Box>
-      <div>{children}</div>
     </>
   );
 };

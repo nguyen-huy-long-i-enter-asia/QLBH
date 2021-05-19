@@ -57,8 +57,8 @@ const ImportTableTemplate: React.FC<Props> = ({
   handleDeleteRD,
 }) => {
   return (
-    <Table>
-      <Thead>
+    <Table bgColor="white">
+      <Thead bgColor="#3cc7bd">
         <Th>ID</Th>
         <Th>Product</Th>
         <Th>Size</Th>

@@ -58,7 +58,7 @@ const TableTemplate: React.FC<Props> = ({
     setExpandList(newExpandList);
   };
   return (
-    <Table>
+    <Table className="table">
       <CustomThead fields={fields} />
 
       <Tbody>

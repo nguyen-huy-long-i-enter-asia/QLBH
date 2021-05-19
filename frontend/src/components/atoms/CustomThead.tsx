@@ -6,7 +6,7 @@ type Props = {
 };
 const CustomThead: React.FC<Props> = ({ fields }) => {
   return (
-    <Thead>
+    <Thead bgColor="#3399ff">
       <Tr>
         {fields.map((item) => (
           <Th key={item} id={item}>

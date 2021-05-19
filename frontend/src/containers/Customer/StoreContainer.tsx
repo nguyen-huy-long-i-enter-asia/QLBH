@@ -11,13 +11,22 @@ import FilterTemplate from "components/organisms/FilterTemplate";
 import Header, { CategoriesList } from "components/organisms/Products/Header";
 import "layouts/layout.css";
 
-type Filter = {
+type CheckBoxFilter = {
   filterName: string;
   filterConditions: {
     id: string;
     name: string;
     isChecked: boolean;
   }[];
+};
+type RangeFilter = {
+  filterName: string;
+  smallest: number;
+  biggest: number;
+  handleSet: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleUnset: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleSmallestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleBiggestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 type Products = {
   id: number;
@@ -48,17 +57,22 @@ type Products = {
   }[];
 }[];
 
-const ProductListContainer: React.FC = () => {
+const StoreContainer: React.FC = () => {
   const position = Cookies.get("position");
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [products, setProducts] = useState<any[]>([]);
   const [keyWord, setKeyWord] = useState("");
   const [expandList, setExpandList] = useState<any>([]);
   const [filteredList, setFilteredList] = useState<any[]>([]);
+
   const [displayList, setDisplayList] = useState<any[]>([]);
-  const [checkBoxFilters, setCheckBoxFilters] = useState<Filter[]>([]);
+  const [checkBoxFilters, setCheckBoxFilters] = useState<CheckBoxFilter[]>([]);
+  const [rangeFilters, setRangeFilters] = useState<RangeFilter[]>([]);
   const [categories, setCategories] = useState<CategoriesList>([]);
-  const [productStates, setProductStates] = useState([{ id: 0, name: "" }]);
+  const [priceRange, setPriceRange] = useState({
+    smallest: 0,
+    biggest: 0,
+    isApplied: false,
+  });
   const [manufacturers, setManufacturers] = useState<any>([]);
 
   // Fetch ProductsList and CategoriesList, Manufacturers List
@@ -73,27 +87,19 @@ const ProductListContainer: React.FC = () => {
       const manufacturersData = await axios.get(
         `${process.env.REACT_APP_SERVER}manufacturers/index`
       );
-      const productStatesData = await axios.get(
-        `${process.env.REACT_APP_SERVER}productStates/index`
-      );
+      // const productStatesData = await axios.get(
+      //   `${process.env.REACT_APP_SERVER}productStates/index`
+      // );
       setProducts([...productsData.data]);
 
       const newCategoriesData = categoriesData.data.map((category: any) => ({
         ...category,
         isChecked: false,
       }));
-      setProductStates(productStatesData.data);
+
       setCategories(newCategoriesData);
-      setManufacturers(manufacturersData.data);
+      // setManufacturers(manufacturersData.data);
       const newCheckBoxFilters = [
-        {
-          filterName: "State",
-          filterConditions: productStatesData.data.map((state: any) => ({
-            id: state.id,
-            name: state.name,
-            isChecked: false,
-          })),
-        },
         {
           filterName: "Category",
           filterConditions: categoriesData.data.map((category: any) => ({
@@ -112,10 +118,36 @@ const ProductListContainer: React.FC = () => {
         },
       ];
       setCheckBoxFilters(newCheckBoxFilters);
+      const newRangeFilters = [
+        {
+          filterName: "sell_price",
+          smallest: 0,
+          biggest: 0,
+          handleSet: (e: React.MouseEvent<HTMLButtonElement>) => {
+            setPriceRange({ ...priceRange, isApplied: true });
+          },
+          handleUnset: (e: React.MouseEvent<HTMLButtonElement>) => {
+            setPriceRange({ ...priceRange, isApplied: false });
+          },
+          handleSmallestChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+            setPriceRange({
+              ...priceRange,
+              smallest: parseInt(e.currentTarget.value, 10),
+            });
+          },
+          handleBiggestChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+            setPriceRange({
+              ...priceRange,
+              biggest: parseInt(e.currentTarget.value, 10),
+            });
+          },
+        },
+      ];
+      setRangeFilters(newRangeFilters);
 
-      setExpandList(
-        productsData.data.map((item: any) => ({ id: item.id, display: false }))
-      );
+      // setExpandList(
+      //   productsData.data.map((item: any) => ({ id: item.id, display: false }))
+      // );
     };
     fetchData();
   }, []);
@@ -132,23 +164,12 @@ const ProductListContainer: React.FC = () => {
         })),
     }));
 
-    // CheckState
     let newFilteredList;
     if (checkedFilters.length !== 0 && products.length > 0) {
-      if (checkedFilters[0].filterConditions.length === 0) {
-        newFilteredList = products;
-      } else {
-        newFilteredList = products.filter((item) =>
-          checkedFilters[0].filterConditions.some((condition) => {
-            return condition.id === item.product_state.id;
-          })
-        );
-      }
-
       // Check Category
-      if (checkedFilters[1].filterConditions.length !== 0) {
-        newFilteredList = newFilteredList.filter((item: any) => {
-          const passCondition = checkedFilters[1].filterConditions.filter(
+      if (checkedFilters[0].filterConditions.length !== 0) {
+        newFilteredList = products.filter((item: any) => {
+          const passCondition = checkedFilters[0].filterConditions.filter(
             (condition: any) =>
               item.categories.some(
                 (category: any) => category.id === condition.id
@@ -159,12 +180,14 @@ const ProductListContainer: React.FC = () => {
           }
           return false;
         });
+      } else {
+        newFilteredList = products;
       }
 
-      if (checkedFilters[2].filterConditions.length !== 0) {
+      if (checkedFilters[1].filterConditions.length !== 0) {
         newFilteredList = newFilteredList.filter((item) => {
-          return checkedFilters[2].filterConditions.some(
-            (condition) => condition.id === item.manufacturer.id
+          return checkedFilters[1].filterConditions.some(
+            (condition: any) => condition.id === item.manufacturer.id
           );
         });
       }
@@ -218,12 +241,13 @@ const ProductListContainer: React.FC = () => {
   };
   return (
     <div>
-      <Flex className="content">
+      <Flex className="body">
         <Box className="left-column">
           <FilterTemplate
             pageTitle="Product"
             checkboxFilters={checkBoxFilters}
             handleOnclick={handleCheckBoxClick}
+            rangeFilters={rangeFilters}
           />
         </Box>
         <VStack className="right-column">
@@ -234,13 +258,7 @@ const ProductListContainer: React.FC = () => {
             position={position}
           />
           <TableTemplate
-            fields={[
-              "id",
-              "name",
-              "original_price",
-              "sell_price",
-              "product_state",
-            ]}
+            fields={["id", "name", "original_price", "sell_price", "state"]}
             dataList={displayList}
             itemType="product"
             productExpandContentProps={{
@@ -255,4 +273,4 @@ const ProductListContainer: React.FC = () => {
   );
 };
 
-export default ProductListContainer;
+export default StoreContainer;

@@ -4,10 +4,22 @@ import axios from "axios";
 import Pagination from "components/atoms/Pagination";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom";
-import { Flex, Box, VStack, Input, Table } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  VStack,
+  Input,
+  Table,
+  Modal,
+  ModalOverlay,
+  ModalBody,
+  ModalContent,
+  useDisclosure,
+} from "@chakra-ui/react";
 import ImportTableTemplate from "components/organisms/Receipts/ImportTableTemplate";
 import ReceiptOverViewTemplate from "components/organisms/Receipts/ReceiptOverViewTemplate";
 import SearchResultTemplate from "components/organisms/Receipts/SearchResultTemplate";
+import "layouts/layout.css";
 
 type searchResultType = {
   id: string;
@@ -39,8 +51,10 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
   const [keyword, setKeyword] = useState("");
   const [searchResult, setSearchResult] = useState<searchResultType>([]);
   const [importList, setImportList] = useState<importListType>([]);
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState("Note");
   const [sum, setSum] = useState(0);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
   useEffect(() => {
     const fetchData = async () => {
       if (receiptId) {
@@ -93,7 +107,7 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
           },
         }
       );
-      // console.log(result.data);
+      console.log(result.data);
       setSearchResult(result.data);
     };
     if (keyword !== "") {
@@ -155,8 +169,7 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
   const handleColorChange = (e: React.FormEvent<HTMLSelectElement>) => {
     const productId = e.currentTarget.id;
     const { value } = e.currentTarget;
-    console.log(productId);
-    console.log(importList);
+
     const newImportList = importList.map((item) => {
       if (item.id === productId.toString()) {
         console.log("aa");
@@ -196,8 +209,13 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
   };
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.currentTarget;
-    setNote(value);
+    if (value === "") {
+      setNote("Note");
+    } else {
+      setNote(value);
+    }
   };
+
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     let url = "";
     const formData = new FormData();
@@ -230,20 +248,32 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
   };
 
   return (
-    <Flex>
-      <VStack>
-        <Flex>
-          <Box>Import</Box>
-          <Box>
+    <Flex pt="1%" w="100%" justify="center">
+      <VStack w="60%" mr="1%">
+        <Flex justify="space-between" w="100%">
+          <Flex align="center" ml="3%">
+            <p>{receiptId ? "Update" : "Import"}</p>
+          </Flex>
+          <Box bgColor="white" mr="2%" >
             <Input
               placeholder="Type product id or name"
               value={keyword}
-              onChange={changeKeyword}
+              onClick={onOpen}
             />
-            <SearchResultTemplate
-              searchResult={searchResult}
-              handleProductClick={handProductClick}
-            />
+            <Modal isOpen={isOpen} onClose={onClose}>
+              <ModalOverlay />
+              <ModalContent>
+                <Input
+                  placeholder="Type product id or name"
+                  value={keyword}
+                  onChange={changeKeyword}
+                />
+                <SearchResultTemplate
+                  searchResult={searchResult}
+                  handleProductClick={handProductClick}
+                />
+              </ModalContent>
+            </Modal>
           </Box>
         </Flex>
         <ImportTableTemplate

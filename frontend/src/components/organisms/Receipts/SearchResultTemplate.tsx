@@ -30,7 +30,13 @@ const SearchResultTemplate: React.FC<Props> = ({
   handleProductClick,
 }) => {
   return (
-    <>
+    <Box
+      position="absolute"
+      top="100%"
+      zIndex="1"
+      bgColor="white"
+      border="1px solid gray"
+    >
       {searchResult.map((item) => {
         return (
           <Flex key={item.id} id={item.id} onClick={handleProductClick}>
@@ -52,7 +58,7 @@ const SearchResultTemplate: React.FC<Props> = ({
           </Flex>
         );
       })}
-    </>
+    </Box>
   );
 };
 export default SearchResultTemplate;
