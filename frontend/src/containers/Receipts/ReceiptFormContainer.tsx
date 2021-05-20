@@ -13,12 +13,16 @@ import {
   Modal,
   ModalOverlay,
   ModalBody,
+  Text,
   ModalContent,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
+
 import ImportTableTemplate from "components/organisms/Receipts/ImportTableTemplate";
 import ReceiptOverViewTemplate from "components/organisms/Receipts/ReceiptOverViewTemplate";
 import SearchResultTemplate from "components/organisms/Receipts/SearchResultTemplate";
+
 import "layouts/layout.css";
 
 type searchResultType = {
@@ -41,7 +45,7 @@ type Props = {
   receiptId?: string;
 };
 const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
-  const history = useHistory();
+  // State
   const [manufacturers, setManufacturers] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
@@ -51,9 +55,11 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
   const [keyword, setKeyword] = useState("");
   const [searchResult, setSearchResult] = useState<searchResultType>([]);
   const [importList, setImportList] = useState<importListType>([]);
-  const [note, setNote] = useState("Note");
+  const [note, setNote] = useState("");
   const [sum, setSum] = useState(0);
 
+  const history = useHistory();
+  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   useEffect(() => {
     const fetchData = async () => {
@@ -209,56 +215,66 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
   };
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.currentTarget;
-    if (value === "") {
-      setNote("Note");
-    } else {
-      setNote(value);
-    }
+
+    setNote(value);
   };
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     let url = "";
-    const formData = new FormData();
-    formData.append("receipt_details", JSON.stringify(importList));
-    if (staffEmail !== undefined) {
-      formData.append("staff_email", staffEmail);
-    }
-    formData.append("manufacturer_id", selectedManufacturer);
-    formData.append("total", sum.toString());
-    formData.append("note", note);
-    console.log(JSON.stringify(importList));
-    try {
-      if (receiptId) {
-        formData.append("receipt_id", receiptId);
-        url = `http://localhost:8765/receipts/edit/`;
-      } else {
-        url = `http://localhost:8765/receipts/import`;
+    if (importList.length !== 0) {
+      const formData = new FormData();
+      formData.append("receipt_details", JSON.stringify(importList));
+      if (staffEmail !== undefined) {
+        formData.append("staff_email", staffEmail);
       }
+      formData.append("manufacturer_id", selectedManufacturer);
+      formData.append("total", sum.toString());
+      formData.append("note", note);
+      console.log(JSON.stringify(importList));
+      try {
+        if (receiptId) {
+          formData.append("receipt_id", receiptId);
+          url = `http://localhost:8765/receipts/edit/`;
+        } else {
+          url = `http://localhost:8765/receipts/import`;
+        }
 
-      const result = await axios.post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        const result = await axios.post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        history.push("/receipts");
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      toast({
+        title: "Import at least 1 product.",
+
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
       });
-
-      history.push("/receipts");
-    } catch (error) {
-      console.log(error);
     }
   };
 
   return (
-    <Flex pt="1%" w="100%" justify="center">
+    <Flex pt="1%" w="100%" justify="center" minH="90vh">
       <VStack w="60%" mr="1%">
         <Flex justify="space-between" w="100%">
           <Flex align="center" ml="3%">
-            <p>{receiptId ? "Update" : "Import"}</p>
+            <Text fontWeight="bold" fontSize="3xl">
+              {receiptId ? "Update" : "Import"}
+            </Text>
           </Flex>
-          <Box bgColor="white" mr="2%">
+          <Box mr="2%">
             <Input
               placeholder="Type product id or name"
               value={keyword}
               onClick={onOpen}
+              bgColor="white"
             />
             <Modal isOpen={isOpen} onClose={onClose}>
               <ModalOverlay />

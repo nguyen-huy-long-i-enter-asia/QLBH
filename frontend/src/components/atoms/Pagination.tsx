@@ -29,7 +29,6 @@ const Pagination: React.FC<Props> = ({ items, onChangePage }) => {
     endIndex: 1,
     pages: [],
   });
-  console.log(items);
 
   useEffect(() => {
     if (items && items.length > 0) {
@@ -48,7 +47,7 @@ const Pagination: React.FC<Props> = ({ items, onChangePage }) => {
     }
 
     // get new pager object for specified page
-    const newPager = getPager(items.length, page, 2);
+    const newPager = getPager(items.length, page, 10);
 
     // get new page of items from items array
 
@@ -61,7 +60,7 @@ const Pagination: React.FC<Props> = ({ items, onChangePage }) => {
     onChangePage(pageOfItems);
   };
 
-  const getPager = (totalItems: number, currentPage: number, pageSize = 2) => {
+  const getPager = (totalItems: number, currentPage: number, pageSize = 5) => {
     // default to first page
 
     // default page size is 10

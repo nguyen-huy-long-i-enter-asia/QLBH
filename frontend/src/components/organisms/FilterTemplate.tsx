@@ -25,13 +25,17 @@ import { DateRangePickerComponent } from "@syncfusion/ej2-react-calendars";
 import { isTemplateExpression } from "typescript";
 
 type RangeFilter = {
-  filterName: string;
-  smallest: number;
-  biggest: number;
-  handleSet: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  handleUnset: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  handleSmallestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleBiggestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  rangeFilterStates: {
+    smallest: number;
+    biggest: number;
+  };
+  rangeFilterConst: {
+    filterName: string;
+    handleSet: (e: React.MouseEvent<HTMLInputElement>) => void;
+    handleUnset: (e: React.MouseEvent<HTMLInputElement>) => void;
+    handleSmallestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleBiggestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  };
 };
 type Props = {
   pageTitle: string;
@@ -62,7 +66,7 @@ type Props = {
     handleTimeOptionChange: (e: any) => void;
     handleTimePicker: (e: React.MouseEvent<HTMLButtonElement>) => void;
   };
-  rangeFilters?: RangeFilter[];
+  rangeFilter?: RangeFilter;
   handleSelectChange?: (e: React.FormEvent<HTMLSelectElement>) => void;
 
   handleOnclick?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -72,16 +76,10 @@ const FilterTemplate: React.FC<Props> = ({
   checkboxFilters,
   selectFilters,
   timeFilter,
-  rangeFilters,
+  rangeFilter,
   handleSelectChange,
   handleOnclick,
 }) => {
-  // const radioFocus = useRef<HTMLInputElement>(null);
-  // const focusRadio = () => {
-  //   if (radioFocus.current !== null) {
-  //     radioFocus.current.click();
-  //   }
-  // };
   return (
     <Box className="filter-list">
       <Box className="page-title">
@@ -95,7 +93,6 @@ const FilterTemplate: React.FC<Props> = ({
                 id="datePicker"
                 value="datePicker"
                 onChange={timeFilter.handleTimeOptionChange}
-                // ref={radioFocus}
               >
                 <Box>
                   {timeFilter.datePicker}
@@ -104,7 +101,6 @@ const FilterTemplate: React.FC<Props> = ({
                       id="date_picker_menu"
                       as={IconButton}
                       icon={<UpDownIcon />}
-                      // onClick={focusRadio}
                     />
                     <MenuList>
                       <MenuOptionGroup defaultValue="This month" type="radio">
@@ -185,11 +181,7 @@ const FilterTemplate: React.FC<Props> = ({
       {/* {textFilters.map((filter) => (
         <TextFilter key={filter.filterName} filterName={filter.filterName} />
       ))} */}
-      {rangeFilters !== undefined ? (
-        rangeFilters.map((filter) => <RangeFilter {...filter} />)
-      ) : (
-        <> </>
-      )}
+      {rangeFilter !== undefined ? <RangeFilter {...rangeFilter} /> : <> </>}
     </Box>
   );
 };

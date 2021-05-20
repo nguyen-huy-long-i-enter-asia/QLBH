@@ -56,27 +56,33 @@ const LoginContainer: React.FC = () => {
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
-    const result = await axios.post(
-      `${process.env.REACT_APP_SERVER}users/login`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    if (result.data.email !== "") {
-      alert(result.data.email);
 
-      Cookies.set("email", result.data.email);
-      Cookies.set("position", result.data.position);
-      console.log(Cookies.get("email"));
-      history.push("/products");
-    } else {
-      window.location.reload(false);
+    if (email !== "" && password !== "") {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      const result = await axios.post(
+        `${process.env.REACT_APP_SERVER}users/login`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (result.data.email !== "") {
+        alert(result.data.email);
+
+        Cookies.set("email", result.data.email);
+        Cookies.set("position", result.data.position);
+        if (result.data.position === 3) {
+          history.push("/store");
+        } else {
+          history.push("/products");
+        }
+      } else {
+        window.location.reload(false);
+      }
     }
   };
   return (
@@ -87,7 +93,12 @@ const LoginContainer: React.FC = () => {
             <Tr>
               <Td>Email</Td>
               <Td>
-                <Input name="email" value={email} onChange={changeEmail} />
+                <Input
+                  name="email"
+                  value={email}
+                  onChange={changeEmail}
+                  required
+                />
               </Td>
             </Tr>
             <Tr>
@@ -98,6 +109,7 @@ const LoginContainer: React.FC = () => {
                   type="password"
                   value={password}
                   onChange={changePassword}
+                  required
                 />
               </Td>
             </Tr>

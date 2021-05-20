@@ -28,8 +28,8 @@ CREATE TABLE products(
     note VARCHAR(255),
     original_price INT,
     sell_price INT,
-    image VARCHAR(255),
-    discount int,
+    image VARCHAR(255) default 'image_upload.png',
+    discount int DEFAULT 0,
     created DATETIME,
     modified DATETIME,
     FOREIGN KEY (manufacturer_id) REFERENCES manufacturers(id) ON DELETE CASCADE,
@@ -143,7 +143,7 @@ CREATE TABLE order_details(
     FOREIGN KEY(color_id) REFERENCES colors(id) ON DELETE CASCADE
 );
 
-INSERT INTO users(name,email,password,phone,address,image,position,point,created,modified) VALUES 
+INSERT INTO users(name,email,password,phone,address,image,position,point,created,modified) VALUES
 ("Huy Long", "cabo@gmail.com", "1234", "03321213", "Vinh, Nghe An", "abc.png",3, 11111 ,NOW(), NOW()),
 ("Dinh TUan", "TuanDinh@gmail.com", "1234", "03321123128", "Ha Tinh", "TuanDinh.png",2, 23000, NOW(), NOW()),
 ("Hai Pham", "PH@gmail.com", "1234", "8526113", "Tuyen QUang", "Hai.png",2, 5000000 ,NOW(), NOW()),
@@ -166,7 +166,7 @@ INSERT INTO product_states(name) VALUES
 ("Out Of Stock"),
 ("Stop Selling");
 
-INSERT INTO transaction_states(name) VALUES 
+INSERT INTO transaction_states(name) VALUES
 ("InProgress"),
 ("Success"),
 ("Fail");
@@ -193,7 +193,7 @@ INSERT INTO products(name,manufacturer_id,state_id,note, original_price, sell_pr
 ("Authentic", 3, 1, "aa", 10000, 20000, "Authentic.jpeg", 15, NOW(), NOW()),
 ("Sk8 Hi", 3, 1, "aa", 500000, 1000000, "Sk8-Hi.png", 50, NOW(), NOW());
 
-INSERT INTO categories(name) VALUES 
+INSERT INTO categories(name) VALUES
 ("Low Top"),
 ("High Top"),
 ("Athletic"),
@@ -229,7 +229,7 @@ INSERT INTO categories_products(product_id, category_id) VALUES
 (19,2),
 (20,3);
 
-INSERT INTO colors(name) VALUES 
+INSERT INTO colors(name) VALUES
 ("Red"),
 ("Blue"),
 ("White"),
@@ -238,7 +238,7 @@ INSERT INTO colors(name) VALUES
 ("Pink"),
 ("Bn");
 
-INSERT INTO sizes(name) VALUES 
+INSERT INTO sizes(name) VALUES
 ("35"),
 ("36"),
 ("37"),

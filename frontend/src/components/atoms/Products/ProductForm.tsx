@@ -22,6 +22,7 @@ import {
   Text,
   Tr,
   Td,
+  FormControl,
   Tbody,
   Textarea,
 } from "@chakra-ui/react";
@@ -100,7 +101,9 @@ const ProductForm: React.FC<Props> = ({
   const [note, setNote] = useState(selectedProduct ? selectedProduct.note : "");
   const [image, setImage] = useState<File>();
   const [imageLink, setImageLink] = useState<string>(
-    selectedProduct ? selectedProduct.image : ""
+    selectedProduct
+      ? selectedProduct.image
+      : `${process.env.PUBLIC_URL}/image_upload.png`
   );
   // if (selectedProduct) {
   //   const [name,setName] = useState(selectedProduct.name);
@@ -199,54 +202,55 @@ const ProductForm: React.FC<Props> = ({
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const formData = new FormData();
-    if (action === "edit" && selectedProduct) {
-      formData.append("id", selectedProduct.id);
-    }
-    formData.append("name", name);
-    formData.append("manufacturer", manufacturer);
-    formData.append("discount", discount);
-    formData.append("state_id", stateId);
-    formData.append("original_price", originalPrice);
-    formData.append("sell_price", sellPrice);
-    // console.log(
-    //   JSON.stringify(
-    //     categories
-    //       .filter((item) => item.isChecked === true)
-    //       .map((item) => item.id)
-    //   )
-    // );
-    formData.append(
-      "categories",
-      JSON.stringify(
-        categories
-          .filter((item) => item.isChecked === true)
-          .map((item) => item.id)
-      )
-    );
-
-    if (image !== undefined) {
-      formData.append("image", image);
-    }
-    formData.append("note", note);
-
-    try {
-      const url = `http://localhost:8765/products/${action}`;
-      const result = await axios.post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      // console.log(result.data);
-      if (result.data.status) {
-        alert("Add product successfull");
+    if (name !== "" && originalPrice !== "" && sellPrice !== "") {
+      const formData = new FormData();
+      if (action === "edit" && selectedProduct) {
+        formData.append("id", selectedProduct.id);
       }
-    } catch (error) {
-      console.log(error);
-    }
+      formData.append("name", name);
+      formData.append("manufacturer", manufacturer);
+      formData.append("discount", discount);
+      formData.append("state_id", stateId);
+      formData.append("original_price", originalPrice);
+      formData.append("sell_price", sellPrice);
+      // console.log(
+      //   JSON.stringify(
+      //     categories
+      //       .filter((item) => item.isChecked === true)
+      //       .map((item) => item.id)
+      //   )
+      // );
+      formData.append(
+        "categories",
+        JSON.stringify(
+          categories
+            .filter((item) => item.isChecked === true)
+            .map((item) => item.id)
+        )
+      );
 
-    window.location.reload(false);
+      if (image !== undefined) {
+        formData.append("image", image);
+      }
+      formData.append("note", note);
+
+      try {
+        const url = `http://localhost:8765/products/${action}`;
+        const result = await axios.post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        // console.log(result.data);
+        if (result.data.status) {
+          alert("Add product successfull");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+      window.location.reload(false);
+    }
   };
 
   return (
@@ -269,8 +273,14 @@ const ProductForm: React.FC<Props> = ({
                   <Tbody>
                     <Tr>
                       <Td fontWeight="bold">Name</Td>
+
                       <Td>
-                        <Input name="name" value={name} onChange={changeName} />
+                        <Input
+                          name="name"
+                          value={name}
+                          onChange={changeName}
+                          required
+                        />
                       </Td>
                     </Tr>
 
@@ -337,6 +347,7 @@ const ProductForm: React.FC<Props> = ({
                           type="number"
                           onChange={changeOriginalPrice}
                           value={originalPrice}
+                          required
                         />
                       </Td>
                     </Tr>
@@ -348,6 +359,7 @@ const ProductForm: React.FC<Props> = ({
                           type="number"
                           onChange={changeSellPrice}
                           value={sellPrice}
+                          required
                         />
                       </Td>
                     </Tr>
@@ -381,6 +393,9 @@ const ProductForm: React.FC<Props> = ({
                 </Box>
               </Box>
               <Flex>
+                <Box pl="1.5rem">
+                  <Text fontWeight="bold">Image</Text>
+                </Box>
                 <FormLabel pl="1.5rem">
                   <Input
                     display="none"
@@ -389,17 +404,20 @@ const ProductForm: React.FC<Props> = ({
                     onChange={changeImage}
                     border="none"
                   />
-                  <Image
-                    src={`${process.env.PUBLIC_URL}/image_upload.png`}
-                    cursor="pointer"
-                    boxSize="10rem"
-                  />
+                  <Image src={imageLink} cursor="pointer" boxSize="10rem" />
                 </FormLabel>
-                <Box>
-                  <Image src={imageLink} boxSize="15rem" />
-                </Box>
               </Flex>
-              <Input type="submit" value="Submit" />
+              <Box mt="3%">
+                <Input
+                  type="submit"
+                  value="Submit"
+                  w="10%"
+                  m="auto"
+                  display="block"
+                  bgColor="#3399ff"
+                  color="white"
+                />
+              </Box>
             </form>
           </ModalBody>
         </ModalContent>

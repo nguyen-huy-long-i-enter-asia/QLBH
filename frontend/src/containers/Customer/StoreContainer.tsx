@@ -9,6 +9,7 @@ import MenuBarTemplate from "components/organisms/MenuBarTemplate";
 import TableTemplate from "components/organisms/TableTemplate";
 import FilterTemplate from "components/organisms/FilterTemplate";
 import Header, { CategoriesList } from "components/organisms/Products/Header";
+import ProductStageTemplate from "components/organisms/Customer/ProductStageTemplate";
 import "layouts/layout.css";
 
 type CheckBoxFilter = {
@@ -19,14 +20,17 @@ type CheckBoxFilter = {
     isChecked: boolean;
   }[];
 };
-type RangeFilter = {
+type RangeFilterConst = {
   filterName: string;
-  smallest: number;
-  biggest: number;
-  handleSet: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  handleUnset: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleSet: (e: React.MouseEvent<HTMLInputElement>) => void;
+  handleUnset: (e: React.MouseEvent<HTMLInputElement>) => void;
   handleSmallestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleBiggestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
+type RangeFilterState = {
+  smallest: number;
+  biggest: number;
+  isApplied: boolean;
 };
 type Products = {
   id: number;
@@ -66,9 +70,30 @@ const StoreContainer: React.FC = () => {
 
   const [displayList, setDisplayList] = useState<any[]>([]);
   const [checkBoxFilters, setCheckBoxFilters] = useState<CheckBoxFilter[]>([]);
-  const [rangeFilters, setRangeFilters] = useState<RangeFilter[]>([]);
+  const rangeFilterConst = {
+    filterName: "sell_price",
+
+    handleSet: (e: React.MouseEvent<HTMLInputElement>) => {
+      setRangeFilterStates({ ...rangeFilterStates, isApplied: true });
+    },
+    handleUnset: (e: React.MouseEvent<HTMLInputElement>) => {
+      setRangeFilterStates({ ...rangeFilterStates, isApplied: false });
+    },
+    handleSmallestChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      setRangeFilterStates({
+        ...rangeFilterStates,
+        smallest: parseInt(e.currentTarget.value, 10),
+      });
+    },
+    handleBiggestChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      setRangeFilterStates({
+        ...rangeFilterStates,
+        biggest: parseInt(e.currentTarget.value, 10),
+      });
+    },
+  };
   const [categories, setCategories] = useState<CategoriesList>([]);
-  const [priceRange, setPriceRange] = useState({
+  const [rangeFilterStates, setRangeFilterStates] = useState({
     smallest: 0,
     biggest: 0,
     isApplied: false,
@@ -81,6 +106,7 @@ const StoreContainer: React.FC = () => {
       const productsData = await axios.get(
         `${process.env.REACT_APP_SERVER}products/index`
       );
+      console.log(productsData.data);
       const categoriesData = await axios.get(
         `${process.env.REACT_APP_SERVER}categories/index`
       );
@@ -118,32 +144,6 @@ const StoreContainer: React.FC = () => {
         },
       ];
       setCheckBoxFilters(newCheckBoxFilters);
-      const newRangeFilters = [
-        {
-          filterName: "sell_price",
-          smallest: 0,
-          biggest: 0,
-          handleSet: (e: React.MouseEvent<HTMLButtonElement>) => {
-            setPriceRange({ ...priceRange, isApplied: true });
-          },
-          handleUnset: (e: React.MouseEvent<HTMLButtonElement>) => {
-            setPriceRange({ ...priceRange, isApplied: false });
-          },
-          handleSmallestChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-            setPriceRange({
-              ...priceRange,
-              smallest: parseInt(e.currentTarget.value, 10),
-            });
-          },
-          handleBiggestChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-            setPriceRange({
-              ...priceRange,
-              biggest: parseInt(e.currentTarget.value, 10),
-            });
-          },
-        },
-      ];
-      setRangeFilters(newRangeFilters);
 
       // setExpandList(
       //   productsData.data.map((item: any) => ({ id: item.id, display: false }))
@@ -183,7 +183,7 @@ const StoreContainer: React.FC = () => {
       } else {
         newFilteredList = products;
       }
-
+      // Check Manufacturer
       if (checkedFilters[1].filterConditions.length !== 0) {
         newFilteredList = newFilteredList.filter((item) => {
           return checkedFilters[1].filterConditions.some(
@@ -191,16 +191,27 @@ const StoreContainer: React.FC = () => {
           );
         });
       }
-      console.log(newFilteredList);
+
       if (keyWord !== "") {
         newFilteredList = newFilteredList.filter((item) =>
           item.name.includes(keyWord)
         );
       }
+      // Check Price
+      if (rangeFilterStates.isApplied === true) {
+        newFilteredList = newFilteredList.filter((item) => {
+          return (
+            rangeFilterStates.smallest <=
+              (item.sell_price * (100 - item.discount)) / 100 &&
+            (item.sell_price * (100 - item.discount)) / 100 <=
+              rangeFilterStates.biggest
+          );
+        });
+      }
 
       setFilteredList(newFilteredList);
     }
-  }, [checkBoxFilters, keyWord]);
+  }, [checkBoxFilters, keyWord, rangeFilterStates]);
   const handleProductClick = (e: React.MouseEvent<HTMLTableRowElement>) => {
     const newExpandList = expandList.map((item: any) =>
       String(item.id) === e.currentTarget.id
@@ -241,23 +252,19 @@ const StoreContainer: React.FC = () => {
   };
   return (
     <div>
-      <Flex className="body">
+      <Flex className="content">
         <Box className="left-column">
           <FilterTemplate
             pageTitle="Product"
             checkboxFilters={checkBoxFilters}
             handleOnclick={handleCheckBoxClick}
-            rangeFilters={rangeFilters}
+            rangeFilter={{ rangeFilterConst, rangeFilterStates }}
           />
         </Box>
-        <VStack className="right-column">
-          <TableTemplate
-            fields={["id", "name", "original_price", "sell_price", "state"]}
-            dataList={displayList}
-            itemType="product"
-          />
+        <Box className="right-column">
+          <ProductStageTemplate dataList={displayList} />
           <Pagination items={filteredList} onChangePage={handlePagination} />
-        </VStack>
+        </Box>
       </Flex>
     </div>
   );

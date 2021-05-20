@@ -25,12 +25,6 @@ class ProductsController extends AppController
      */
     public function index()
     {
-        // $path = WWW_ROOT . 'img/Sk8-Hi.png';
-        // $type = pathinfo($path, PATHINFO_EXTENSION);
-        // $data = file_get_contents($path);
-        // $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-        // echo $base64;
-
         $this->loadModel('ColorsProductsSizes');
         $this->loadModel("CategoriesProducts");
         $mapFunc = function ( $product) {
@@ -109,6 +103,8 @@ class ProductsController extends AppController
         // $this->set(compact('products'));
     }
 
+
+
     /**
      * View method
      *
@@ -149,7 +145,7 @@ class ProductsController extends AppController
         $categories = json_decode($this->request->getData('categories'),true);
         $product->image = $imageName;
         $this->Products->save($product);
-        $id = $product->id; 
+        $id = $product->id;
         foreach($categories as $category){
             $category_product = $this->CategoriesProducts->newEmptyEntity();
             $category_product->product_id = $id;
