@@ -105,7 +105,7 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
       formData.append("keyword", keyword);
       formData.append("id", selectedManufacturer);
       const result = await axios.post(
-        `${process.env.REACT_APP_SERVER}products/find`,
+        `${process.env.REACT_APP_SERVER}products/findByKeywordAndManufacturer`,
         formData,
         {
           headers: {

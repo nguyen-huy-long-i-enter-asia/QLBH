@@ -244,25 +244,11 @@ class ProductsController extends AppController
     public function info($id = null) {
 
     }
-    public function find() {
+
+    public function findByKeywordAndManufacturer() {
         $keyword = $this->request->getData('keyword');
         $manufacturer_id = $this->request->getData('id');
 
-        // $result = $this->Products->find()
-
-        //             ->where([
-        //                 'manufacturer_id' => (int)$selectedManufacturer,
-        //                 'OR' =>[['id ' => (int)$keyword], ['name LIKE' => '%'.$keyword.'%']]
-        //             ])
-        //             ->contain(['ColorsProductsSizes' => function ($q)
-        //             {
-        //                 return $q->select([ 'ColorsProductsSizes.product_id','count' => 'SUM(ColorsProductsSizes.count)'])->group(['ColorsProductsSizes.product_id'])
-        //                         ;
-        //             }
-        //             ])
-        //            ->toArray();
-
-        //
 
         $dsn = 'mysql://long7aclass:Long7aclass@@localhost/projectDB';
         ConnectionManager::drop('default');

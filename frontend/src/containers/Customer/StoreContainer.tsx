@@ -104,9 +104,9 @@ const StoreContainer: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const productsData = await axios.get(
-        `${process.env.REACT_APP_SERVER}products/index`
+        `${process.env.REACT_APP_SERVER}store/index`
       );
-      console.log(productsData.data);
+      // console.log(productsData.data);
       const categoriesData = await axios.get(
         `${process.env.REACT_APP_SERVER}categories/index`
       );
@@ -261,10 +261,10 @@ const StoreContainer: React.FC = () => {
             rangeFilter={{ rangeFilterConst, rangeFilterStates }}
           />
         </Box>
-        <Box className="right-column">
+        <VStack className="right-column">
           <ProductStageTemplate dataList={displayList} />
           <Pagination items={filteredList} onChangePage={handlePagination} />
-        </Box>
+        </VStack>
       </Flex>
     </div>
   );

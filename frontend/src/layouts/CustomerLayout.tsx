@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import Cookies from "js-cookie";
-import MenuBarTemplate from "components/organisms/Customer/MenuBarTemplate";
+import MenuBarTemplate from "containers/Customer/MenuBarTemplate";
 import { Box } from "@chakra-ui/react";
 import "layouts/layout.css";
 
@@ -8,7 +8,7 @@ type LayoutProps = {
   children?: ReactNode;
 };
 
-const MainLayout: React.FC<LayoutProps> = ({ children }) => {
+const CustomerLayout: React.FC<LayoutProps> = ({ children }) => {
   const position = Cookies.get("position");
   return (
     <>
@@ -23,4 +23,4 @@ const MainLayout: React.FC<LayoutProps> = ({ children }) => {
   );
 };
 
-export default MainLayout;
+export default CustomerLayout;

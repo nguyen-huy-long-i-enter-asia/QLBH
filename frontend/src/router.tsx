@@ -8,7 +8,7 @@ import ReceiptFormPage from "pages/Receipts/ReceiptFormPage";
 import ReceiptListPage from "pages/Receipts/ReceiptListPage";
 import OrderListPage from "pages/Orders/OrderListPage";
 import StorePage from "pages/Customer/StorePage";
-
+import StoreProductPage from "pages/Customer/StoreProductPage";
 import ManagerAuth from "components/auth/ManagerAuth";
 import StaffAuth from "components/auth/StaffAuth";
 import CustomerAuth from "components/auth/CustomerAuth";
@@ -36,6 +36,10 @@ export const Router: React.FC = () => {
       <StaffAuth path="/orders">
         <OrderListPage />
       </StaffAuth>
+
+      <CustomerAuth path="/store/product">
+        <StoreProductPage />
+      </CustomerAuth>
       <CustomerAuth path="/store">
         <StorePage />
       </CustomerAuth>

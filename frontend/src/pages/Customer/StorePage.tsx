@@ -4,7 +4,7 @@ import StoreContainer from "containers/Customer/StoreContainer";
 
 import { Redirect } from "react-router-dom";
 
-const ProductListPage: React.FC = () => {
+const StorePage: React.FC = () => {
   return (
     <CustomerLayout>
       <StoreContainer />
@@ -12,4 +12,4 @@ const ProductListPage: React.FC = () => {
   );
 };
 
-export default ProductListPage;
+export default StorePage;
