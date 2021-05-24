@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
-import { Input, Box, useDisclosure, Flex } from "@chakra-ui/react";
+import React from "react";
+import { Input, Box, Flex } from "@chakra-ui/react";
 import ProductForm from "components/atoms/Products/ProductForm";
 
 export type CategoriesList = {

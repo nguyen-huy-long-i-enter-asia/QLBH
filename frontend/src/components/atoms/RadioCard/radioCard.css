@@ -1,0 +1,35 @@
+body {
+  font-family: sans-serif;
+}
+
+.radio-button-groups {
+  margin: 4px;
+
+  float: left;
+}
+
+.radio-button-groups label {
+  float: left;
+  width: 170px;
+  margin: 4px;
+  background-color: #efefef;
+  border-radius: 4px;
+  border: 1px solid #d0d0d0;
+  overflow: auto;
+}
+
+.radio-button-groups label span {
+  text-align: center;
+  font-size: 32px;
+  padding: 13px 0px;
+  display: block;
+}
+
+.radio-button-groups label input {
+  position: absolute;
+  top: -20px;
+}
+.radio-button-groups input:checked + span {
+  background-color: #404040;
+  color: #f7f7f7;
+}

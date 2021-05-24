@@ -12,7 +12,6 @@ import {
   Button,
   Icon,
 } from "@chakra-ui/react";
-
 import { MdPerson } from "react-icons/md";
 import CustomThead from "components/atoms/CustomThead";
 import ProductExpandContent from "components/molecules/Products/ProductExpandContent";

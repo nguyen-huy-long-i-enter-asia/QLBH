@@ -1,9 +1,8 @@
 /* eslint-disable camelcase */
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Flex,
-  Image,
   Table,
   Thead,
   Tbody,
@@ -11,9 +10,8 @@ import {
   Td,
   Button,
 } from "@chakra-ui/react";
-import ProductForm from "components/atoms/Products/ProductForm";
-import axios from "axios";
-import { useHistory, Redirect, Link } from "react-router-dom";
+
+import { useHistory, Link } from "react-router-dom";
 
 type CategoriesList = {
   id: string;
@@ -24,10 +22,7 @@ type ManufacturersList = {
   id: number;
   name: string;
 }[];
-type ProductExpandContentProps = {
-  categoriesList: CategoriesList;
-  manufacturersList: ManufacturersList;
-};
+
 type Props = {
   receipt: {
     id: string;
@@ -72,14 +67,6 @@ const ProductExpandContent: React.FC<Props> = ({
   receipt,
   receiptExpandContentProps,
 }) => {
-  const history = useHistory();
-
-  const handleReceiptUpdate = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // history.push({
-    //   pathname: '/receipts/update/'+'',
-    //   search: ''
-    // })
-  };
   return (
     <Box>
       <Flex w="100%" bg="tomato">
