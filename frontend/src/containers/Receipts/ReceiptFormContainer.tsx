@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Pagination from "components/atoms/Pagination";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom";
 import {
@@ -9,10 +8,8 @@ import {
   Box,
   VStack,
   Input,
-  Table,
   Modal,
   ModalOverlay,
-  ModalBody,
   Text,
   ModalContent,
   useDisclosure,
@@ -49,7 +46,7 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
   const [manufacturers, setManufacturers] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
-  const [transactionStates, setTransactionStates] = useState([]);
+
   const [staffEmail, setStaffEmail] = useState(Cookies.get("email"));
   const [selectedManufacturer, setSelectedManufacturer] = useState("1");
   const [keyword, setKeyword] = useState("");

@@ -124,7 +124,7 @@ class StoreController extends AppController
         $this->loadModel('ColorsProductsSizes');
         $this->loadModel("CategoriesProducts");
 
-        $product = $this->Products->find('all')->contain(['Manufacturers'])->where(['products.id' => $id])->first();
+        $product = $this->Products->find('all')->contain(['Manufacturers'])->where(['Products.id' => $id])->first();
         $colors_products_sizes= $this->ColorsProductsSizes->find()->contain(['Colors','Sizes'])->where(['product_id' => $product->id, 'count >' => 0] )->toArray();
         $sizeObject = array(
             "size" =>$colors_products_sizes[0]['size']['name'] ,
@@ -177,11 +177,39 @@ class StoreController extends AppController
         );
         unset($product["manufacturer_id"]);
         unset($product["state_id"]);
-
+        $product['colors'] = $this->getProductColors($id) ;
+        $product['sizes'] = $this->getProductSizes($id);
         return $this->response->withStringBody(json_encode($product))->withType('json');
 
     }
+    private function getProductColors($id = null) {
+        $dsn = 'mysql://long7aclass:Long7aclass@@localhost/projectDB';
+        ConnectionManager::drop('default');
+        ConnectionManager::setConfig('default', ['url' => $dsn]);
+        $connection = ConnectionManager::get('default');
 
+        $query = "Select distinct colors.id, colors.name
+        From colors, colors_products_sizes
+        WHERE colors.id = colors_products_sizes.color_id 
+        AND colors_products_sizes.product_id = ?";
+        
+        $result = $connection->execute($query,[$id])->fetchAll('assoc');
+        return $result;
+    }
+    private function getProductSizes($id = null) {
+        $dsn = 'mysql://long7aclass:Long7aclass@@localhost/projectDB';
+        ConnectionManager::drop('default');
+        ConnectionManager::setConfig('default', ['url' => $dsn]);
+        $connection = ConnectionManager::get('default');
+
+        $query = "Select distinct sizes.id, sizes.name
+        From sizes, colors_products_sizes
+        WHERE sizes.id = colors_products_sizes.size_id 
+        AND colors_products_sizes.product_id = ?";
+        
+        $result = $connection->execute($query,[$id])->fetchAll('assoc');
+        return $result;
+    }
  }
 
 

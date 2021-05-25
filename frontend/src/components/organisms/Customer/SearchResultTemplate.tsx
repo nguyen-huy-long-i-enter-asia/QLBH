@@ -1,19 +1,6 @@
 /* eslint-disable camelcase */
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { css, SerializedStyles } from "@emotion/react";
-import {
-  Table,
-  Tbody,
-  Tr,
-  Td,
-  Thead,
-  Th,
-  Select,
-  Flex,
-  Box,
-  Image,
-} from "@chakra-ui/react";
+import React from "react";
+import { Flex, Box, Image } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
 type Props = {

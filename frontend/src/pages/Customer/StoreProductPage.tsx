@@ -5,12 +5,11 @@ import { useParams, Redirect } from "react-router-dom";
 import { Text } from "@chakra-ui/react";
 
 const StoreProductPage: React.FC = () => {
-  console.log("aa");
-  // const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
 
   return (
     <CustomerLayout>
-      <StoreProductContainer id="1" />
+      <StoreProductContainer id={id} />
     </CustomerLayout>
   );
 };
