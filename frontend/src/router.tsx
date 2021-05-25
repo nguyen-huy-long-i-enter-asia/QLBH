@@ -36,14 +36,12 @@ export const Router: React.FC = () => {
       <StaffAuth path="/orders">
         <OrderListPage />
       </StaffAuth>
-
-      <CustomerAuth path="/store">
-        <StorePage />
-      </CustomerAuth>
       <CustomerAuth path="/store/product">
         <StoreProductPage />
       </CustomerAuth>
-      
+      <CustomerAuth path="/store">
+        <StorePage />
+      </CustomerAuth>
     </Switch>
   );
 };
