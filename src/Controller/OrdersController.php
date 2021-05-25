@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 namespace App\Controller;
-
+use Cake\Model\Table\Users;
+use Cake\Model\Table\OrderDetails;
+use Cake\Model\Table\TransactionStates;
 /**
  * Orders Controller
  *
@@ -49,18 +51,35 @@ class OrdersController extends AppController
      */
     public function add()
     {
-        $order = $this->Orders->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $order = $this->Orders->patchEntity($order, $this->request->getData());
-            if ($this->Orders->save($order)) {
-                $this->Flash->success(__('The order has been saved.'));
+        $this->request->allowMethod(['post']);
+        $this->loadModel('Users');
+        $this->loadModel('OrderDetails');
+        //Create new Order
+        $newOrder = $this->Orders->newEmptyEntity();
+        $customerEmail = $this->request->getData('customer_email');
+        $customer = $this->Users->find('all')->where(['email'=> $customerEmail])->first();
+        $newOrder->customer_id = $customer->id;
+        $newOrder->state_id = 1;
+        $newOrder->note = $this->request->getData('note');
+        $this->Orders->save($newOrder);
+        $order_id = $newOrder->id;
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The order could not be saved. Please, try again.'));
+        //Create Order_details
+        $order_details = json_decode($this->request->getData('order_details'));
+        foreach( $order_details as $od) {
+            $order_detail = $this->OrderDetails->newEmptyEntity();
+            $order_detail->order_id = $order_id;
+            $order_detail->product_id = $od->id;
+            $order_detail->color_id = $od->color->id;
+            $order_detail->size_id = $od->size->id;
+            $order_detail->count = $od->count;
+            $this->OrderDetails->save($order_detail);
         }
-        $users = $this->Orders->Users->find('list', ['limit' => 200]);
-        $this->set(compact('order', 'users'));
+        $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "success"]));
+
+        return $response;
+
     }
 
     /**

@@ -12,6 +12,7 @@ import StoreProductPage from "pages/Customer/StoreProductPage";
 import ManagerAuth from "components/auth/ManagerAuth";
 import StaffAuth from "components/auth/StaffAuth";
 import CustomerAuth from "components/auth/CustomerAuth";
+import CartPage from "pages/Customer/CartPage";
 
 export const Router: React.FC = () => {
   return (
@@ -42,6 +43,9 @@ export const Router: React.FC = () => {
       </CustomerAuth>
       <CustomerAuth path="/store">
         <StorePage />
+      </CustomerAuth>
+      <CustomerAuth path="/cart">
+        <CartPage />
       </CustomerAuth>
     </Switch>
   );

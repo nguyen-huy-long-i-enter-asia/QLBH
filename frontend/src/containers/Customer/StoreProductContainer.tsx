@@ -13,6 +13,7 @@ import {
   Table,
   Input,
   Button,
+  color,
 } from "@chakra-ui/react";
 import "layouts/layout.css";
 import RadioCard from "components/atoms/RadioCard/RadioCard";
@@ -54,8 +55,8 @@ type Props = {
 };
 const StoreProductContainer: React.FC<Props> = ({ id }) => {
   const [product, setProduct] = useState<Product>();
-  const [selectedColor, setSelectedColor] = useState<number>(0);
-  const [selectedSize, setSelectedSize] = useState<number>(0);
+  const [selectedColor, setSelectedColor] = useState({ id: "0", name: "" });
+  const [selectedSize, setSelectedSize] = useState({ id: "0", name: "" });
   const [count, setCount] = useState<number>(0);
 
   useEffect(() => {
@@ -66,46 +67,70 @@ const StoreProductContainer: React.FC<Props> = ({ id }) => {
       setProduct(result.data);
     };
     fetchData();
-  }, []);
+  }, [id]);
   const handleColorClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    const colorId = e.currentTarget.id;
+    const colorId = e.currentTarget.value;
+    const colorName = e.currentTarget.id;
 
-    setSelectedColor(parseInt(colorId, 10));
+    setSelectedColor({ id: colorId, name: colorName });
   };
   const handleSizeClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    const sizeId = e.currentTarget.id;
+    const sizeId = e.currentTarget.value;
+    const sizeName = e.currentTarget.id;
 
-    setSelectedSize(parseInt(sizeId, 10));
+    setSelectedSize({ id: sizeId, name: sizeName });
   };
   const handleCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
     setCount(parseInt(value, 10));
   };
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const oldCart = localStorage.getItem("cart");
+    const oldCart = sessionStorage.getItem("cart");
     if (product) {
       if (oldCart) {
         const newCart = JSON.parse(oldCart);
-        console.log(newCart);
-        newCart.push({
-          productId: product.id,
-          colorId: selectedColor,
-          sizeId: selectedSize,
-          count,
-        });
-        localStorage.setItem("cart", JSON.stringify(newCart));
+        const duplicateItemIndex = newCart.findIndex(
+          (item: any) =>
+            item.id === product.id &&
+            item.color.id === selectedColor.id &&
+            item.size.id === selectedSize.id
+        );
+        if (duplicateItemIndex === -1) {
+          newCart.push({
+            id: product.id,
+            name: product.name,
+            color: selectedColor,
+            size: selectedSize,
+            sellPrice: product.sell_price,
+            count,
+            image: product.image,
+            discount: product.discount,
+          });
+        } else {
+          newCart[duplicateItemIndex] = {
+            ...newCart[duplicateItemIndex],
+            count: newCart[duplicateItemIndex].count + count,
+          };
+        }
+
+        sessionStorage.setItem("cart", JSON.stringify(newCart));
       } else {
         const newCart = [
           {
-            productId: product.id,
-            colorId: selectedColor,
-            sizeId: selectedSize,
+            id: product.id,
+            name: product.name,
+            color: selectedColor,
+            size: selectedSize,
+            sellPrice: product.sell_price,
             count,
+            image: product.image,
+            discount: product.discount,
           },
         ];
-        console.log(newCart);
-        localStorage.setItem("cart", JSON.stringify(newCart));
+
+        sessionStorage.setItem("cart", JSON.stringify(newCart));
       }
+      window.location.reload();
     }
   };
   if (product === undefined) {

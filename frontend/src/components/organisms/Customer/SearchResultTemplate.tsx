@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import React from "react";
-import { Flex, Box, Image } from "@chakra-ui/react";
+import { Flex, Box, Image, Button } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
 type Props = {
@@ -12,6 +12,9 @@ type Props = {
   }[];
 };
 const SearchResultTemplate: React.FC<Props> = ({ searchResult }) => {
+  const redirect = (url: string) => {
+    window.location.href = url;
+  };
   return (
     <Box
       position="absolute"
@@ -22,6 +25,11 @@ const SearchResultTemplate: React.FC<Props> = ({ searchResult }) => {
     >
       {searchResult.map((item) => {
         return (
+          // <Box
+          //   onClick={() => {
+          //     redirect(`/store/product/${item.id}`);
+          //   }}
+          // >
           <Link to={`/store/product/${item.id}`}>
             <Flex key={item.id} id={item.id}>
               <Box w="33.3%">
@@ -36,6 +44,7 @@ const SearchResultTemplate: React.FC<Props> = ({ searchResult }) => {
               </Box>
             </Flex>
           </Link>
+          // </Box>
         );
       })}
     </Box>

@@ -21,7 +21,8 @@ const RadioCard: React.FC<Props> = ({ options, handleClick }) => {
             <input
               type="radio"
               name="toggle"
-              id={option.id}
+              id={option.name}
+              value={option.id}
               onClick={handleClick}
             />
             <span>{option.name}</span>

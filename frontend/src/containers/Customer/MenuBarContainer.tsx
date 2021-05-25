@@ -1,7 +1,9 @@
 /* eslint-disable camelcase */
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import { MdShoppingCart } from "react-icons/md";
 import {
+  Icon,
   Button,
   Box,
   Flex,
@@ -11,7 +13,9 @@ import {
   ModalOverlay,
   ModalContent,
   useDisclosure,
+  Text,
 } from "@chakra-ui/react";
+
 import Cookies from "js-cookie";
 import axios from "axios";
 import CustomMenu from "components/atoms/CustomMenu";
@@ -22,12 +26,40 @@ type searchResultType = {
   name: string;
   image: string;
 }[];
-const MenuBarTemplate: React.FC = () => {
+const MenuBarContainer: React.FC = () => {
   const history = useHistory();
   const [keyword, setKeyword] = useState("");
   const [searchResult, setSearchResult] = useState<searchResultType>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const [cart, setCart] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  useEffect(() => {
+    const cartString = sessionStorage.getItem("cart");
+    // if (cartString !== null) {
+    //   const carts = JSON.parse(cartString);
+    //   console.log(carts[carts.length - 1].count);
+    //   window.addEventListener("storage", () => {
+    //     handleStorageChange();
+    //   });
+    // }
+    if (cartString !== null) {
+      setCart(JSON.parse(cartString));
+      const productsCount = JSON.parse(cartString).reduce(
+        (accumulator: number, currentValue: any) =>
+          accumulator + currentValue.count,
+        0
+      );
+      setTotalCount(productsCount);
+    }
+
+    window.addEventListener("storage", () => {
+      handleStorageChange();
+    });
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
   useEffect(() => {
     const findData = async () => {
       // const formData = new FormData();
@@ -60,6 +92,19 @@ const MenuBarTemplate: React.FC = () => {
     };
     logoutBackEnd();
   };
+  const handleStorageChange = () => {
+    console.log("Storage changed");
+    const cartString = sessionStorage.getItem("cart");
+    if (cartString !== null) {
+      setCart(JSON.parse(cartString));
+    }
+    const productsCount = cart.reduce(
+      (accumulator: number, currentValue: any) =>
+        accumulator + currentValue.count,
+      0
+    );
+    setTotalCount(productsCount);
+  };
   const changeKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.currentTarget.value);
   };
@@ -73,7 +118,6 @@ const MenuBarTemplate: React.FC = () => {
       <Box mr="2%">
         <Input
           placeholder="Type product id or name"
-          value={keyword}
           onClick={onOpen}
           bgColor="white"
         />
@@ -89,7 +133,11 @@ const MenuBarTemplate: React.FC = () => {
           </ModalContent>
         </Modal>
       </Box>
+      <Flex>
+        <Icon as={MdShoppingCart} />
+        <Text>Your Cart has {totalCount} products</Text>
+      </Flex>
     </Flex>
   );
 };
-export default MenuBarTemplate;
+export default MenuBarContainer;
