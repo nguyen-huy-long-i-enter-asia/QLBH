@@ -11,7 +11,7 @@ use Cake\Datasource\ConnectionManager;
 use Cake\ORM\Query;
 
 /**
- * Products Controller
+ * Store Controller
  *
  *
  * @property \App\Model\Table\ProductsTable $Products
