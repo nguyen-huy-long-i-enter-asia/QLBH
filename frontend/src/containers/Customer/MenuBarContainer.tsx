@@ -19,7 +19,7 @@ import {
 import Cookies from "js-cookie";
 import axios from "axios";
 import CustomMenu from "components/atoms/CustomMenu";
-import SearchResultTemplate from "components/organisms/Customer/SearchResultTemplate";
+import SearchModal from "components/molecules/Customer/SearchModal";
 
 type searchResultType = {
   id: string;
@@ -115,24 +115,11 @@ const MenuBarContainer: React.FC = () => {
         boxSize="4rem"
         display="block"
       />
-      <Box mr="2%">
-        <Input
-          placeholder="Type product id or name"
-          onClick={onOpen}
-          bgColor="white"
-        />
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <Input
-              placeholder="Type product id or name"
-              value={keyword}
-              onChange={changeKeyword}
-            />
-            <SearchResultTemplate searchResult={searchResult} />
-          </ModalContent>
-        </Modal>
-      </Box>
+      <SearchModal
+        keyword={keyword}
+        changeKeyword={changeKeyword}
+        searchResult={searchResult}
+      />
       <Flex>
         <Icon as={MdShoppingCart} />
         <Text>Your Cart has {totalCount} products</Text>

@@ -263,7 +263,11 @@ const StoreContainer: React.FC = () => {
         </Box>
         <VStack className="right-column">
           <ProductStageTemplate dataList={displayList} />
-          <Pagination items={filteredList} onChangePage={handlePagination} />
+          <Pagination
+            items={filteredList}
+            onChangePage={handlePagination}
+            pageSizeProp={10}
+          />
         </VStack>
       </Flex>
     </div>

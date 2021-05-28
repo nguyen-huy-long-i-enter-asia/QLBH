@@ -5,6 +5,9 @@ namespace App\Controller;
 use Cake\Model\Table\Users;
 use Cake\Model\Table\OrderDetails;
 use Cake\Model\Table\TransactionStates;
+use Cake\Model\Table\Colors;
+use Cake\Model\Table\Sizes;
+use Cake\Model\Table\Products;
 /**
  * Orders Controller
  *
@@ -13,6 +16,23 @@ use Cake\Model\Table\TransactionStates;
  */
 class OrdersController extends AppController
 {
+    private function orderDetailMapFunc($orderDetail){
+        $product = $this->Products->get($orderDetail->product_id);
+        $orderDetail["product"] = ['id'=> $product->id, 'name' =>$product->name, 'sell_price' => $product->sell_price, 'discount' => $product->discount];
+        unset($orderDetail['product_id']);
+        $size= $this->Sizes->get($orderDetail->size_id);
+        $orderDetail["size"] = $size;
+        unset($orderDetail['size_id']);
+        $color = $this->Colors->get($orderDetail->color_id);
+        $orderDetail['color'] = $color;
+        unset($orderDetail['color_id']);
+        unset($orderDetail['created']);
+        unset($orderDetail['modified']);
+        unset($orderDetail['receipt_id']);
+
+        return $orderDetail;
+
+    }
     /**
      * Index method
      *
@@ -20,14 +40,58 @@ class OrdersController extends AppController
      */
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['Users'],
-        ];
-        $orders = $this->paginate($this->Orders);
+        $this->loadModel('Users');
+        $this->loadModel('OrderDetails');
+        $this->loadModel("Colors");
+        $this->loadModel("Sizes");
+        $this->loadModel('Products');
+        $this->loadModel('TransactionStates');
+        $orderMapFunc = function ( $order) {
+            //Get full info of color,size
+            $orderDetailMapFunc = function( $orderDetail) {
+                $color = $this->Colors->find('all')->where(['id' => $orderDetail->color_id])->first();
+                $size = $this->Sizes->find('all')->where(['id'  => $orderDetail->size_id] )->first();
+                $product = $this->Products->find('all')->where(['id' => $orderDetail->product_id])->first();
+                $orderDetail['color'] = $color;
+                $orderDetail['size'] = $size;
+                $orderDetail['product'] = $product;
+                unset($orderDetail['color_id']);
+                unset($orderDetail['size_id']);
+                unset($orderDetail['product_id']);
+                return $orderDetail;
+            };
+            $customer = $this->Users->find('all')->select(['id', 'name'])->where(['id' => $order->customer_id])->first();
+            if($order->staff_id !== null) {
+                $staff = $this->Users->find('all')->select(['id', 'name'])->where(['id' => $order->staff_id])->first();
+            } else {
+                $staff = null;
+            }
+            $state = $this->TransactionStates->find('all')->where(['id' => $order->state_id])->first();
 
-        $this->set(compact('orders'));
+            $order->staff= $staff;
+            $order->customer = $customer;
+            $order->state= $state;
+            unset($order->customer_id);
+            unset($order->staff_id);
+            unset($order->state_id);
+            unset($order->point);
+            $order->created = $order->created->format('Y-m-d');
+            $order->order_details=  array_map($orderDetailMapFunc, $order->order_details);
+            return $order;
+
+        };
+
+        $orders = $this->Orders->find('all')->contain(['TransactionStates', 'OrderDetails'])->toArray();
+
+
+
+        // $this->set(compact('products'));
+        // $this->viewBuilder()->setOption('_serialize', 'products');
+        $this->response = $this->response->withStringBody(json_encode(array_map($orderMapFunc, $orders)));
+        $this->response = $this->response->withType('json');
+        return $this->response;
+        // $this->set(compact('products'));
     }
-
     /**
      * View method
      *
@@ -44,6 +108,33 @@ class OrdersController extends AppController
         $this->set(compact('order'));
     }
 
+    public function find($id = null){
+        $this->loadModel('OrderDetails');
+        $this->loadModel("Products");
+        $this->loadModel('Colors');
+        $this->loadModel('Sizes');
+        $this->loadModel('Users');
+
+        $order = $this->Orders->find('all')->contain(['OrderDetails', 'TransactionStates'])->where(['Orders.id' => $id])->first();
+        if($order->staff_id !== null) {
+        $staff = $this->Users->get($order->staff_id);
+        $order['staff'] = ['id' => $staff->id, 'name' => $staff->name];
+        }else {
+            $order['staff'] = null;
+        }
+        $customer = $this->Users->get($order->customer_id);
+        $receipt['customer'] = ['id' => $customer->id, 'name' => $customer->name];
+        $order->created = $order->created->format('Y-m-d');
+        unset($order['staff_id']);
+        unset($order['customer_id']);
+        unset($order['state_id']);
+        $orderDetails = array_map(array($this, 'orderDetailMapFunc'), $order['order_details']);
+        $order['order_details'] = $orderDetails;
+        $this->response = $this->response->withStringBody(json_encode($order))->withType('json');
+
+        return $this->response;
+
+    }
     /**
      * Add method
      *
@@ -60,7 +151,9 @@ class OrdersController extends AppController
         $customer = $this->Users->find('all')->where(['email'=> $customerEmail])->first();
         $newOrder->customer_id = $customer->id;
         $newOrder->state_id = 1;
+        $newOrder->pay = $this->request->getData('pay');
         $newOrder->note = $this->request->getData('note');
+
         $this->Orders->save($newOrder);
         $order_id = $newOrder->id;
 

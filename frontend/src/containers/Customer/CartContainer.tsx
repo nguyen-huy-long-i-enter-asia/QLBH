@@ -91,7 +91,7 @@ const CartContainer: React.FC = () => {
     const formData = new FormData();
     console.log(JSON.stringify(cart));
     formData.append("order_details", JSON.stringify(cart));
-    formData.append("total", (total - totalDiscount).toString(10));
+    formData.append("pay", (total - totalDiscount).toString(10));
     if (customerEmail !== undefined) {
       formData.append("customer_email", customerEmail);
     }

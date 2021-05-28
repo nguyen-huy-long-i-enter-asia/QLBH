@@ -154,7 +154,6 @@ const ProductExpandContent: React.FC<Props> = ({
         </Box>
       </Flex>
       <Flex>
-        <Button>Import</Button>
         <ProductForm
           categoriesList={
             productExpandContentProps

@@ -277,6 +277,18 @@ class ProductsController extends AppController
         $this->response = $this->response->withType('json');
         return $this->response;
     }
+    public function findByKeyword() {
+        $keyword = $this->request->getData('keyword');
+        if(is_numeric($keyword)){
+            $result = $this->Products->find('all')->select(['id','name', 'sell_price', 'image'])->where(['OR'=> [['id LIKE' => '%'.(int)$keyword.'%'], ['name LIKE' => '%'.$keyword.'%' ]]])->toArray();
+            return $this->response->withStringBody(json_encode($result))->withType('json');
+        }else {
+            $result = $this->Products->find('all')->select(['id','name', 'sell_price', 'image'])->where(['name LIKE' => '%'.$keyword.'%' ])->toArray();
+            return $this->response->withStringBody(json_encode($result))->withType('json');
+
+        }
+
+    }
  }
 
 

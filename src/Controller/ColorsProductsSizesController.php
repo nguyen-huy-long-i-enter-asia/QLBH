@@ -117,4 +117,16 @@ class ColorsProductsSizesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+    //get inventory of product with specified size and color
+    public function getInventory()
+    {
+        $product_id = $this->request->getData('product_id');
+        $size_id = $this->request->getData('size_id');
+        $color_id = $this->request->getData('color_id');
+
+        $result = $this->ColorsProductsSizes->find('all')->select(['count'])->where(['product_id' => (int)$product_id, 'size_id' => (int)$size_id, 'color_id' => (int)$color_id])->first();
+        return $this->response->withStringBody(json_encode( $result))->withType('json');
+
+    }
 }

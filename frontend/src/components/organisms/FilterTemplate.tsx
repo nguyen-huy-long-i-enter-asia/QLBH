@@ -19,10 +19,8 @@ import {
 import { UpDownIcon } from "@chakra-ui/icons";
 import CheckBoxFilter from "components/molecules/filter/CheckBoxFilter";
 import TextFilter from "components/molecules/filter/TextFilter";
-import RangeFilter from "components/molecules/filter/RangeFilter";
 import "layouts/layout.css";
 import { DateRangePickerComponent } from "@syncfusion/ej2-react-calendars";
-import { isTemplateExpression } from "typescript";
 
 type RangeFilter = {
   rangeFilterStates: {
@@ -181,7 +179,6 @@ const FilterTemplate: React.FC<Props> = ({
       {/* {textFilters.map((filter) => (
         <TextFilter key={filter.filterName} filterName={filter.filterName} />
       ))} */}
-      {rangeFilter !== undefined ? <RangeFilter {...rangeFilter} /> : <> </>}
     </Box>
   );
 };

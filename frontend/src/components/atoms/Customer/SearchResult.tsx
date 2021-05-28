@@ -11,10 +11,7 @@ type Props = {
     image: string;
   }[];
 };
-const SearchResultTemplate: React.FC<Props> = ({ searchResult }) => {
-  const redirect = (url: string) => {
-    window.location.href = url;
-  };
+const SearchResult: React.FC<Props> = ({ searchResult }) => {
   return (
     <Box
       position="absolute"
@@ -50,4 +47,4 @@ const SearchResultTemplate: React.FC<Props> = ({ searchResult }) => {
     </Box>
   );
 };
-export default SearchResultTemplate;
+export default SearchResult;

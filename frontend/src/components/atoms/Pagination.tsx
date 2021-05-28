@@ -15,9 +15,10 @@ type Pager = {
 type Props = {
   items: any[];
   onChangePage: (pageOfItems: any) => void;
+  pageSizeProp: number;
 };
 
-const Pagination: React.FC<Props> = ({ items, onChangePage }) => {
+const Pagination: React.FC<Props> = ({ items, onChangePage, pageSizeProp }) => {
   const [pager, setPager] = useState<Pager>({
     totalItems: 1,
     currentPage: 1,
@@ -47,7 +48,7 @@ const Pagination: React.FC<Props> = ({ items, onChangePage }) => {
     }
 
     // get new pager object for specified page
-    const newPager = getPager(items.length, page, 10);
+    const newPager = getPager(items.length, page, pageSizeProp);
 
     // get new page of items from items array
 

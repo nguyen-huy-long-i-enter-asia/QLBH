@@ -60,7 +60,14 @@ const ProductListContainer: React.FC = () => {
   const [categories, setCategories] = useState<CategoriesList>([]);
   const [productStates, setProductStates] = useState([{ id: "0", name: "" }]);
   const [manufacturers, setManufacturers] = useState<any>([]);
-
+  const fields = [
+    "id",
+    "name",
+    "original_price",
+    "sell_price",
+    "product_state",
+  ];
+  const [sortState, setSortState] = useState(fields.map((item) => false));
   // Fetch ProductsList and CategoriesList, Manufacturers List
   useEffect(() => {
     const fetchData = async () => {
@@ -77,6 +84,7 @@ const ProductListContainer: React.FC = () => {
         `${process.env.REACT_APP_SERVER}productStates/index`
       );
       setProducts([...productsData.data]);
+      setFilteredList([...productsData.data]);
 
       const newCategoriesData = categoriesData.data.map((category: any) => ({
         ...category,
@@ -168,7 +176,7 @@ const ProductListContainer: React.FC = () => {
           );
         });
       }
-      console.log(newFilteredList);
+
       if (keyWord !== "") {
         newFilteredList = newFilteredList.filter((item) =>
           item.name.includes(keyWord)
@@ -178,14 +186,7 @@ const ProductListContainer: React.FC = () => {
       setFilteredList(newFilteredList);
     }
   }, [checkBoxFilters, keyWord]);
-  const handleProductClick = (e: React.MouseEvent<HTMLTableRowElement>) => {
-    const newExpandList = expandList.map((item: any) =>
-      String(item.id) === e.currentTarget.id
-        ? { id: item.id, display: !item.display }
-        : { id: item.id, display: false }
-    );
-    setExpandList(newExpandList);
-  };
+
   const handleCheckBoxClick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
     const filterName = e.currentTarget.name;
@@ -206,15 +207,60 @@ const ProductListContainer: React.FC = () => {
             }),
           };
     });
-    // console.log(newCBFilter);
+
     setCheckBoxFilters(newCBFilter);
   };
   const handlePagination = (newDisplayList: Products) => {
     setDisplayList(newDisplayList);
-    // console.log(newDisplayList);
   };
   const searchProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyWord(e.currentTarget.value);
+  };
+  // Sort Display list by field
+  const handleSort = (e: React.MouseEvent<HTMLTableCaptionElement>) => {
+    const field = e.currentTarget.id;
+    const indexOfField = fields.indexOf(field);
+    const sortedFilteredList = [...filteredList];
+    const newSortState = [...sortState];
+    newSortState[indexOfField] = !newSortState[indexOfField];
+    setSortState(newSortState);
+    if (typeof filteredList[0][field] === "object") {
+      if (sortState[indexOfField] === false) {
+        setFilteredList(
+          sortedFilteredList.sort((a: any, b: any) =>
+            b[field].name.localeCompare(a[field].name)
+          )
+        );
+      } else {
+        setFilteredList(
+          sortedFilteredList.sort((a: any, b: any) =>
+            a[field].name.localeCompare(b[field].name)
+          )
+        );
+      }
+    } else if (typeof filteredList[0][field] === "string") {
+      if (sortState[indexOfField] === false) {
+        setFilteredList(
+          sortedFilteredList.sort((a: any, b: any) =>
+            b[field].localeCompare(a[field])
+          )
+        );
+      } else {
+        setFilteredList(
+          sortedFilteredList.sort((a: any, b: any) =>
+            a[field].localeCompare(b[field])
+          )
+        );
+      }
+    } else if (sortState[indexOfField] === false) {
+      setFilteredList(
+        sortedFilteredList.sort((a: any, b: any) => a[field] - b[field])
+      );
+    } else {
+      setFilteredList(
+        sortedFilteredList.sort((a: any, b: any) => b[field] - a[field])
+      );
+    }
   };
   return (
     <div>
@@ -242,6 +288,7 @@ const ProductListContainer: React.FC = () => {
               "sell_price",
               "product_state",
             ]}
+            handleSort={handleSort}
             dataList={displayList}
             itemType="product"
             productExpandContentProps={{
@@ -250,7 +297,11 @@ const ProductListContainer: React.FC = () => {
               productStatesList: productStates,
             }}
           />
-          <Pagination items={filteredList} onChangePage={handlePagination} />
+          <Pagination
+            items={filteredList}
+            onChangePage={handlePagination}
+            pageSizeProp={15}
+          />
         </VStack>
       </Flex>
     </div>

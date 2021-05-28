@@ -47,6 +47,9 @@ const ReceiptListContainer: React.FC = () => {
       new Date().getDate()
     ),
   });
+  const fields = ["id", "created", "manufacturer", "staff", "total"];
+  const [sortState, setSortState] = useState(fields.map((item) => false));
+
   // Fetch ProductsList and CategoriesList, Manufacturers List
   useEffect(() => {
     const fetchData = async () => {
@@ -264,6 +267,51 @@ const ReceiptListContainer: React.FC = () => {
     };
     deleteReceipt();
   };
+  const handleSort = (e: React.MouseEvent<HTMLTableCaptionElement>) => {
+    const field = e.currentTarget.id;
+    const indexOfField = fields.indexOf(field);
+    const sortedFilteredList = [...filteredList];
+    const newSortState = [...sortState];
+    newSortState[indexOfField] = !newSortState[indexOfField];
+    setSortState(newSortState);
+    if (typeof filteredList[0][field] === "object") {
+      if (sortState[indexOfField] === false) {
+        setFilteredList(
+          sortedFilteredList.sort((a: any, b: any) =>
+            b[field].name.localeCompare(a[field].name)
+          )
+        );
+      } else {
+        setFilteredList(
+          sortedFilteredList.sort((a: any, b: any) =>
+            a[field].name.localeCompare(b[field].name)
+          )
+        );
+      }
+    } else if (typeof filteredList[0][field] === "string") {
+      if (sortState[indexOfField] === false) {
+        setFilteredList(
+          sortedFilteredList.sort((a: any, b: any) =>
+            b[field].localeCompare(a[field])
+          )
+        );
+      } else {
+        setFilteredList(
+          sortedFilteredList.sort((a: any, b: any) =>
+            a[field].localeCompare(b[field])
+          )
+        );
+      }
+    } else if (sortState[indexOfField] === false) {
+      setFilteredList(
+        sortedFilteredList.sort((a: any, b: any) => a[field] - b[field])
+      );
+    } else {
+      setFilteredList(
+        sortedFilteredList.sort((a: any, b: any) => b[field] - a[field])
+      );
+    }
+  };
   return (
     <div>
       <Flex className="content">
@@ -285,12 +333,17 @@ const ReceiptListContainer: React.FC = () => {
         <VStack className="right-column">
           <Header handleSearch={searchReceipts} />
           <TableTemplate
-            fields={["id", "created", "manufacturer", "staff", "total"]}
+            fields={fields}
             dataList={displayList}
             itemType="receipt"
             receiptExpandContentProps={{ handleDeleteReceipt }}
+            handleSort={handleSort}
           />
-          <Pagination items={filteredList} onChangePage={handlePagination} />
+          <Pagination
+            items={filteredList}
+            onChangePage={handlePagination}
+            pageSizeProp={15}
+          />
         </VStack>
       </Flex>
     </div>

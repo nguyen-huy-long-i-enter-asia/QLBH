@@ -16,31 +16,31 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-import ImportTableTemplate from "components/organisms/Receipts/ImportTableTemplate";
-import ReceiptOverViewTemplate from "components/organisms/Receipts/ReceiptOverViewTemplate";
-import SearchModal from "components/molecules/Receipts/SearchModal";
+import ImportTableTemplate from "components/organisms/Orders/ImportTableTemplate";
+import OrderOverViewTemplate from "components/organisms/Orders/OrderOverViewTemplate";
 import "layouts/layout.css";
+import SearchModal from "components/molecules/Orders/SearchModal";
 
 type searchResultType = {
-  id: string;
+  id: number;
   name: string;
-  original_price: number;
+  sell_price: number;
   image: string;
-  count: number;
 }[];
 type importListType = {
-  id: string; // id san pham
+  id: number; // id san pham
   name: string;
-  original_price: number;
+  sell_price: number;
   count: number;
   size_id: string;
   color_id: string;
   total: number;
+  inventory: number;
 }[];
 type Props = {
-  receiptId?: string;
+  orderId?: string;
 };
-const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
+const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
   // State
   const [manufacturers, setManufacturers] = useState([]);
   const [sizes, setSizes] = useState([]);
@@ -52,22 +52,23 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
   const [searchResult, setSearchResult] = useState<searchResultType>([]);
   const [importList, setImportList] = useState<importListType>([]);
   const [note, setNote] = useState("");
-  const [sum, setSum] = useState(0);
-
+  const [pay, setPay] = useState(0);
+  const [transactionState, setTransactionState] = useState(1);
+  const [customerId, setCustomerId] = useState(0);
   const history = useHistory();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   useEffect(() => {
     const fetchData = async () => {
-      if (receiptId) {
-        const receiptData = await axios.get(
-          `${process.env.REACT_APP_SERVER}receipts/find/${receiptId}`
+      if (orderId) {
+        const orderData = await axios.get(
+          `${process.env.REACT_APP_SERVER}orders/find/${orderId}`
         );
-        const oldImportedList = receiptData.data.receipt_details.map(
+        const oldImportedList = orderData.data.order_details.map(
           (item: any) => ({
             id: item.product.id.toString(),
             name: item.product.name,
-            original_price: item.product.original_price,
+            sell_price: item.product.sell_price,
             count: item.count,
             size_id: item.size.id.toString(),
             color_id: item.color.id.toString(),
@@ -76,8 +77,8 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
           })
         );
         setImportList(oldImportedList);
-        setNote(receiptData.data.note);
-        setStaffEmail(receiptData.data.user.email);
+        setNote(orderData.data.note);
+        setStaffEmail(orderData.data.staff.email);
       }
       const manufacturersData = await axios.get(
         `${process.env.REACT_APP_SERVER}manufacturers/index`
@@ -99,9 +100,8 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
     const findData = async () => {
       const formData = new FormData();
       formData.append("keyword", keyword);
-      formData.append("id", selectedManufacturer);
       const result = await axios.post(
-        `${process.env.REACT_APP_SERVER}products/findByKeywordAndManufacturer`,
+        `${process.env.REACT_APP_SERVER}products/findByKeyword`,
         formData,
         {
           headers: {
@@ -117,16 +117,16 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
     } else {
       setSearchResult([]);
     }
-  }, [keyword, selectedManufacturer]);
+  }, [keyword]);
   useEffect(() => {
     if (importList.length > 0) {
-      const newSum = importList.reduce(
+      const newPay = importList.reduce(
         (accumulator, currentValue) => accumulator + currentValue.total,
         0
       );
-      setSum(newSum);
+      setPay(newPay);
     } else {
-      setSum(0);
+      setPay(0);
     }
   }, [importList]);
   const changeKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,11 +136,42 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
     setSelectedManufacturer(e.currentTarget.value);
   };
 
-  const handleProductClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleProductClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     const { id } = e.currentTarget;
-
-    const selectedProduct = searchResult.filter((item) => item.id === id);
-
+    const selectedProduct = searchResult.filter((item) => {
+      console.log(`${item.id}||${id}`);
+      console.log(item.id === parseInt(id, 10));
+      return item.id === parseInt(id, 10);
+    });
+    console.log(id);
+    const formData = new FormData();
+    formData.append("product_id", id);
+    formData.append("size_id", "1");
+    formData.append("color_id", "1");
+    const result = await axios.post(
+      `http://localhost:8765/colorsProductsSizes/getInventory/`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    let inventory = 0;
+    if (result.data !== null) {
+      inventory = result.data.count;
+    }
+    console.log([
+      ...importList,
+      {
+        ...selectedProduct[0],
+        count: 0,
+        size_id: "1",
+        color_id: "1",
+        total: 0,
+        inventory,
+      },
+    ]);
     setImportList([
       ...importList,
       {
@@ -149,18 +180,40 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
         size_id: "1",
         color_id: "1",
         total: 0,
+        inventory,
       },
     ]);
   };
 
-  const handleSizeChange = (e: React.FormEvent<HTMLSelectElement>) => {
+  const handleSizeChange = async (e: React.FormEvent<HTMLSelectElement>) => {
     const productId = e.currentTarget.id;
     const { value } = e.currentTarget;
+    const selectedOrder = importList.filter(
+      (item) => item.id === parseInt(productId, 10)
+    )[0];
+    const formData = new FormData();
+    formData.append("product_id", productId);
+    formData.append("size_id", value);
+    formData.append("color_id", selectedOrder.color_id);
+    const result = await axios.post(
+      `http://localhost:8765/colorsProductsSizes/Inventory/`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    let inventory = 0;
+    if (result.data !== null) {
+      inventory = result.data.count;
+    }
     const newImportList = importList.map((item) => {
-      if (item.id === productId) {
+      if (item.id === parseInt(productId, 10)) {
         return {
           ...item,
           size_id: value,
+          inventory,
         };
       }
       return item;
@@ -168,12 +221,31 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
 
     setImportList(newImportList);
   };
-  const handleColorChange = (e: React.FormEvent<HTMLSelectElement>) => {
+  const handleColorChange = async (e: React.FormEvent<HTMLSelectElement>) => {
     const productId = e.currentTarget.id;
     const { value } = e.currentTarget;
-
+    const selectedOrder = importList.filter(
+      (item) => item.id === parseInt(productId, 10)
+    )[0];
+    const formData = new FormData();
+    formData.append("product_id", productId);
+    formData.append("size_id", selectedOrder.size_id);
+    formData.append("color_id", value);
+    const result = await axios.post(
+      `http://localhost:8765/colorsProductsSizes/Inventory/`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    let inventory = 0;
+    if (result.data !== null) {
+      inventory = result.data.count;
+    }
     const newImportList = importList.map((item) => {
-      if (item.id === productId.toString()) {
+      if (item.id === parseInt(productId, 10)) {
         console.log("aa");
         return {
           ...item,
@@ -190,11 +262,11 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
     const { value } = e.currentTarget;
 
     const newImportList = importList.map((item) => {
-      if (item.id === productId.toString()) {
+      if (item.id === parseInt(productId, 10)) {
         return {
           ...item,
           count: value === "" ? 0 : parseInt(value, 10),
-          total: value === "" ? 0 : item.original_price * parseInt(value, 10),
+          total: value === "" ? 0 : item.sell_price * parseInt(value, 10),
         };
       }
       return item;
@@ -224,12 +296,12 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
         formData.append("staff_email", staffEmail);
       }
       formData.append("manufacturer_id", selectedManufacturer);
-      formData.append("total", sum.toString());
+      formData.append("pay", pay.toString());
       formData.append("note", note);
       console.log(JSON.stringify(importList));
       try {
-        if (receiptId) {
-          formData.append("receipt_id", receiptId);
+        if (orderId) {
+          formData.append("order_id", orderId);
           url = `http://localhost:8765/receipts/edit/`;
         } else {
           url = `http://localhost:8765/receipts/import`;
@@ -262,14 +334,15 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
         <Flex justify="space-between" w="100%">
           <Flex align="center" ml="3%">
             <Text fontWeight="bold" fontSize="3xl">
-              {receiptId ? "Update" : "Import"}
+              {orderId ? "Update" : "New"}
             </Text>
           </Flex>
           <SearchModal
+            type="product"
             keyword={keyword}
             changeKeyword={changeKeyword}
             searchResult={searchResult}
-            handleProductClick={handleProductClick}
+            handleResultClick={handleProductClick}
           />
         </Flex>
         <ImportTableTemplate
@@ -282,17 +355,16 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
           handleDeleteRD={handleDeleteRD}
         />
       </VStack>
-      <ReceiptOverViewTemplate
-        manufacturers={manufacturers}
+      <OrderOverViewTemplate
         staffEmail={staffEmail}
-        handleManufacturerChange={handleManufacturerChange}
-        selectedManufacturer={selectedManufacturer}
         handleNoteChange={handleNoteChange}
         note={note}
-        sum={sum}
+        pay={pay}
         handleSubmit={handleSubmit}
+        customerId={customerId}
+        setCustomerId={setCustomerId}
       />
     </Flex>
   );
 };
-export default ReceiptFormContainer;
+export default OrderFormContainer;

@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import ReceiptFormPage from "pages/Receipts/ReceiptFormPage";
 import ReceiptListPage from "pages/Receipts/ReceiptListPage";
 import OrderListPage from "pages/Orders/OrderListPage";
+import OrderFormPage from "pages/Orders/OrderFormPage";
 import StorePage from "pages/Customer/StorePage";
 import StoreProductPage from "pages/Customer/StoreProductPage";
 import ManagerAuth from "components/auth/ManagerAuth";
@@ -34,6 +35,9 @@ export const Router: React.FC = () => {
 
       <StaffAuth path="/receipts">
         <ReceiptListPage />
+      </StaffAuth>
+      <StaffAuth path="/orders/new">
+        <OrderFormPage />
       </StaffAuth>
       <StaffAuth path="/orders">
         <OrderListPage />

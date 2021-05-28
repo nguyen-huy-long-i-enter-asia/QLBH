@@ -4,6 +4,7 @@ import { Table, Tbody, Tr, Td } from "@chakra-ui/react";
 import CustomThead from "components/atoms/CustomThead";
 import ProductExpandContent from "components/molecules/Products/ProductExpandContent";
 import ReceiptExpandContent from "components/molecules/Receipts/ReceiptExpandContent";
+import OrderExpandContent from "components/molecules/Orders/OrderExpandContent";
 
 const tableStyle = css`
   border: groove;
@@ -28,6 +29,7 @@ type ReceiptExpandContentProps = {
 };
 type Props = {
   fields: string[];
+  handleSort: (e: React.MouseEvent<HTMLTableCaptionElement>) => void;
   dataList: any;
   itemType: string;
   productExpandContentProps?: ProductExpandContentProps;
@@ -37,6 +39,7 @@ type Props = {
 const TableTemplate: React.FC<Props> = ({
   fields,
   dataList,
+  handleSort,
   itemType,
   productExpandContentProps,
   receiptExpandContentProps,
@@ -44,6 +47,7 @@ const TableTemplate: React.FC<Props> = ({
   const [expandList, setExpandList] = useState<
     { id: number; display: boolean }[]
   >([]);
+
   useEffect(() => {
     setExpandList(
       dataList.map((item: any) => ({ id: item.id, display: false }))
@@ -58,9 +62,10 @@ const TableTemplate: React.FC<Props> = ({
 
     setExpandList(newExpandList);
   };
+
   return (
     <Table className="table">
-      <CustomThead fields={fields} />
+      <CustomThead fields={fields} handleSort={handleSort} />
 
       <Tbody>
         {dataList.map((item: any) => {
@@ -73,9 +78,15 @@ const TableTemplate: React.FC<Props> = ({
               <Tr id={item.id} onClick={handleItemClick}>
                 {fields.map((field) => (
                   <Td key={field}>
-                    {typeof item[field] === "object"
-                      ? item[field].name
-                      : item[field]}
+                    {(() => {
+                      if (item[field] === null) {
+                        return "null";
+                      }
+                      if (typeof item[field] === "object") {
+                        return item[field].name;
+                      }
+                      return item[field];
+                    })()}
                   </Td>
                 ))}
               </Tr>
@@ -107,6 +118,9 @@ const TableTemplate: React.FC<Props> = ({
                           receiptExpandContentProps={receiptExpandContentProps}
                         />
                       );
+                    }
+                    if (itemType === "order") {
+                      return <OrderExpandContent order={item} />;
                     }
                     return <></>;
                   })()}

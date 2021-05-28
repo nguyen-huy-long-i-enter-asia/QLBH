@@ -25,7 +25,7 @@ type Props = {
   }[];
   handleProductClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
-const SearchResultTemplate: React.FC<Props> = ({
+const SearchResult: React.FC<Props> = ({
   searchResult,
   handleProductClick,
 }) => {
@@ -61,4 +61,4 @@ const SearchResultTemplate: React.FC<Props> = ({
     </Box>
   );
 };
-export default SearchResultTemplate;
+export default SearchResult;

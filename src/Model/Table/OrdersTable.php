@@ -58,7 +58,7 @@ class OrdersTable extends Table
         $this->belongsTo('Users', [
             'foreignKey' => 'staff_id',
         ]);
-        $this->hasMany('OrdersDetails', [
+        $this->hasMany('OrderDetails', [
             'foreignKey' => 'order_id',
         ]);
     }
