@@ -36,8 +36,6 @@ class ColorsProductsSize extends Entity
         'product_id' => true,
         'size_id' => true,
         'count' => true,
-        'created' => true,
-        'modified' => true,
         'color' => true,
         'product' => true,
         'size' => true,

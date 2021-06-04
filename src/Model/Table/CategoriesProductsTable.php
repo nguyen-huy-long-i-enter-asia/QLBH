@@ -42,7 +42,7 @@ class CategoriesProductsTable extends Table
 
         $this->setTable('categories_products');
         $this->setDisplayField('product_id');
-        $this->setPrimaryKey(['product_id', 'category_id']);
+        $this->setPrimaryKey('id');
 
         $this->belongsTo('Products', [
             'foreignKey' => 'product_id',

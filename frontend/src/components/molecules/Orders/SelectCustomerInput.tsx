@@ -10,23 +10,33 @@ import {
 import SearchResult from "components/atoms/Orders/SearchResult";
 
 type Props = {
-  type: string;
   keyword: string;
   changeKeyword: (e: React.ChangeEvent<HTMLInputElement>) => void;
   searchResult: any;
-  handleResultClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  handleCustomerClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  customer?: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+  };
 };
 const SelectCustomerInput: React.FC<Props> = ({
   keyword,
   changeKeyword,
   searchResult,
-  handleResultClick,
+  handleCustomerClick,
+  customer,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  if (customer !== undefined) {
+    console.log("xyz");
+    return <Box>aaa</Box>;
+  }
   return (
     <Box>
       <Input
+        variant="flushed"
         placeholder="Type Customer Name"
         onClick={onOpen}
         bgColor="white"
@@ -42,7 +52,7 @@ const SelectCustomerInput: React.FC<Props> = ({
           <SearchResult
             type="customer"
             searchResult={searchResult}
-            handleResultClick={handleResultClick}
+            handleResultClick={handleCustomerClick}
           />
         </ModalContent>
       </Modal>

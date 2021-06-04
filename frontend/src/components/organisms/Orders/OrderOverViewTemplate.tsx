@@ -21,39 +21,79 @@ import SelectCustomerInput from "components/molecules/Orders/SelectCustomerInput
 const tableStyle = css`
   border: groove;
 `;
-type CategoriesList = {
-  id: string;
-  name: string;
-  isChecked: boolean | false;
-}[];
 
+type SearchResultType = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+}[];
 type Props = {
-  // customer?: {
-  //   id: string;
-  //   name: string;
-  //   email: string;
-  //   phone: string;
-  //   address: string;
-  //   image: string;
-  // };
-  customerId: number;
+  customer?: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+  };
+
   staffEmail: string | undefined;
   pay: number;
   note: string;
   handleNoteChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleSubmit: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  setCustomerId: (value: number) => void;
+  setCustomer: any;
 };
 
 const OrderOverViewTemplate: React.FC<Props> = ({
-  customerId,
+  customer,
   staffEmail,
   handleNoteChange,
   pay,
   note,
   handleSubmit,
+  setCustomer,
 }) => {
-  // const;
+  const [keyword, setKeyword] = useState("");
+  const [searchResult, setSearchResult] = useState<SearchResultType>([]);
+
+  useEffect(() => {
+    const findData = async () => {
+      const formData = new FormData();
+      formData.append("keyword", keyword);
+      const result = await axios.post(
+        `${process.env.REACT_APP_SERVER}users/findCustomerByKeyword`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const resultData = result.data;
+      setSearchResult(resultData);
+    };
+    if (keyword !== "") {
+      findData();
+    } else {
+      setSearchResult([]);
+    }
+    // findData();
+
+    // console.log(resultData);
+  }, [keyword]);
+  const changeKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setKeyword(e.currentTarget.value);
+  };
+  const handleCustomerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const id = parseInt(e.currentTarget.id, 10);
+    console.log(searchResult);
+    const newSelectedCustomer = searchResult.filter(
+      (item) => item.id === id
+    )[0];
+    console.log(newSelectedCustomer);
+    setCustomer(newSelectedCustomer);
+  };
   return (
     <Box w="20%" bgColor="white" position="relative">
       <Flex alignItems="center" ml="2%" mt="8%">
@@ -68,6 +108,13 @@ const OrderOverViewTemplate: React.FC<Props> = ({
         searchResult,
         handleResultClick, />
       </Flex> */}
+      <SelectCustomerInput
+        customer={customer !== undefined ? customer : undefined}
+        handleCustomerClick={handleCustomerClick}
+        keyword={keyword}
+        changeKeyword={changeKeyword}
+        searchResult={searchResult}
+      />
       <Flex
         justifyContent="space-between"
         alignItems="center"

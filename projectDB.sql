@@ -1,15 +1,13 @@
 CREATE DATABASE projectDB;
 USE projectDB;
 
-CREATE TABLE manufacturers (
+CREATE TABLE manufacturers(
     id INT AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(255),
     phone VARCHAR(255),
     `address` VARCHAR(255),
     email VARCHAR(255),
-    note VARCHAR(255),
-    created DATETIME,
-    modified DATETIME
+    note VARCHAR(255)
 );
 
 CREATE TABLE product_states(
@@ -30,8 +28,6 @@ CREATE TABLE products(
     sell_price INT,
     image VARCHAR(255) default 'image_upload.png',
     discount int DEFAULT 0,
-    created DATETIME,
-    modified DATETIME,
     FOREIGN KEY (manufacturer_id) REFERENCES manufacturers(id) ON DELETE CASCADE,
     FOREIGN KEY (state_id) REFERENCES product_states(id) ON DELETE CASCADE
 );
@@ -64,8 +60,6 @@ CREATE TABLE colors_products_sizes(
     product_id INT,
     size_id INT,
     count INT,
-    created DATETIME,
-    modified DATETIME,
     FOREIGN KEY(color_id) REFERENCES colors(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     FOREIGN KEY (size_id) REFERENCES sizes(id) ON DELETE CASCADE
@@ -80,9 +74,7 @@ CREATE TABLE users(
     address VARCHAR(255),
     image VARCHAR(255),
     position INT,
-    point INT,
-    created DATETIME,
-    modified DATETIME
+    point INT
 );
 
 
@@ -143,23 +135,24 @@ CREATE TABLE order_details(
     FOREIGN KEY(color_id) REFERENCES colors(id) ON DELETE CASCADE
 );
 
-INSERT INTO users(name,email,password,phone,address,image,position,point,created,modified) VALUES
-("Huy Long", "cabo@gmail.com", "1234", "03321213", "Vinh, Nghe An", "abc.png",3, 11111 ,NOW(), NOW()),
-("Dinh TUan", "TuanDinh@gmail.com", "1234", "03321123128", "Ha Tinh", "TuanDinh.png",2, 23000, NOW(), NOW()),
-("Hai Pham", "PH@gmail.com", "1234", "8526113", "Tuyen QUang", "Hai.png",2, 5000000 ,NOW(), NOW()),
-("Tien", "TIen@gmail.com", "1234", "015421214", "Ha Nam", "Tien.png",1, 250000 ,NOW(), NOW()),
-("Than Quang Khoat", "TQK@gmail.com", "1234", "3478232", "Ha Noi", "Khoat.png",1, 20000, NOW(), NOW()),
-("Son Tung", "ST@gmail.com", "1234", "2131321", "Thai Binh", "ST.png",1, 11111 ,NOW(), NOW()),
-("Dung", "DPS@gmail.com", "1234", "9991", "Hai Duong", "Dung.png",2, 222444 ,NOW(), NOW()),
-("Thu", "PT@gmail.com", "1234", "113", "Thanh Hoa", "Thu.png",1, 43434343 ,NOW(), NOW()),
-("Ngoc Trinh", "NT@gmail.com", "1234", "11112222233333", "Ho Chi Minh", "NT.png",1, 100000 ,NOW(), NOW());
+INSERT INTO users(name,email,password,phone,address,image,position,point) VALUES
+("Huy Long", "cabo@gmail.com", "1234", "03321213", "Vinh, Nghe An", "abc.png",3, 11111 ),
+("Dinh TUan", "TuanDinh@gmail.com", "1234", "03321123128", "Ha Tinh", "TuanDinh.png",2, 23000),
+("Hai Pham", "PH@gmail.com", "1234", "8526113", "Tuyen QUang", "Hai.png",2, 5000000 ),
+("Tien", "TIen@gmail.com", "1234", "015421214", "Ha Nam", "Tien.png",1, 250000 ),
+("Than Quang Khoat", "TQK@gmail.com", "1234", "3478232", "Ha Noi", "Khoat.png",1, 20000 ),
+("Son Tung", "ST@gmail.com", "1234", "2131321", "Thai Binh", "ST.png",1, 11111 ),
+("Dung", "DPS@gmail.com", "1234", "9991", "Hai Duong", "Dung.png",2, 222444 ),
+("Thu", "PT@gmail.com", "1234", "113", "Thanh Hoa", "Thu.png",1, 43434343 ),
+("KhachHang", "KH@gmail.com", "1234", "112123", "Thanh Hoa", "KH.png",3, 43434343 ),
+("Ngoc Trinh", "NT@gmail.com", "1234", "11112222233333", "Ho Chi Minh", "NT.png",1, 100000 );
 
-INSERT INTO manufacturers(name,phone,address,email,note,created,modified) VALUES
-("Bitis", "033232323", "Vinh", "Bitis@gmail.com","Hoi chan", NOW(), NOW()),
-("NIKE", "0332q323", "Ha Noi", "NIKE@gmail.com","absbsa", NOW(), NOW()),
-("Vans", "121312", "Vinh", "Vans@gmail.com","CO chu V", NOW(), NOW()),
-("Gucci", "1123121", "Ho Chi Minh", "Gucci@gmail.com","Sang chanh", NOW(), NOW()),
-("Adidas", "92221212", "Vinh", "adidas@gmail.com","The thao nang dong", NOW(), NOW());
+INSERT INTO manufacturers(name,phone,address,email,note) VALUES
+("Bitis", "033232323", "Vinh", "Bitis@gmail.com","Hoi chan"),
+("NIKE", "0332q323", "Ha Noi", "NIKE@gmail.com","absbsa"),
+("Vans", "121312", "Vinh", "Vans@gmail.com","CO chu V"),
+("Gucci", "1123121", "Ho Chi Minh", "Gucci@gmail.com","Sang chanh"),
+("Adidas", "92221212", "Vinh", "adidas@gmail.com","The thao nang dong");
 
 INSERT INTO product_states(name) VALUES
 ("Selling"),
@@ -171,27 +164,27 @@ INSERT INTO transaction_states(name) VALUES
 ("Success"),
 ("Fail");
 
-INSERT INTO products(name,manufacturer_id,state_id,note, original_price, sell_price,image,discount,created,modified) VALUES
-("Zoom Winflo 7", 2, 1, "aa", 300000, 1000000, "Zoom-Winflo-7.jpeg", 10, NOW(), NOW()),
-("Zoom Freak 2", 2, 1, "aa", 10000, 1000000, "Zoom-Freak-2.jpeg", 5, NOW(), NOW()),
-("Air MAX 2090", 2, 1, "aa", 350000, 534333, "Air-Max-2090.jpeg", 5, NOW(), NOW()),
-("Kyrie 6", 2, 1, "aa", 10000, 20000, "Kyrie-6.jpeg", 50, NOW(), NOW()),
-("Kyrie Flytrap III", 2, 1, "aa", 10000, 1000000, "Kyrie-Flytrap-III.jpeg", 50, NOW(), NOW()),
-("Nike Jordan", 2, 1, "aa", 2000, 4000, "Nike-Jordan.jpeg", 3, NOW(), NOW()),
-("Stan Smith", 5, 1, "aa", 320000, 9800000, "Stan-Smith.jpeg", 10, NOW(), NOW()),
-("X9000L3", 5, 1, "aa", 1000000, 2000000, "X9000L3.jpeg", 20, NOW(), NOW()),
-("Ultraboost 21", 5, 1, "aa", 10000, 1000000, "Ultraboost-21.jpeg", 15, NOW(), NOW()),
-("Alphatorsion", 5, 1, "aa", 76000, 130000, "Alphatorsion.jpeg", 5, NOW(), NOW()),
-("Samba Vegan", 5, 1, "aa", 890000, 1000000, "Samba-Vegan.jpeg", 10, NOW(), NOW()),
-("NITEBALL", 5, 1, "aa", 80000, 100000, "NITEBALL.jpeg", 50, NOW(), NOW()),
-("Superstar", 5, 1, "aa", 200000, 3500000, "Superstar.jpeg", 5, NOW(), NOW()),
-("Vietnam Arising R3 Gold DSMH05500NAU", 1, 1, "aa", 10000, 1000000, "Vietnam-Arising-R3-Gold-DSMH05500NAU.jpeg", 50, NOW(), NOW()),
-("Classic Blue DSMH05000XDG", 1, 1, "aa", 10000, 1000000, "Classic-Blue-DSMH05000XDG.png", 50, NOW(), NOW()),
-("Slip On", 3, 1, "aa", 243000, 1002123, "Slip-On.png", 5, NOW(), NOW()),
-("Old Skool", 3, 1, "aa", 23000, 45000, "Old-Skool.jpeg", 50, NOW(), NOW()),
-("Checkerboard Slip On", 3, 1, "aa", 15000, 170000, "Checkerboard-Slip-On.png", 50, NOW(), NOW()),
-("Authentic", 3, 1, "aa", 10000, 20000, "Authentic.jpeg", 15, NOW(), NOW()),
-("Sk8 Hi", 3, 1, "aa", 500000, 1000000, "Sk8-Hi.png", 50, NOW(), NOW());
+INSERT INTO products(name,manufacturer_id,state_id,note, original_price, sell_price,image,discount) VALUES
+("Zoom Winflo 7", 2, 1, "aa", 300000, 1000000, "Zoom-Winflo-7.jpeg", 10),
+("Zoom Freak 2", 2, 1, "aa", 10000, 1000000, "Zoom-Freak-2.jpeg", 5),
+("Air MAX 2090", 2, 1, "aa", 350000, 534333, "Air-Max-2090.jpeg", 5),
+("Kyrie 6", 2, 1, "aa", 10000, 20000, "Kyrie-6.jpeg", 50),
+("Kyrie Flytrap III", 2, 1, "aa", 10000, 1000000, "Kyrie-Flytrap-III.jpeg", 50),
+("Nike Jordan", 2, 1, "aa", 2000, 4000, "Nike-Jordan.jpeg", 3),
+("Stan Smith", 5, 1, "aa", 320000, 9800000, "Stan-Smith.jpeg", 10),
+("X9000L3", 5, 1, "aa", 1000000, 2000000, "X9000L3.jpeg", 20),
+("Ultraboost 21", 5, 1, "aa", 10000, 1000000, "Ultraboost-21.jpeg", 15),
+("Alphatorsion", 5, 1, "aa", 76000, 130000, "Alphatorsion.jpeg", 5),
+("Samba Vegan", 5, 1, "aa", 890000, 1000000, "Samba-Vegan.jpeg", 10),
+("NITEBALL", 5, 1, "aa", 80000, 100000, "NITEBALL.jpeg", 50),
+("Superstar", 5, 1, "aa", 200000, 3500000, "Superstar.jpeg", 5),
+("Vietnam Arising R3 Gold DSMH05500NAU", 1, 1, "aa", 10000, 1000000, "Vietnam-Arising-R3-Gold-DSMH05500NAU.jpeg", 50),
+("Classic Blue DSMH05000XDG", 1, 1, "aa", 10000, 1000000, "Classic-Blue-DSMH05000XDG.png", 50),
+("Slip On", 3, 1, "aa", 243000, 1002123, "Slip-On.png", 5),
+("Old Skool", 3, 1, "aa", 23000, 45000, "Old-Skool.jpeg", 50),
+("Checkerboard Slip On", 3, 1, "aa", 15000, 170000, "Checkerboard-Slip-On.png", 50),
+("Authentic", 3, 1, "aa", 10000, 20000, "Authentic.jpeg", 15),
+("Sk8 Hi", 3, 1, "aa", 500000, 1000000, "Sk8-Hi.png", 50);
 
 INSERT INTO categories(name) VALUES
 ("Low Top"),
@@ -248,41 +241,41 @@ INSERT INTO sizes(name) VALUES
 
 
 
-INSERT INTO colors_products_sizes(product_id,size_id,color_id,count,created,modified) VALUES
-(1,1,2,0,NOW(),NOW()),
-(1,2,6,0,NOW(),NOW()),
-(1,3,2,0,NOW(),NOW()),
-(2,1,2,0,NOW(),NOW()),
-(2,6,7,0,NOW(),NOW()),
-(3,4,2,0,NOW(),NOW()),
-(3,5,6,0,NOW(),NOW()),
-(4,1,2,0,NOW(),NOW()),
-(4,4,6,0,NOW(),NOW()),
-(4,3,2,0,NOW(),NOW()),
-(5,1,6,0,NOW(),NOW()),
-(6,3,2,0,NOW(),NOW()),
-(6,1,2,0,NOW(),NOW()),
-(7,4,6,0,NOW(),NOW()),
-(7,3,1,0,NOW(),NOW()),
-(7,3,6,0,NOW(),NOW()),
-(8,3,6,0,NOW(),NOW()),
-(8,1,2,0,NOW(),NOW()),
-(9,2,4,0,NOW(),NOW()),
-(9,1,1,0,NOW(),NOW()),
-(10,2,1,0,NOW(),NOW()),
-(11,3,7,0,NOW(),NOW()),
-(12,5,5,0,NOW(),NOW()),
-(12,1,2,0,NOW(),NOW()),
-(13,3,2,0,NOW(),NOW()),
-(13,5,6,0,NOW(),NOW()),
-(13,6,2,0,NOW(),NOW()),
-(14,1,2,0,NOW(),NOW()),
-(15,1,2,0,NOW(),NOW()),
-(16,1,2,0,NOW(),NOW()),
-(17,1,2,0,NOW(),NOW()),
-(18,1,2,0,NOW(),NOW()),
-(19,3,2,0,NOW(),NOW()),
-(20,4,6,0,NOW(),NOW());
+INSERT INTO colors_products_sizes(product_id,size_id,color_id,count) VALUES
+(1,1,2,0),
+(1,2,6,0),
+(1,3,2,0),
+(2,1,2,0),
+(2,6,7,0),
+(3,4,2,0),
+(3,5,6,0),
+(4,1,2,0),
+(4,4,6,0),
+(4,3,2,0),
+(5,1,6,0),
+(6,3,2,0),
+(6,1,2,0),
+(7,4,6,0),
+(7,3,1,0),
+(7,3,6,0),
+(8,3,6,0),
+(8,1,2,0),
+(9,2,4,0),
+(9,1,1,0),
+(10,2,1,0),
+(11,3,7,0),
+(12,5,5,0),
+(12,1,2,0),
+(13,3,2,0),
+(13,5,6,0),
+(13,6,2,0),
+(14,1,2,0),
+(15,1,2,0),
+(16,1,2,0),
+(17,1,2,0),
+(18,1,2,0),
+(19,3,2,0),
+(20,4,6,0);
 
 
 

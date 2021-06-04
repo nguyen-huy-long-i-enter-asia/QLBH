@@ -45,7 +45,7 @@ class ColorsProductsSizesTable extends Table
 
         $this->setTable('colors_products_sizes');
         $this->setDisplayField('color_id');
-        $this->setPrimaryKey(['color_id', 'product_id', 'size_id']);
+        $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
 

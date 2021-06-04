@@ -3,6 +3,13 @@ declare(strict_types=1);
 
 namespace App\Controller;
 use Cake\I18n\Time;
+use Cake\Model\Table\ReceiptDetails;
+use Cake\Model\Table\ColorsProductsSizes;
+use Cake\Model\Table\Users;
+use Cake\Model\Table\Products;
+use Cake\Model\Table\Manufacturers;
+use Cake\Model\Table\Colors;
+use Cake\Model\Table\Sizes;
 /**
  * Receipts Controller
  *
@@ -234,7 +241,7 @@ class ReceiptsController extends AppController
         $this->loadModel("ReceiptDetails");
         $this->loadModel('Users');
         $this->request->allowMethod(['post']);
-        $receipt_details = json_decode($this->request->getData('receipt_details'));
+        $receipt_details = json_decode($this->request->getData('receipt_details'), true);
         $receipt = $this->Receipts->newEmptyEntity();
         $receipt->manufacturer_id = (int)$this->request->getData('manufacturer_id');
         $user = $this->Users->find()->where(['email' => $this->request->getData('staff_email')])->first();
@@ -247,39 +254,38 @@ class ReceiptsController extends AppController
         $this->Receipts->save($receipt);
         $receipt_id= $receipt->id;
 
-
+        // $new_receipt_details = [];
+        // debug($receipt_details);
         foreach($receipt_details as $rd){
             $receipt_detail = $this->ReceiptDetails->newEmptyEntity();
             $receipt_detail->receipt_id = $receipt_id;
-            $receipt_detail->product_id = (int)$rd->id;
-            $receipt_detail->size_id = (int)$rd->size_id;
-            $receipt_detail->color_id = (int)$rd->color_id;
-            $receipt_detail->count = (int)$rd->count;
+            $receipt_detail->product_id = (int)$rd['id'];
+            $receipt_detail->size_id = (int)$rd["size_id"];
+            $receipt_detail->color_id = (int)$rd["color_id"];
+            $receipt_detail->count = (int)$rd["count"];
+            // debug($receipt_detail);
             $this->ReceiptDetails->save($receipt_detail);
 
-            $color_product_size = $this->ColorsProductsSizes->find()->where(['product_id' => (int)$rd->id, 'size_id'=>(int)$rd->size_id, 'color_id' => (int)$rd->color_id ])->first();
+            //Change count of products in colors_products_sizes table
+            $color_product_size = $this->ColorsProductsSizes->find()->where(['product_id' => (int)$rd["id"], 'size_id'=>(int)$rd["size_id"], 'color_id' => (int)$rd["color_id"] ])->first();
             if($color_product_size) {
+                $color_product_size->count = $color_product_size->count + (int)$rd["count"];
 
-                $color_product_size->count = $color_product_size->count + (int)$rd->count;
                 $this->ColorsProductsSizes->save($color_product_size);
-            }
-            else {
+            }else {
                 $color_product_size = $this->ColorsProductsSizes->newEmptyEntity();
-                $color_product_size->product_id = (int)$rd->id;
-                $color_product_size->size_id = (int)$rd->size_id;
-                $color_product_size->color_id = (int)$rd->color_id;
-                $color_product_size->count = (int)$rd->count;
+                $color_product_size->product_id = (int)$rd["id"];
+                $color_product_size->size_id = (int)$rd["size_id"];
+                $color_product_size->color_id = (int)$rd["color_id"];
+                $color_product_size->count = (int)$rd["count"];
+                debug($color_product_size);
                 $this->ColorsProductsSizes->save($color_product_size);
             }
-
-
         }
+        // $this->ReceiptDetails->saveMany($new_receipt_details);
         $response = $this->response->withType('application/json')
                     ->withStringBody(json_encode(['status' => "success"]));
 
         return $response;
-
-
-
     }
 }

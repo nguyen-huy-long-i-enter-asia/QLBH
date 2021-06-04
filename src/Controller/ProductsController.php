@@ -284,12 +284,12 @@ class ProductsController extends AppController
             return $this->response->withStringBody(json_encode($result))->withType('json');
         }else {
             $result = $this->Products->find('all')->select(['id','name', 'sell_price', 'image'])->where(['name LIKE' => '%'.$keyword.'%' ])->toArray();
-            return $this->response->withStringBody(json_encode($result))->withType('json');
+            return $this->response->y(json_encode($result))->withType('json');
 
         }
-
     }
  }
+
 
 
 

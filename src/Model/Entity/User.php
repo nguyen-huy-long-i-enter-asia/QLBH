@@ -40,8 +40,6 @@ class User extends Entity
         'image' => true,
         'position' => true,
         'point' => true,
-        'created' => true,
-        'modified' => true,
     ];
 
     /**

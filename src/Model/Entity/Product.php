@@ -46,8 +46,6 @@ class Product extends Entity
         'sell_price' => true,
         'image' => true,
         'discount' => true,
-        'created' => true,
-        'modified' => true,
         'manufacturer' => true,
         'colors_products_sizes' => true,
         'orders_details' => true,

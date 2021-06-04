@@ -37,8 +37,6 @@ class Manufacture extends Entity
         'address' => true,
         'email' => true,
         'note' => true,
-        'created' => true,
-        'modified' => true,
         'products' => true,
         'receipts' => true,
     ];

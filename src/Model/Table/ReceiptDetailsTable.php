@@ -44,7 +44,7 @@ class ReceiptDetailsTable extends Table
 
         $this->setTable('receipt_details');
         $this->setDisplayField('receipt_id');
-        $this->setPrimaryKey(['receipt_id', 'product_id']);
+        $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
 

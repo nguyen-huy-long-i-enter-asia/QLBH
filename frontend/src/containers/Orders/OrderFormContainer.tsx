@@ -21,12 +21,6 @@ import OrderOverViewTemplate from "components/organisms/Orders/OrderOverViewTemp
 import "layouts/layout.css";
 import SearchModal from "components/molecules/Orders/SearchModal";
 
-type searchResultType = {
-  id: number;
-  name: string;
-  sell_price: number;
-  image: string;
-}[];
 type importListType = {
   id: number; // id san pham
   name: string;
@@ -45,16 +39,13 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
   const [manufacturers, setManufacturers] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
-
   const [staffEmail, setStaffEmail] = useState(Cookies.get("email"));
   const [selectedManufacturer, setSelectedManufacturer] = useState("1");
-  const [keyword, setKeyword] = useState("");
-  const [searchResult, setSearchResult] = useState<searchResultType>([]);
   const [importList, setImportList] = useState<importListType>([]);
   const [note, setNote] = useState("");
   const [pay, setPay] = useState(0);
   const [transactionState, setTransactionState] = useState(1);
-  const [customerId, setCustomerId] = useState(0);
+  const [customer, setCustomer] = useState();
   const history = useHistory();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -79,6 +70,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         setImportList(oldImportedList);
         setNote(orderData.data.note);
         setStaffEmail(orderData.data.staff.email);
+        setCustomer(orderData.data.customer);
       }
       const manufacturersData = await axios.get(
         `${process.env.REACT_APP_SERVER}manufacturers/index`
@@ -96,28 +88,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     };
     fetchData();
   }, []);
-  useEffect(() => {
-    const findData = async () => {
-      const formData = new FormData();
-      formData.append("keyword", keyword);
-      const result = await axios.post(
-        `${process.env.REACT_APP_SERVER}products/findByKeyword`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log(result.data);
-      setSearchResult(result.data);
-    };
-    if (keyword !== "") {
-      findData();
-    } else {
-      setSearchResult([]);
-    }
-  }, [keyword]);
+
   useEffect(() => {
     if (importList.length > 0) {
       const newPay = importList.reduce(
@@ -129,60 +100,9 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
       setPay(0);
     }
   }, [importList]);
-  const changeKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setKeyword(e.currentTarget.value);
-  };
+
   const handleManufacturerChange = (e: React.FormEvent<HTMLSelectElement>) => {
     setSelectedManufacturer(e.currentTarget.value);
-  };
-
-  const handleProductClick = async (e: React.MouseEvent<HTMLDivElement>) => {
-    const { id } = e.currentTarget;
-    const selectedProduct = searchResult.filter((item) => {
-      console.log(`${item.id}||${id}`);
-      console.log(item.id === parseInt(id, 10));
-      return item.id === parseInt(id, 10);
-    });
-    console.log(id);
-    const formData = new FormData();
-    formData.append("product_id", id);
-    formData.append("size_id", "1");
-    formData.append("color_id", "1");
-    const result = await axios.post(
-      `http://localhost:8765/colorsProductsSizes/getInventory/`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    let inventory = 0;
-    if (result.data !== null) {
-      inventory = result.data.count;
-    }
-    console.log([
-      ...importList,
-      {
-        ...selectedProduct[0],
-        count: 0,
-        size_id: "1",
-        color_id: "1",
-        total: 0,
-        inventory,
-      },
-    ]);
-    setImportList([
-      ...importList,
-      {
-        ...selectedProduct[0],
-        count: 0,
-        size_id: "1",
-        color_id: "1",
-        total: 0,
-        inventory,
-      },
-    ]);
   };
 
   const handleSizeChange = async (e: React.FormEvent<HTMLSelectElement>) => {
@@ -339,10 +259,8 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
           </Flex>
           <SearchModal
             type="product"
-            keyword={keyword}
-            changeKeyword={changeKeyword}
-            searchResult={searchResult}
-            handleResultClick={handleProductClick}
+            importList={importList}
+            setImportList={setImportList}
           />
         </Flex>
         <ImportTableTemplate
@@ -361,8 +279,8 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         note={note}
         pay={pay}
         handleSubmit={handleSubmit}
-        customerId={customerId}
-        setCustomerId={setCustomerId}
+        customer={customer}
+        setCustomer={setCustomer}
       />
     </Flex>
   );

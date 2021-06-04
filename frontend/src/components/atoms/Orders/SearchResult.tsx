@@ -18,17 +18,7 @@ import {
 
 type Props = {
   type: string;
-  searchResult:
-    | {
-        id: string;
-        name: string;
-        sell_price: number;
-        image: string;
-      }[]
-    | {
-        id: string;
-        name: string;
-      }[];
+  searchResult: any;
   handleResultClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 const SearchResult: React.FC<Props> = ({
@@ -37,13 +27,7 @@ const SearchResult: React.FC<Props> = ({
   handleResultClick,
 }) => {
   return (
-    <Box
-      position="absolute"
-      top="100%"
-      zIndex="1"
-      bgColor="white"
-      border="1px solid gray"
-    >
+    <Box bgColor="white" border="1px solid gray">
       {(() => {
         if (type === "product") {
           return searchResult.map((item: any) => {
@@ -68,12 +52,28 @@ const SearchResult: React.FC<Props> = ({
           });
         }
         if (type === "customer") {
-          return searchResult;
+          return searchResult.map((item: any) => {
+            return (
+              <Box id={item.id} onClick={handleResultClick}>
+                <Box>
+                  <Text>{item.name}</Text>
+                </Box>
+                <Flex justifyContent="space-between">
+                  <Box>
+                    <Text>{`Email: ${item.email}`}</Text>
+                  </Box>
+                  <Box>
+                    <Text>{`Phone: ${item.phone}`}</Text>
+                  </Box>
+                </Flex>
+              </Box>
+            );
+          });
         }
         return <></>;
       })()}
 
-      {searchResult.map((item: any) => {
+      {/* {searchResult.map((item: any) => {
         return (
           <Box key={item.id} id={item.id} onClick={handleResultClick}>
             <Box>{item.name}</Box>
@@ -82,7 +82,7 @@ const SearchResult: React.FC<Props> = ({
             </Box>
           </Box>
         );
-      })}
+      })} */}
     </Box>
   );
 };

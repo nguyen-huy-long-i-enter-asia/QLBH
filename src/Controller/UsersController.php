@@ -70,14 +70,10 @@ class UsersController extends AppController
      * @return \Cake\Http\Response|null|void Renders view
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
-    {
-        $user = $this->Users->get($id, [
-            'contain' => [],
-        ]);
-
-        $this->set(compact('user'));
-    }
+    // public function find($id = null)
+    // {
+    //     $user = $this->Users->find('all')
+    // }
 
     /**
      * Add method
@@ -141,5 +137,12 @@ class UsersController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+    public function findCustomerByKeyword()
+    {
+        $keyword = $this->request->getData('keyword');
+
+        $result = $this->Users->find('all')->select(['id', 'name', 'email', 'phone'])->where(['position' => 3, 'OR' => [['name LIKE' => '%'.$keyword.'%' ] , ['email LIKE ' => '%'.$keyword.'%'], ['phone LIKE' => '%'.$keyword.'%']]])->toArray();
+        return $this->response->withType('application/json')->withStringBody(json_encode($result));
     }
 }

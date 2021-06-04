@@ -76,7 +76,7 @@ const ImportTableTemplate: React.FC<Props> = ({
             <Td>{importItem.name}</Td>
             <Td>
               <Select
-                id={importItem.id}
+                id={index.toString()}
                 name="size"
                 onChange={handleSizeChange}
                 value={importItem.size_id}
@@ -90,7 +90,7 @@ const ImportTableTemplate: React.FC<Props> = ({
             </Td>
             <Td>
               <Select
-                id={importItem.id}
+                id={index.toString()}
                 name="color"
                 onChange={handleColorChange}
                 value={importItem.color_id}
@@ -104,7 +104,7 @@ const ImportTableTemplate: React.FC<Props> = ({
             </Td>
             <Td>
               <Input
-                id={importItem.id}
+                id={index.toString()}
                 name="count"
                 value={importItem.count.toString()}
                 type="number"

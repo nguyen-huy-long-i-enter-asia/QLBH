@@ -21,14 +21,14 @@ import ReceiptOverViewTemplate from "components/organisms/Receipts/ReceiptOverVi
 import SearchModal from "components/molecules/Receipts/SearchModal";
 import "layouts/layout.css";
 
-type searchResultType = {
+type SearchResultType = {
   id: string;
   name: string;
   original_price: number;
   image: string;
   count: number;
 }[];
-type importListType = {
+type ImportListType = {
   id: string; // id san pham
   name: string;
   original_price: number;
@@ -49,8 +49,8 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
   const [staffEmail, setStaffEmail] = useState(Cookies.get("email"));
   const [selectedManufacturer, setSelectedManufacturer] = useState("1");
   const [keyword, setKeyword] = useState("");
-  const [searchResult, setSearchResult] = useState<searchResultType>([]);
-  const [importList, setImportList] = useState<importListType>([]);
+  const [searchResult, setSearchResult] = useState<SearchResultType>([]);
+  const [importList, setImportList] = useState<ImportListType>([]);
   const [note, setNote] = useState("");
   const [sum, setSum] = useState(0);
 
@@ -154,10 +154,10 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
   };
 
   const handleSizeChange = (e: React.FormEvent<HTMLSelectElement>) => {
-    const productId = e.currentTarget.id;
+    const selectedIndex = e.currentTarget.id;
     const { value } = e.currentTarget;
-    const newImportList = importList.map((item) => {
-      if (item.id === productId) {
+    const newImportList = importList.map((item, index) => {
+      if (index === parseInt(selectedIndex, 10)) {
         return {
           ...item,
           size_id: value,
@@ -169,12 +169,11 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
     setImportList(newImportList);
   };
   const handleColorChange = (e: React.FormEvent<HTMLSelectElement>) => {
-    const productId = e.currentTarget.id;
+    const selectedIndex = e.currentTarget.id;
     const { value } = e.currentTarget;
 
-    const newImportList = importList.map((item) => {
-      if (item.id === productId.toString()) {
-        console.log("aa");
+    const newImportList = importList.map((item, index) => {
+      if (index === parseInt(selectedIndex, 10)) {
         return {
           ...item,
           color_id: value.toString(),
@@ -186,11 +185,11 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
     setImportList(newImportList);
   };
   const handleCountChange = (e: React.FormEvent<HTMLInputElement>) => {
-    const productId = e.currentTarget.id;
+    const selectedIndex = e.currentTarget.id;
     const { value } = e.currentTarget;
 
-    const newImportList = importList.map((item) => {
-      if (item.id === productId.toString()) {
+    const newImportList = importList.map((item, index) => {
+      if (index === parseInt(selectedIndex, 10)) {
         return {
           ...item,
           count: value === "" ? 0 : parseInt(value, 10),

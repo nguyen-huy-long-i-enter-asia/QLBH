@@ -122,7 +122,7 @@ class OrdersController extends AppController
         }else {
             $order['staff'] = null;
         }
-        $customer = $this->Users->get($order->customer_id);
+        $customer = $this->Users->select(['id', 'name' , 'email', 'phone'])->get($order->customer_id);
         $receipt['customer'] = ['id' => $customer->id, 'name' => $customer->name];
         $order->created = $order->created->format('Y-m-d');
         unset($order['staff_id']);
