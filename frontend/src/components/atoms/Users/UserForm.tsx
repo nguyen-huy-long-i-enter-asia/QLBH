@@ -134,11 +134,10 @@ const UserForm: React.FC<Props> = ({ customer }) => {
     e.preventDefault();
     if (name !== "" && email !== "") {
       const formData = new FormData();
-      const url = `${process.env.REACT_APP_SERVER}users/add`
+      const url = `${process.env.REACT_APP_SERVER}users/add`;
       if (customer) {
         formData.append("id", customer.id.toString());
       }
-
     }
     // if (name !== "" && originalPrice !== "" && sellPrice !== "") {
     //   const formData = new FormData();
