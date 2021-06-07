@@ -73,8 +73,7 @@ CREATE TABLE users(
     phone VARCHAR(255),
     address VARCHAR(255),
     image VARCHAR(255),
-    position INT,
-    point INT
+    position INT
 );
 
 
@@ -110,7 +109,7 @@ CREATE TABLE orders(
     customer_id INT ,
     staff_id INT,
     state_id INT,
-    total INT,
+    pay INT,
     point INT,
     note VARCHAR(255),
     created DATETIME,
@@ -135,17 +134,17 @@ CREATE TABLE order_details(
     FOREIGN KEY(color_id) REFERENCES colors(id) ON DELETE CASCADE
 );
 
-INSERT INTO users(name,email,password,phone,address,image,position,point) VALUES
-("Huy Long", "cabo@gmail.com", "1234", "03321213", "Vinh, Nghe An", "abc.png",3, 11111 ),
-("Dinh TUan", "TuanDinh@gmail.com", "1234", "03321123128", "Ha Tinh", "TuanDinh.png",2, 23000),
-("Hai Pham", "PH@gmail.com", "1234", "8526113", "Tuyen QUang", "Hai.png",2, 5000000 ),
-("Tien", "TIen@gmail.com", "1234", "015421214", "Ha Nam", "Tien.png",1, 250000 ),
-("Than Quang Khoat", "TQK@gmail.com", "1234", "3478232", "Ha Noi", "Khoat.png",1, 20000 ),
-("Son Tung", "ST@gmail.com", "1234", "2131321", "Thai Binh", "ST.png",1, 11111 ),
-("Dung", "DPS@gmail.com", "1234", "9991", "Hai Duong", "Dung.png",2, 222444 ),
-("Thu", "PT@gmail.com", "1234", "113", "Thanh Hoa", "Thu.png",1, 43434343 ),
-("KhachHang", "KH@gmail.com", "1234", "112123", "Thanh Hoa", "KH.png",3, 43434343 ),
-("Ngoc Trinh", "NT@gmail.com", "1234", "11112222233333", "Ho Chi Minh", "NT.png",1, 100000 );
+INSERT INTO users(name,email,password,phone,address,image,position) VALUES
+("Huy Long", "cabo@gmail.com", "1234", "03321213", "Vinh, Nghe An", "abc.png",3),
+("Dinh TUan", "TuanDinh@gmail.com", "1234", "03321123128", "Ha Tinh", "TuanDinh.png",2),
+("Hai Pham", "PH@gmail.com", "1234", "8526113", "Tuyen QUang", "Hai.png",2),
+("Tien", "TIen@gmail.com", "1234", "015421214", "Ha Nam", "Tien.png",1),
+("Than Quang Khoat", "TQK@gmail.com", "1234", "3478232", "Ha Noi", "Khoat.png",1),
+("Son Tung", "ST@gmail.com", "1234", "2131321", "Thai Binh", "ST.png",1),
+("Dung", "DPS@gmail.com", "1234", "9991", "Hai Duong", "Dung.png",2),
+("Thu", "PT@gmail.com", "1234", "113", "Thanh Hoa", "Thu.png",1),
+("KhachHang", "KH@gmail.com", "1234", "112123", "Thanh Hoa", "KH.png",3),
+("Ngoc Trinh", "NT@gmail.com", "1234", "11112222233333", "Ho Chi Minh", "NT.png",1);
 
 INSERT INTO manufacturers(name,phone,address,email,note) VALUES
 ("Bitis", "033232323", "Vinh", "Bitis@gmail.com","Hoi chan"),

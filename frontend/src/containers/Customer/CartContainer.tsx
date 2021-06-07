@@ -12,7 +12,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { AddIcon, MinusIcon, DeleteIcon } from "@chakra-ui/icons";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -32,6 +32,7 @@ const CartContainer: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [totalDiscount, setTotalDiscount] = useState(0);
   const [note, setNote] = useState("");
+  const history = useHistory();
   useEffect(() => {
     const cartString = sessionStorage.getItem("cart");
     if (cartString) {
@@ -64,6 +65,7 @@ const CartContainer: React.FC = () => {
       setCart(newCart);
       sessionStorage.setItem("cart", JSON.stringify(newCart));
     }
+    window.location.reload(false);
   };
   const decreaseCount = (index: number) => {
     if (cart !== undefined) {
@@ -104,6 +106,8 @@ const CartContainer: React.FC = () => {
         },
       });
       alert(result.data.status);
+      sessionStorage.removeItem("cart");
+      history.push("/store");
     } catch (error) {
       console.log(error);
     }

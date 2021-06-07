@@ -39,7 +39,6 @@ class User extends Entity
         'address' => true,
         'image' => true,
         'position' => true,
-        'point' => true,
     ];
 
     /**

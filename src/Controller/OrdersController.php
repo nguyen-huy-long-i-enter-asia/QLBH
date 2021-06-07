@@ -122,8 +122,11 @@ class OrdersController extends AppController
         }else {
             $order['staff'] = null;
         }
-        $customer = $this->Users->select(['id', 'name' , 'email', 'phone'])->get($order->customer_id);
-        $receipt['customer'] = ['id' => $customer->id, 'name' => $customer->name];
+        $customer = $this->Users->find('all')->select(['id', 'name','email','phone', 'address', 'image'])->where(['id' => $order->customer_id])->first();
+        $orders = $this->Orders->find('all')->where(['customer_id' => $order->customer_id])->toArray();
+        $customer->orders = $orders;
+        // $order['customer'] = ['id' => $customer->id, 'name' => $customer->name];
+        $order['customer'] = $customer;
         $order->created = $order->created->format('Y-m-d');
         unset($order['staff_id']);
         unset($order['customer_id']);

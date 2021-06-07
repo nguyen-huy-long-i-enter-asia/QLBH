@@ -34,6 +34,9 @@ type Props = {
     name: string;
     email: string;
     phone: string;
+    address: string;
+    image: string;
+    orders: any[];
   };
 
   staffEmail: string | undefined;
@@ -85,14 +88,13 @@ const OrderOverViewTemplate: React.FC<Props> = ({
   const changeKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.currentTarget.value);
   };
-  const handleCustomerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleCustomerClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     const id = parseInt(e.currentTarget.id, 10);
-    console.log(searchResult);
-    const newSelectedCustomer = searchResult.filter(
-      (item) => item.id === id
-    )[0];
-    console.log(newSelectedCustomer);
-    setCustomer(newSelectedCustomer);
+    const result = await axios.get(
+      `${process.env.REACT_APP_SERVER}users/findCustomer/${id}`
+    );
+    console.log(result.data);
+    setCustomer(result.data);
   };
   return (
     <Box w="20%" bgColor="white" position="relative">

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import { MdShoppingCart } from "react-icons/md";
 import {
   Icon,
@@ -110,19 +110,23 @@ const MenuBarContainer: React.FC = () => {
   };
   return (
     <Flex w="80%" m="auto" justify="space-around">
-      <Image
-        src={`${process.env.PUBLIC_URL}/page-logo.png`}
-        boxSize="4rem"
-        display="block"
-      />
+      <Link to="/store">
+        <Image
+          src={`${process.env.PUBLIC_URL}/page-logo.png`}
+          boxSize="4rem"
+          display="block"
+        />
+      </Link>
       <SearchModal
         keyword={keyword}
         changeKeyword={changeKeyword}
         searchResult={searchResult}
       />
       <Flex>
-        <Icon as={MdShoppingCart} />
-        <Text>Your Cart has {totalCount} products</Text>
+        <Link to="/cart">
+          <Icon as={MdShoppingCart} />
+          <Text>Your Cart has {totalCount} products</Text>
+        </Link>
       </Flex>
     </Flex>
   );

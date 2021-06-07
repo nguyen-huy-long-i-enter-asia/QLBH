@@ -78,6 +78,7 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
         setImportList(oldImportedList);
         setNote(receiptData.data.note);
         setStaffEmail(receiptData.data.user.email);
+        setSelectedManufacturer(receiptData.data.manufacturer.id);
       }
       const manufacturersData = await axios.get(
         `${process.env.REACT_APP_SERVER}manufacturers/index`

@@ -13,8 +13,8 @@ import {
   ModalCloseButton,
   useDisclosure,
   Flex,
-  Image,
   FormLabel,
+  Image,
   VStack,
   Select,
   Checkbox,
@@ -33,10 +33,17 @@ type CategoriesList = {
   isChecked: boolean | false;
 }[];
 type Props = {
-  customerId?: number;
-  modalButton: React.ReactNode;
+  customer?: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    image: string;
+    orders: any[];
+  };
 };
-const ProductForm: React.FC<Props> = ({ customerId, modalButton }) => {
+const UserForm: React.FC<Props> = ({ customer }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   // const [name, setName] = useState(selectedProduct ? selectedProduct.name : "");
   // const [manufacturer, setManufacturer] = useState<string>(
@@ -62,12 +69,16 @@ const ProductForm: React.FC<Props> = ({ customerId, modalButton }) => {
   //     ? selectedProduct.image
   //     : `${process.env.PUBLIC_URL}/image_upload.png`
   // );
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [name, setName] = useState(customer ? customer.name : "");
+  const [email, setEmail] = useState(customer ? customer.email : "");
+  const [phone, setPhone] = useState(customer ? customer.phone : "");
+  const [address, setAddress] = useState(customer ? customer.address : "");
   const [image, setImage] = useState<File>();
-  const [imageLink, setImageLink] = useState("");
+  const [imageLink, setImageLink] = useState(
+    customer
+      ? `${process.env.REACT_APP_IMG_SERVER}Avatar/${customer.image}`
+      : `${process.env.PUBLIC_URL}/image_upload.png`
+  );
 
   // if (selectedProduct) {
   //   const [name,setName] = useState(selectedProduct.name);
@@ -81,11 +92,18 @@ const ProductForm: React.FC<Props> = ({ customerId, modalButton }) => {
 
   //   setImageLink(selectedProduct.image);
   // }
-  useEffect(() => {
-    const fetchData = async () => {
-      const url = `http://localhost:8765/users/find/${customerId}`;
-    };
-  }, [customerId]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const url = `http://localhost:8765/users/findCustomer/${customerId}`;
+  //     const result = await axios.get(url);
+  //     const customerData = result.data;
+  //     setName(customerData.name);
+  //     setEmail(customerData.email);
+  //     setPhone(customerData.phone);
+  //     setAddress(customerData.address);
+  //     setImageLink(customerData.image);
+  //   };
+  // }, [customerId]);
   const changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
     setName(value);
@@ -113,8 +131,15 @@ const ProductForm: React.FC<Props> = ({ customerId, modalButton }) => {
     }
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("a");
-    // e.preventDefault();
+    e.preventDefault();
+    if (name !== "" && email !== "") {
+      const formData = new FormData();
+      const url = `${process.env.REACT_APP_SERVER}users/add`
+      if (customer) {
+        formData.append("id", customer.id.toString());
+      }
+
+    }
     // if (name !== "" && originalPrice !== "" && sellPrice !== "") {
     //   const formData = new FormData();
     //   if (action === "edit" && selectedProduct) {
@@ -168,176 +193,78 @@ const ProductForm: React.FC<Props> = ({ customerId, modalButton }) => {
 
   return (
     <>
-      {/* <Button
-        className="button "
-        onClick={onOpen}
-        bgColor="#3399ff"
-        color="white"
-      >
-        {modalButton}
-      </Button>
-      <Modal isOpen={isOpen} onClose={onClose} size="full">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader bgColor="#ededed">Add new Product</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <form onSubmit={handleSubmit}>
-              <Flex>
-                <Table>
-                  <Tbody>
-                    <Tr>
-                      <Td fontWeight="bold">Name</Td>
-
-                      <Td>
-                        <Input
-                          name="name"
-                          value={name}
-                          onChange={changeName}
-                          required
-                        />
-                      </Td>
-                    </Tr>
-
-                    <Tr>
-                      <Td fontWeight="bold">Manufacturer</Td>
-                      <Td>
-                        <Select
-                          name="manufacturer"
-                          onChange={changeManufacturer}
-                          value={manufacturer}
-                        >
-                          {manufacturersList ? (
-                            manufacturersList.map((item) => (
-                              <option key={item.id} value={item.id}>
-                                {item.name}
-                              </option>
-                            ))
-                          ) : (
-                            <></>
-                          )}
-                        </Select>
-                      </Td>
-                    </Tr>
-
-                    <Tr>
-                      <Td fontWeight="bold">Discount</Td>
-                      <Td>
-                        <Input
-                          name="discount"
-                          type="number"
-                          onChange={changeDiscount}
-                          value={discount}
-                        />
-                      </Td>
-                    </Tr>
-
-                    <Tr>
-                      <Td fontWeight="bold">State</Td>
-                      <Td>
-                        <Select
-                          name="state"
-                          onChange={changeStateId}
-                          value={stateId}
-                        >
-                          {productStatesList !== undefined ? (
-                            productStatesList.map((state) => (
-                              <option value={state.id}>{state.name} </option>
-                            ))
-                          ) : (
-                            <></>
-                          )}
-                        </Select>
-                      </Td>
-                    </Tr>
-                  </Tbody>
-                </Table>
-                <Table>
-                  <Tbody>
-                    <Tr>
-                      <Td fontWeight="bold">Original Price</Td>
-                      <Td>
-                        <Input
-                          name="original_price"
-                          type="number"
-                          onChange={changeOriginalPrice}
-                          value={originalPrice}
-                          required
-                        />
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td fontWeight="bold">Sell Price</Td>
-                      <Td>
-                        <Input
-                          name="sell_price"
-                          type="number"
-                          onChange={changeSellPrice}
-                          value={sellPrice}
-                          required
-                        />
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td fontWeight="bold">Categories</Td>
-                      <Td>
-                        <VStack>
-                          {categories.map((item) => (
-                            <Checkbox
-                              key={item.id}
-                              name="categories"
-                              value={item.id}
-                              isChecked={item.isChecked}
-                              onChange={changeCategories}
-                            >
-                              {item.name}
-                            </Checkbox>
-                          ))}
-                        </VStack>
-                      </Td>
-                    </Tr>
-                  </Tbody>
-                </Table>
-              </Flex>
-              <Box w="100%">
-                <Box pl="1.5rem">
-                  <Text fontWeight="bold">Note</Text>
-                </Box>
-                <Box pl="1.5rem" w="100%">
-                  <Textarea name="note" onChange={changeNote} value={note} />
-                </Box>
-              </Box>
-              <Flex>
-                <Box pl="1.5rem">
-                  <Text fontWeight="bold">Image</Text>
-                </Box>
-                <FormLabel pl="1.5rem">
+      <form onSubmit={handleSubmit}>
+        <Flex>
+          <FormLabel pl="1.5rem">
+            <Input
+              display="none"
+              name="image"
+              type="file"
+              onChange={changeImage}
+              border="none"
+            />
+            <Image src={imageLink} cursor="pointer" boxSize="10rem" />
+          </FormLabel>
+          <Table>
+            <Tbody>
+              <Tr>
+                <Td>
+                  Name
+                  <Text color="red" display="inline">
+                    *
+                  </Text>
+                </Td>
+                <Td>
+                  <Input value={name} onChange={changeName} required />
+                </Td>
+              </Tr>
+              <Tr>
+                <Td>
+                  Email
+                  <Text color="red" display="inline">
+                    *
+                  </Text>
+                </Td>
+                <Td>
                   <Input
-                    display="none"
-                    name="image"
-                    type="file"
-                    onChange={changeImage}
-                    border="none"
+                    type="email"
+                    value={email}
+                    onChange={changeEmail}
+                    required
                   />
-                  <Image src={imageLink} cursor="pointer" boxSize="10rem" />
-                </FormLabel>
-              </Flex>
-              <Box mt="3%">
-                <Input
-                  type="submit"
-                  value="Submit"
-                  w="10%"
-                  m="auto"
-                  display="block"
-                  bgColor="#3399ff"
-                  color="white"
-                />
-              </Box>
-            </form>
-          </ModalBody>
-        </ModalContent>
-      </Modal> */}
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
+
+          <Table>
+            <Tbody>
+              <Tr>
+                <Td>Phone</Td>
+                <Td>
+                  <Input value={phone} onChange={changePhone} />
+                </Td>
+              </Tr>
+              <Tr>
+                <Td>Address</Td>
+                <Td>
+                  <Input value={address} onChange={changeAddress} />
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        </Flex>
+        <Input
+          type="submit"
+          value={customer ? "Save" : "Add"}
+          w="10%"
+          m="auto"
+          display="block"
+          bgColor="#3399ff"
+          color="white"
+        />
+      </form>
     </>
   );
 };
-export default ProductForm;
+export default UserForm;

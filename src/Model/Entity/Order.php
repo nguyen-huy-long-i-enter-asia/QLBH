@@ -12,7 +12,7 @@ use Cake\ORM\Entity;
  * @property int|null $customer_id
  * @property int|null $staff_id
  * @property int|null $state
- * @property int|null $total
+ * @property int|null $pay
  * @property int|null $point
  * @property string|null $note
  * @property \Cake\I18n\FrozenTime|null $created
@@ -36,7 +36,7 @@ class Order extends Entity
         'customer_id' => true,
         'staff_id' => true,
         'state' => true,
-        'total' => true,
+        'pay' => true,
         'point' => true,
         'note' => true,
         'created' => true,

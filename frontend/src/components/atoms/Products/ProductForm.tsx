@@ -105,18 +105,6 @@ const ProductForm: React.FC<Props> = ({
       ? selectedProduct.image
       : `${process.env.PUBLIC_URL}/image_upload.png`
   );
-  // if (selectedProduct) {
-  //   const [name,setName] = useState(selectedProduct.name);
-  //   const[manufact](selectedProduct.manufacturer.id);
-  //   setDiscount(selectedProduct.discount);
-  //   setState(selectedProduct.state);
-  //   setOriginalPrice(selectedProduct.original_price);
-  //   setSellPrice(selectedProduct.sell_price);
-
-  //   setNote(selectedProduct.note);
-
-  //   setImageLink(selectedProduct.image);
-  // }
 
   useEffect(() => {
     if (categoriesList) {

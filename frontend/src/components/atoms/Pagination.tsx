@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Flex, Button } from "@chakra-ui/react";
+import { Flex, Button, Box } from "@chakra-ui/react";
 
 type Pager = {
   totalItems: number;
@@ -123,33 +123,37 @@ const Pagination: React.FC<Props> = ({ items, onChangePage, pageSizeProp }) => {
   }
 
   return (
-    <div className="row mt-5">
-      <div className="col text-center">
-        <div className="block-27">
-          <Flex>
-            <Button
-              onClick={() => {
-                setPage(1);
-              }}
-            >
-              &lt; &lt;
-            </Button>
+    // <Box>
+    //   <Box>
+    <Box display="flex" justifyContent="center">
+      <Flex>
+        <Button
+          onClick={() => {
+            setPage(1);
+          }}
+        >
+          &lt; &lt;
+        </Button>
 
-            <Button onClick={() => setPage(pager.currentPage - 1)}>&lt;</Button>
+        <Button onClick={() => setPage(pager.currentPage - 1)}>&lt;</Button>
 
-            {pager.pages.map((page) => (
-              <Button key={page} onClick={() => setPage(page)}>
-                {page}
-              </Button>
-            ))}
+        {pager.pages.map((page, index) => (
+          <Button
+            key={page}
+            onClick={() => setPage(page)}
+            bgColor={index + 1 === pager.currentPage ? "#3399ff" : "white"}
+          >
+            {page}
+          </Button>
+        ))}
 
-            <Button onClick={() => setPage(pager.currentPage + 1)}>&gt;</Button>
+        <Button onClick={() => setPage(pager.currentPage + 1)}>&gt;</Button>
 
-            <Button onClick={() => setPage(pager.totalPages)}>&gt;&gt;</Button>
-          </Flex>
-        </div>
-      </div>
-    </div>
+        <Button onClick={() => setPage(pager.totalPages)}>&gt;&gt;</Button>
+      </Flex>
+    </Box>
+    //   </Box>
+    // </Box>
   );
 };
 

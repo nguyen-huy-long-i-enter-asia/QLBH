@@ -49,14 +49,19 @@ class OrdersTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Users', [
+        $this->belongsTo('Customer', [
             'foreignKey' => 'customer_id',
+
+            'className' => 'Users',
+
         ]);
         $this->belongsTo('TransactionStates', [
             'foreignKey' => 'state_id',
         ]);
-        $this->belongsTo('Users', [
+        $this->belongsTo('Staff', [
             'foreignKey' => 'staff_id',
+
+            'className' => 'Users'
         ]);
         $this->hasMany('OrderDetails', [
             'foreignKey' => 'order_id',
@@ -80,8 +85,8 @@ class OrdersTable extends Table
             ->allowEmptyString('state');
 
         $validator
-            ->integer('total')
-            ->allowEmptyString('total');
+            ->integer('pay')
+            ->allowEmptyString('pay');
 
         $validator
             ->integer('point')

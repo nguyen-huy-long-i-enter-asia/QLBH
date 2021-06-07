@@ -44,6 +44,14 @@ class UsersTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+        $this->hasMany('Orders', [
+            'foreignKey' => 'customer_id',
+            'className' => 'Orders',
+        ]);
+        $this->hasMany('ProcessedOrders', [
+            'foreignKey' => 'staff_id',
+            "className" => 'Orders',
+        ]);
     }
 
     /**
@@ -91,9 +99,6 @@ class UsersTable extends Table
             ->integer('position')
             ->allowEmptyString('position');
 
-        $validator
-            ->integer('point')
-            ->allowEmptyString('point');
 
         return $validator;
     }

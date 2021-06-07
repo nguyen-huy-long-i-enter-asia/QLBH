@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Controller;
-
+use Cake\Model\Table\Orders;
 /**
  * Users Controller
  *
@@ -138,11 +138,25 @@ class UsersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+    //Find Customer By ID
+    public function findCustomer($id = null)
+    {
+
+        $this->loadModel('Orders');
+        $customer = $this->Users->find('all')->select(['id', 'name','email','phone', 'address', 'image'])->where(['position' => 3, 'id' => (int)$id])->first();
+        $orders = $this->Orders->find('all')->where(['customer_id' => $id])->contain(['Staff','TransactionStates'])->toArray();
+        $customer->orders = $orders;
+        return $this->response->withType('application/json')->withStringBody(json_encode($customer));
+    }
+
     public function findCustomerByKeyword()
     {
-        $keyword = $this->request->getData('keyword');
 
-        $result = $this->Users->find('all')->select(['id', 'name', 'email', 'phone'])->where(['position' => 3, 'OR' => [['name LIKE' => '%'.$keyword.'%' ] , ['email LIKE ' => '%'.$keyword.'%'], ['phone LIKE' => '%'.$keyword.'%']]])->toArray();
+        $keyword = $this->request->getData('keyword');
+        $result = $this->Users->find('all')->select(['id', 'name', 'email', 'phone', 'address', 'image'])->where(['position' => 3, 'OR' => [['name LIKE' => '%'.$keyword.'%' ] , ['email LIKE ' => '%'.$keyword.'%'], ['phone LIKE' => '%'.$keyword.'%']]])->toArray();
+
+
         return $this->response->withType('application/json')->withStringBody(json_encode($result));
     }
+
 }
