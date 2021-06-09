@@ -88,7 +88,7 @@ const CartContainer: React.FC = () => {
     setNote(value);
   };
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    const url = `http://localhost:8765/orders/add/`;
+    const url = `http://localhost:8765/orders/addByCustomer/`;
     const customerEmail = Cookies.get("email");
     const formData = new FormData();
     console.log(JSON.stringify(cart));

@@ -67,7 +67,7 @@ type Props = {
   rangeFilter?: RangeFilter;
   handleSelectChange?: (e: React.FormEvent<HTMLSelectElement>) => void;
 
-  handleOnclick?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleCheckBoxClick?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 const FilterTemplate: React.FC<Props> = ({
   pageTitle,
@@ -76,7 +76,7 @@ const FilterTemplate: React.FC<Props> = ({
   timeFilter,
   rangeFilter,
   handleSelectChange,
-  handleOnclick,
+  handleCheckBoxClick,
 }) => {
   return (
     <Box className="filter-list">
@@ -155,7 +155,7 @@ const FilterTemplate: React.FC<Props> = ({
             key={filter.filterName}
             filterName={filter.filterName}
             filterConditions={filter.filterConditions}
-            handleOnclick={handleOnclick}
+            handleOnclick={handleCheckBoxClick}
           />
         ))
       ) : (

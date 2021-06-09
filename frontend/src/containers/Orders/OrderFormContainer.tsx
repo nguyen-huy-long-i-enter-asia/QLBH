@@ -16,15 +16,25 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-import ImportTableTemplate from "components/organisms/Orders/ImportTableTemplate";
+import OrderDetailsTableTemplate from "components/organisms/Orders/OrderDetailsTableTemplate";
 import OrderOverViewTemplate from "components/organisms/Orders/OrderOverViewTemplate";
 import "layouts/layout.css";
 import SearchModal from "components/molecules/Orders/SearchModal";
+import ProductStageTemplate from "components/organisms/Orders/ProductStageTemplate";
 
+type Filter = {
+  filterName: string;
+  filterConditions: {
+    id: string;
+    name: string;
+    isChecked: boolean;
+  }[];
+};
 type importListType = {
   id: number; // id san pham
   name: string;
   sell_price: number;
+  discount: number;
   count: number;
   size_id: string;
   color_id: string;
@@ -36,6 +46,10 @@ type Props = {
 };
 const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
   // State
+  const [checkBoxFilters, setCheckBoxFilters] = useState<Filter[]>([]);
+  const [filteredList, setFilteredList] = useState<any[]>([]);
+  const [keyword, setKeyword] = useState("");
+  const [products, setProducts] = useState([]);
   const [manufacturers, setManufacturers] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
@@ -44,11 +58,11 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
   const [importList, setImportList] = useState<importListType>([]);
   const [note, setNote] = useState("");
   const [pay, setPay] = useState(0);
-  const [transactionState, setTransactionState] = useState(1);
+  const [orderState, setOrderState] = useState(1);
   const [customer, setCustomer] = useState();
   const history = useHistory();
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
   useEffect(() => {
     const fetchData = async () => {
       if (orderId) {
@@ -57,21 +71,34 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         );
         const oldImportedList = orderData.data.order_details.map(
           (item: any) => ({
-            id: item.product.id.toString(),
+            id: item.product.id,
             name: item.product.name,
             sell_price: item.product.sell_price,
+            discount: item.product.discount,
             count: item.count,
             size_id: item.size.id.toString(),
             color_id: item.color.id.toString(),
-            total: item.count * item.product.original_price,
+            total:
+              (item.count *
+                item.product.sell_price *
+                (100 - item.product.discount)) /
+              100,
             note: item.note,
+            inventory: item.inventory,
           })
         );
+        setOrderState(orderData.data.transaction_state.id);
         setImportList(oldImportedList);
         setNote(orderData.data.note);
-        setStaffEmail(orderData.data.staff.email);
+        // setStaffEmail(orderData.data.staff ? orderData.data.staff.email);
         setCustomer(orderData.data.customer);
       }
+      const productsData = await axios.get(
+        `${process.env.REACT_APP_SERVER}products/getSellList`
+      );
+      const categoriesData = await axios.get(
+        `${process.env.REACT_APP_SERVER}categories/index`
+      );
       const manufacturersData = await axios.get(
         `${process.env.REACT_APP_SERVER}manufacturers/index`
       );
@@ -81,14 +108,92 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
       const colorsData = await axios.get(
         `${process.env.REACT_APP_SERVER}colors/index`
       );
+      setProducts(productsData.data);
+      setFilteredList([...productsData.data]);
 
       setManufacturers(manufacturersData.data);
+      const newCheckBoxFilters = [
+        {
+          filterName: "Category",
+          filterConditions: categoriesData.data.map((category: any) => ({
+            id: category.id,
+            name: category.name,
+            isChecked: false,
+          })),
+        },
+        {
+          filterName: "Manufacturer",
+          filterConditions: manufacturersData.data.map((manufacturer: any) => ({
+            id: manufacturer.id,
+            name: manufacturer.name,
+            isChecked: false,
+          })),
+        },
+      ];
+      setCheckBoxFilters(newCheckBoxFilters);
       setSizes(sizesData.data);
       setColors(colorsData.data);
     };
     fetchData();
   }, []);
+  useEffect(() => {
+    const checkedFilters = checkBoxFilters.map((item) => ({
+      filterName: item.filterName,
+      filterConditions: item.filterConditions
+        .filter((condition) => condition.isChecked === true)
+        .map((condition) => ({
+          id: condition.id,
+          name: condition.name,
+        })),
+    }));
 
+    // CheckManufacturer
+    let newFilteredList;
+    if (checkedFilters.length !== 0 && products.length > 0) {
+      if (checkedFilters[1].filterConditions.length === 0) {
+        newFilteredList = products;
+      } else {
+        newFilteredList = products.filter((item: any) =>
+          checkedFilters[1].filterConditions.some((condition) => {
+            return condition.id === item.manufacturer.id;
+          })
+        );
+      }
+
+      // Check Category
+      if (checkedFilters[0].filterConditions.length !== 0) {
+        newFilteredList = newFilteredList.filter((item: any) => {
+          const passCondition = checkedFilters[0].filterConditions.filter(
+            (condition: any) =>
+              item.categories.some(
+                (category: any) => category.id === condition.id
+              )
+          );
+          if (passCondition.length > 0) {
+            return true;
+          }
+          return false;
+        });
+      }
+
+      // if (checkedFilters[2].filterConditions.length !== 0) {
+      //   newFilteredList = newFilteredList.filter((item: any) => {
+      //     return checkedFilters[2].filterConditions.some(
+      //       (condition) => condition.id === item.manufacturer.id
+      //     );
+      //   });
+      // }
+
+      if (keyword !== "") {
+        newFilteredList = newFilteredList.filter(
+          (item: any) =>
+            item.name.includes(keyword) || item.id.toString().includes(keyword)
+        );
+      }
+
+      setFilteredList(newFilteredList);
+    }
+  }, [checkBoxFilters, keyword]);
   useEffect(() => {
     if (importList.length > 0) {
       const newPay = importList.reduce(
@@ -101,8 +206,53 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     }
   }, [importList]);
 
-  const handleManufacturerChange = (e: React.FormEvent<HTMLSelectElement>) => {
-    setSelectedManufacturer(e.currentTarget.value);
+  const handleCheckBoxClick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.currentTarget;
+    const filterName = e.currentTarget.name;
+
+    const newCBFilter = checkBoxFilters.map((filter) => {
+      return filter.filterName !== filterName
+        ? filter
+        : {
+            filterName: filter.filterName,
+            filterConditions: filter.filterConditions.map((condition) => {
+              return condition.name !== value
+                ? condition
+                : {
+                    id: condition.id,
+                    name: condition.name,
+                    isChecked: !condition.isChecked,
+                  };
+            }),
+          };
+    });
+
+    setCheckBoxFilters(newCBFilter);
+  };
+  const changeKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setKeyword(e.currentTarget.value);
+  };
+  const handleProductClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+    const { id } = e.currentTarget;
+
+    const selectedProduct = filteredList.filter(
+      (item) => item.id === parseInt(id, 10)
+    )[0];
+
+    setImportList([
+      ...importList,
+      {
+        id: selectedProduct.id,
+        name: selectedProduct.name,
+        sell_price: selectedProduct.sell_price,
+        discount: selectedProduct.discount,
+        count: 0,
+        size_id: "1",
+        color_id: "1",
+        total: 0,
+        inventory: selectedProduct.inventory,
+      },
+    ]);
   };
 
   const handleSizeChange = async (e: React.FormEvent<HTMLSelectElement>) => {
@@ -111,12 +261,14 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     const selectedOrder = importList.filter(
       (item) => item.id === parseInt(productId, 10)
     )[0];
+    console.log(selectedOrder);
+    // Call API to get inventory of product with specific size and color
     const formData = new FormData();
     formData.append("product_id", productId);
     formData.append("size_id", value);
     formData.append("color_id", selectedOrder.color_id);
     const result = await axios.post(
-      `http://localhost:8765/colorsProductsSizes/Inventory/`,
+      `http://localhost:8765/colorsProductsSizes/getInventory/`,
       formData,
       {
         headers: {
@@ -128,8 +280,10 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     if (result.data !== null) {
       inventory = result.data.count;
     }
+    console.log("a");
     const newImportList = importList.map((item) => {
       if (item.id === parseInt(productId, 10)) {
+        console.log("a0");
         return {
           ...item,
           size_id: value,
@@ -152,7 +306,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     formData.append("size_id", selectedOrder.size_id);
     formData.append("color_id", value);
     const result = await axios.post(
-      `http://localhost:8765/colorsProductsSizes/Inventory/`,
+      `http://localhost:8765/colorsProductsSizes/getInventory/`,
       formData,
       {
         headers: {
@@ -186,7 +340,11 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         return {
           ...item,
           count: value === "" ? 0 : parseInt(value, 10),
-          total: value === "" ? 0 : item.sell_price * parseInt(value, 10),
+          total:
+            value === ""
+              ? 0
+              : ((item.sell_price * (100 - item.discount)) / 100) *
+                parseInt(value, 10),
         };
       }
       return item;
@@ -208,10 +366,16 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
   };
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    let outOfStockCount = 0;
     let url = "";
-    if (importList.length !== 0) {
+    importList.forEach((item) => {
+      if (item.count > item.inventory) {
+        outOfStockCount += 1;
+      }
+    });
+    if (importList.length !== 0 && outOfStockCount === 0) {
       const formData = new FormData();
-      formData.append("receipt_details", JSON.stringify(importList));
+      formData.append("order_details", JSON.stringify(importList));
       if (staffEmail !== undefined) {
         formData.append("staff_email", staffEmail);
       }
@@ -222,9 +386,9 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
       try {
         if (orderId) {
           formData.append("order_id", orderId);
-          url = `http://localhost:8765/receipts/edit/`;
+          url = `http://localhost:8765/oreder/edit/`;
         } else {
-          url = `http://localhost:8765/receipts/import`;
+          url = `http://localhost:8765/orders/addByStaff`;
         }
 
         const result = await axios.post(url, formData, {
@@ -237,9 +401,17 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
       } catch (error) {
         console.log(error);
       }
-    } else {
+    } else if (importList.length === 0) {
       toast({
         title: "Import at least 1 product.",
+
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Some Products are out of stock",
 
         status: "warning",
         duration: 5000,
@@ -257,13 +429,19 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
               {orderId ? "Update" : "New"}
             </Text>
           </Flex>
-          <SearchModal
+          {/* <SearchModal
             type="product"
             importList={importList}
             setImportList={setImportList}
+          /> */}
+          <Input
+            placeholder="Type product id or name"
+            bgColor="white"
+            value={keyword === "" ? undefined : keyword}
+            onChange={changeKeyword}
           />
         </Flex>
-        <ImportTableTemplate
+        <OrderDetailsTableTemplate
           colors={colors}
           sizes={sizes}
           importList={importList}
@@ -271,6 +449,12 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
           handleSizeChange={handleSizeChange}
           handleCountChange={handleCountChange}
           handleDeleteRD={handleDeleteRD}
+        />
+        <ProductStageTemplate
+          dataList={filteredList}
+          checkboxFilters={checkBoxFilters}
+          handleCheckBoxClick={handleCheckBoxClick}
+          handleProductClick={handleProductClick}
         />
       </VStack>
       <OrderOverViewTemplate
@@ -281,6 +465,8 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         handleSubmit={handleSubmit}
         customer={customer}
         setCustomer={setCustomer}
+        action={orderId ? "edit" : "update"}
+        setOrderState={setOrderState}
       />
     </Flex>
   );

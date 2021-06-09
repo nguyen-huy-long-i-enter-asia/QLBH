@@ -257,7 +257,7 @@ const StoreContainer: React.FC = () => {
           <FilterTemplate
             pageTitle="Product"
             checkboxFilters={checkBoxFilters}
-            handleOnclick={handleCheckBoxClick}
+            handleCheckBoxClick={handleCheckBoxClick}
             rangeFilter={{ rangeFilterConst, rangeFilterStates }}
           />
         </Box>

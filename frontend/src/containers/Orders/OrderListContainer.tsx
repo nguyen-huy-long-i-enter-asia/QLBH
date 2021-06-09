@@ -352,7 +352,7 @@ const OrderListContainer: React.FC = () => {
           <FilterTemplate
             pageTitle="Order"
             checkboxFilters={checkBoxFilters}
-            handleOnclick={handleCheckBoxClick}
+            handleCheckBoxClick={handleCheckBoxClick}
             timeFilter={{
               datePicker,
               dateRange,

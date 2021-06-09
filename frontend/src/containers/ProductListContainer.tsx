@@ -269,7 +269,7 @@ const ProductListContainer: React.FC = () => {
           <FilterTemplate
             pageTitle="Product"
             checkboxFilters={checkBoxFilters}
-            handleOnclick={handleCheckBoxClick}
+            handleCheckBoxClick={handleCheckBoxClick}
           />
         </Box>
         <VStack className="right-column">

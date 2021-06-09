@@ -77,17 +77,7 @@ const SearchModal: React.FC<Props> = ({ type, importList, setImportList }) => {
     if (result.data !== null) {
       inventory = result.data.count;
     }
-    console.log([
-      ...importList,
-      {
-        ...selectedProduct[0],
-        count: 0,
-        size_id: "1",
-        color_id: "1",
-        total: 0,
-        inventory,
-      },
-    ]);
+
     setImportList([
       ...importList,
       {

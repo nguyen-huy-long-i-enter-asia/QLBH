@@ -25,7 +25,9 @@ import {
   FormControl,
   Tbody,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
+import { useHistory } from "react-router-dom";
 
 type CategoriesList = {
   id: string;
@@ -42,33 +44,19 @@ type Props = {
     image: string;
     orders: any[];
   };
+  closeModal: any;
+  handleAddNewCustomerToOrder?: (id: string) => void;
 };
-const UserForm: React.FC<Props> = ({ customer }) => {
+const UserForm: React.FC<Props> = ({
+  customer,
+  closeModal,
+  handleAddNewCustomerToOrder,
+}) => {
+  console.log(customer);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // const [name, setName] = useState(selectedProduct ? selectedProduct.name : "");
-  // const [manufacturer, setManufacturer] = useState<string>(
-  //   selectedProduct ? selectedProduct.manufacturer.id : "1"
-  // );
-  // const [discount, setDiscount] = useState<string>(
-  //   selectedProduct ? selectedProduct.discount : ""
-  // );
-  // const [stateId, setStateId] = useState<string>(
-  //   selectedProduct ? selectedProduct.state : "1"
-  // );
-  // const [originalPrice, setOriginalPrice] = useState<string>(
-  //   selectedProduct ? selectedProduct.original_price : ""
-  // );
-  // const [sellPrice, setSellPrice] = useState<string>(
-  //   selectedProduct ? selectedProduct.sell_price : ""
-  // );
-  // const [categories, setCategories] = useState<CategoriesList>([]);
-  // const [note, setNote] = useState(selectedProduct ? selectedProduct.note : "");
-  // const [image, setImage] = useState<File>();
-  // const [imageLink, setImageLink] = useState<string>(
-  //   selectedProduct
-  //     ? selectedProduct.image
-  //     : `${process.env.PUBLIC_URL}/image_upload.png`
-  // );
+  const history = useHistory();
+  const toast = useToast();
   const [name, setName] = useState(customer ? customer.name : "");
   const [email, setEmail] = useState(customer ? customer.email : "");
   const [phone, setPhone] = useState(customer ? customer.phone : "");
@@ -134,9 +122,48 @@ const UserForm: React.FC<Props> = ({ customer }) => {
     e.preventDefault();
     if (name !== "" && email !== "") {
       const formData = new FormData();
-      const url = `${process.env.REACT_APP_SERVER}users/add`;
+
       if (customer) {
         formData.append("id", customer.id.toString());
+      }
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("phone", phone);
+      formData.append("address", address);
+      if (image !== undefined) {
+        formData.append("image", image);
+      }
+      try {
+        const url = `http://localhost:8765/users/${
+          customer === undefined ? "add" : "edit"
+        }`;
+        const result = await axios.post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        // console.log(result.data);
+        if (result.data.status === "success") {
+          console.log(customer);
+          if (
+            customer === undefined &&
+            handleAddNewCustomerToOrder !== undefined
+          ) {
+            console.log("add new User");
+            handleAddNewCustomerToOrder(result.data.id);
+          }
+          closeModal();
+          toast({
+            title: "Update User Infomation successful",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          alert("fail");
+        }
+      } catch (error) {
+        console.log(error);
       }
     }
     // if (name !== "" && originalPrice !== "" && sellPrice !== "") {
@@ -266,4 +293,5 @@ const UserForm: React.FC<Props> = ({ customer }) => {
     </>
   );
 };
+
 export default UserForm;

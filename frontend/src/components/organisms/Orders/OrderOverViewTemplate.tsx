@@ -45,6 +45,8 @@ type Props = {
   handleNoteChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleSubmit: (e: React.MouseEvent<HTMLButtonElement>) => void;
   setCustomer: any;
+  action: string;
+  setOrderState: (value: number) => void;
 };
 
 const OrderOverViewTemplate: React.FC<Props> = ({
@@ -55,10 +57,21 @@ const OrderOverViewTemplate: React.FC<Props> = ({
   note,
   handleSubmit,
   setCustomer,
+  action,
+  setOrderState,
 }) => {
   const [keyword, setKeyword] = useState("");
   const [searchResult, setSearchResult] = useState<SearchResultType>([]);
-
+  const [orderStates, setOrderStates] = useState([]);
+  // get State List of Product
+  useEffect(() => {
+    const fetchStateList = async () => {
+      const result = await axios.get(
+        `${process.env.REACT_APP_SERVER}transactionStates/index`
+      );
+      setOrderStates(result.data);
+    };
+  }, []);
   useEffect(() => {
     const findData = async () => {
       const formData = new FormData();
@@ -89,12 +102,15 @@ const OrderOverViewTemplate: React.FC<Props> = ({
     setKeyword(e.currentTarget.value);
   };
   const handleCustomerClick = async (e: React.MouseEvent<HTMLDivElement>) => {
-    const id = parseInt(e.currentTarget.id, 10);
+    const { id } = e.currentTarget;
     const result = await axios.get(
       `${process.env.REACT_APP_SERVER}users/findCustomer/${id}`
     );
-    console.log(result.data);
+
     setCustomer(result.data);
+  };
+  const changeState = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setOrderState(parseInt(e.currentTarget.value, 10));
   };
   return (
     <Box w="20%" bgColor="white" position="relative">
@@ -102,20 +118,14 @@ const OrderOverViewTemplate: React.FC<Props> = ({
         <Icon as={MdPerson} />
         <Text>{staffEmail}</Text>
       </Flex>
-      {/* <Flex justifyContent="space-between" alignItems="center" mt="8%">
-        <Text ml="2%">Customer</Text>
-        <SelectCustomerInput  keyword={keyword}
-        customerId={customerId}
-        changeKeyword={}
-        searchResult,
-        handleResultClick, />
-      </Flex> */}
       <SelectCustomerInput
         customer={customer !== undefined ? customer : undefined}
         handleCustomerClick={handleCustomerClick}
         keyword={keyword}
         changeKeyword={changeKeyword}
         searchResult={searchResult}
+        setCustomer={setCustomer}
+        action={action}
       />
       <Flex
         justifyContent="space-between"
@@ -128,6 +138,11 @@ const OrderOverViewTemplate: React.FC<Props> = ({
         <Text>{pay}</Text>
       </Flex>
       {/* <Box>Note</Box> */}
+      <Select onChange={changeState}>
+        {orderStates.map((item: any) => (
+          <option value={item.id}>{item.name}</option>
+        ))}
+      </Select>
       <Textarea
         w="96%"
         name="note"

@@ -38,7 +38,7 @@ const StaffAuth: React.FC<Props> = ({ path, children }) => {
       </Route>
     );
   }
-  return <Redirect to="login" />;
+  return <Redirect to="/login" />;
 };
 
 export default StaffAuth;

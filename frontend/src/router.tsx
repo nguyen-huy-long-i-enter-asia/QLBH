@@ -39,6 +39,9 @@ export const Router: React.FC = () => {
       <StaffAuth path="/orders/new">
         <OrderFormPage />
       </StaffAuth>
+      <StaffAuth path="/orders/update/:id">
+        <OrderFormPage />
+      </StaffAuth>
       <StaffAuth path="/orders">
         <OrderListPage />
       </StaffAuth>

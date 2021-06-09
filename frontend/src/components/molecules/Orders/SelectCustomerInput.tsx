@@ -3,6 +3,7 @@ import {
   Box,
   Input,
   Button,
+  Flex,
   Modal,
   ModalHeader,
   ModalFooter,
@@ -23,9 +24,11 @@ import {
   Tr,
   Td,
 } from "@chakra-ui/react";
+import { SmallCloseIcon, SmallAddIcon } from "@chakra-ui/icons";
 import SearchResult from "components/atoms/Orders/SearchResult";
 import UserForm from "components/atoms/Users/UserForm";
 import Pagination from "components/atoms/Pagination";
+import axios from "axios";
 
 type Props = {
   keyword: string;
@@ -41,6 +44,8 @@ type Props = {
     image: string;
     orders: any[];
   };
+  setCustomer: any;
+  action: string;
 };
 const SelectCustomerInput: React.FC<Props> = ({
   keyword,
@@ -48,27 +53,64 @@ const SelectCustomerInput: React.FC<Props> = ({
   searchResult,
   handleCustomerClick,
   customer,
+  setCustomer,
+  action,
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenSearchModal,
+    onOpen: onOpenSearchModal,
+    onClose: onCloseSearchModal,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenUpdateModal,
+    onOpen: onOpenUpdateModal,
+    onClose: onCloseUpdateModal,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenAddModal,
+    onOpen: onOpenAddModal,
+    onClose: onCloseAddModal,
+  } = useDisclosure();
   const [displayList, setDisplayList] = useState<any[]>([]);
   const handlePagination = (newDisplayList: any[]) => {
     setDisplayList(newDisplayList);
   };
+  const handleAddNewCustomerToOrder = async (id: string) => {
+    const result = await axios.get(
+      `${process.env.REACT_APP_SERVER}users/findCustomer/${id}`
+    );
+    setCustomer(result.data);
+  };
+  const removeSelectedUser = () => {
+    onCloseSearchModal();
+    setCustomer(undefined);
+  };
   if (customer !== undefined) {
-    console.log(customer);
     return (
       <Box>
-        <Input
-          onClick={onOpen}
-          value={customer.name}
-          isReadOnly
-          variant="flushed"
-          bgColor="white"
-          color="#3cc7bd"
-          cursor="pointer"
-        />
+        <Flex alignItems="center">
+          <Input
+            onClick={onOpenUpdateModal}
+            value={customer.name}
+            isReadOnly
+            variant="flushed"
+            bgColor="white"
+            color="#3cc7bd"
+            cursor="pointer"
+          />
+          <SmallCloseIcon
+            onClick={removeSelectedUser}
+            cursor="pointer"
+            color="red"
+            display={action === "edit" ? "none" : "block"}
+          />
+        </Flex>
 
-        <Modal isOpen={isOpen} onClose={onClose} size="5xl">
+        <Modal
+          isOpen={isOpenUpdateModal}
+          onClose={onCloseUpdateModal}
+          size="5xl"
+        >
           <ModalOverlay />
           <ModalContent>
             <ModalBody>
@@ -79,7 +121,11 @@ const SelectCustomerInput: React.FC<Props> = ({
                 </TabList>
                 <TabPanels>
                   <TabPanel>
-                    <UserForm customer={customer} />
+                    <UserForm
+                      customer={customer}
+                      closeModal={onCloseUpdateModal}
+                      handleAddNewCustomerToOrder={handleAddNewCustomerToOrder}
+                    />
                   </TabPanel>
                   <TabPanel>
                     <Table>
@@ -134,13 +180,28 @@ const SelectCustomerInput: React.FC<Props> = ({
   }
   return (
     <Box>
-      <Input
-        variant="flushed"
-        placeholder="Type Customer Name"
-        onClick={onOpen}
-        bgColor="white"
-      />
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Flex alignItems="center">
+        <Input
+          className="abc"
+          variant="flushed"
+          placeholder="Type Customer Name"
+          onClick={onOpenSearchModal}
+          bgColor="white"
+          value={undefined}
+        />
+        <SmallAddIcon cursor="pointer" onClick={onOpenAddModal} />
+        <Modal isOpen={isOpenAddModal} onClose={onCloseAddModal} size="5xl">
+          <ModalOverlay />
+          <ModalContent>
+            <UserForm
+              closeModal={onCloseAddModal}
+              handleAddNewCustomerToOrder={handleAddNewCustomerToOrder}
+            />
+          </ModalContent>
+        </Modal>
+      </Flex>
+
+      <Modal isOpen={isOpenSearchModal} onClose={onCloseSearchModal}>
         <ModalOverlay />
         <ModalContent>
           <Input

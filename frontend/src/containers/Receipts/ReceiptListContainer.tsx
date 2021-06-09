@@ -319,7 +319,7 @@ const ReceiptListContainer: React.FC = () => {
           <FilterTemplate
             pageTitle="Receipts"
             checkboxFilters={checkBoxFilters}
-            handleOnclick={handleCheckBoxClick}
+            handleCheckBoxClick={handleCheckBoxClick}
             timeFilter={{
               datePicker,
               dateRange,

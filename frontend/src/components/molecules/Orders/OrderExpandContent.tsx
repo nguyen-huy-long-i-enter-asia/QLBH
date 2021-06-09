@@ -146,6 +146,10 @@ const OrderExpandContent: React.FC<Props> = ({
           ))}
         </Tbody>
       </Table>
+
+      <Link to={`/orders/update/${order.id}`}>
+        <Button>Update</Button>{" "}
+      </Link>
       {/* <Box>{receipt.total}</Box>
 
       <Flex>

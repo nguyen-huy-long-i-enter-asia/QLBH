@@ -8,6 +8,7 @@ use Cake\Model\Table\TransactionStates;
 use Cake\Model\Table\Colors;
 use Cake\Model\Table\Sizes;
 use Cake\Model\Table\Products;
+use Cake\Model\Table\ColorsProductsSizes;
 /**
  * Orders Controller
  *
@@ -17,14 +18,24 @@ use Cake\Model\Table\Products;
 class OrdersController extends AppController
 {
     private function orderDetailMapFunc($orderDetail){
+        // Add field Inventory to orderDetail
+        $inventory = $this->ColorsProductsSizes->find('all')->select(['count'])->where(['product_id' => (int)$orderDetail->product_id, 'size_id' => (int)$orderDetail->size_id, 'color_id' => (int)$orderDetail->color_id])->first();
+        if($inventory === null ){
+            $orderDetail['inventory'] = 0;
+        } else {
+            $orderDetail['inventory'] = $inventory->count;
+        }
+
         $product = $this->Products->get($orderDetail->product_id);
-        $orderDetail["product"] = ['id'=> $product->id, 'name' =>$product->name, 'sell_price' => $product->sell_price, 'discount' => $product->discount];
+        $orderDetail["product"] = ['id'=> $product->id, 'name' =>$product->name, 'sell_price' => $product->sell_price , 'discount' => $product->discount];
         unset($orderDetail['product_id']);
         $size= $this->Sizes->get($orderDetail->size_id);
         $orderDetail["size"] = $size;
         unset($orderDetail['size_id']);
         $color = $this->Colors->get($orderDetail->color_id);
         $orderDetail['color'] = $color;
+
+
         unset($orderDetail['color_id']);
         unset($orderDetail['created']);
         unset($orderDetail['modified']);
@@ -114,6 +125,7 @@ class OrdersController extends AppController
         $this->loadModel('Colors');
         $this->loadModel('Sizes');
         $this->loadModel('Users');
+        $this->loadModel('ColorsProductsSizes');
 
         $order = $this->Orders->find('all')->contain(['OrderDetails', 'TransactionStates'])->where(['Orders.id' => $id])->first();
         if($order->staff_id !== null) {
@@ -122,15 +134,18 @@ class OrdersController extends AppController
         }else {
             $order['staff'] = null;
         }
+
+        //Get Orders of a customer
         $customer = $this->Users->find('all')->select(['id', 'name','email','phone', 'address', 'image'])->where(['id' => $order->customer_id])->first();
         $orders = $this->Orders->find('all')->where(['customer_id' => $order->customer_id])->toArray();
         $customer->orders = $orders;
-        // $order['customer'] = ['id' => $customer->id, 'name' => $customer->name];
         $order['customer'] = $customer;
+
         $order->created = $order->created->format('Y-m-d');
         unset($order['staff_id']);
         unset($order['customer_id']);
         unset($order['state_id']);
+        // debug($order['order_details']);
         $orderDetails = array_map(array($this, 'orderDetailMapFunc'), $order['order_details']);
         $order['order_details'] = $orderDetails;
         $this->response = $this->response->withStringBody(json_encode($order))->withType('json');
@@ -143,7 +158,7 @@ class OrdersController extends AppController
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function addByCustomer()
     {
         $this->request->allowMethod(['post']);
         $this->loadModel('Users');

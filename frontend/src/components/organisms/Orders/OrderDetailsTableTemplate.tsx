@@ -48,6 +48,7 @@ type Props = {
     id: number;
     name: string;
     sell_price: number;
+    discount: number;
     count: number;
     size_id: string;
     color_id: string;
@@ -60,7 +61,7 @@ type Props = {
   handleDeleteRD: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-const ImportTableTemplate: React.FC<Props> = ({
+const OrderDetailsTableTemplate: React.FC<Props> = ({
   colors,
   sizes,
   importList,
@@ -72,7 +73,7 @@ const ImportTableTemplate: React.FC<Props> = ({
   return (
     <Table bgColor="white">
       <Thead bgColor="#3cc7bd">
-        <Th>ID</Th>
+        <Th>Product ID</Th>
         <Th>Product</Th>
         <Th>Size</Th>
         <Th>Color</Th>
@@ -151,7 +152,9 @@ const ImportTableTemplate: React.FC<Props> = ({
                   </Box>
                 </Flex>
               </Td>
-              <Td>{importItem.sell_price}</Td>
+              <Td>
+                {(importItem.sell_price * (100 - importItem.discount)) / 100}
+              </Td>
               <Td>{importItem.total}</Td>
               <Td>
                 <Button
@@ -171,4 +174,4 @@ const ImportTableTemplate: React.FC<Props> = ({
     </Table>
   );
 };
-export default ImportTableTemplate;
+export default OrderDetailsTableTemplate;

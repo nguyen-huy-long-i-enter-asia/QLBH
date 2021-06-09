@@ -82,17 +82,35 @@ class UsersController extends AppController
      */
     public function add()
     {
-        $user = $this->Users->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+        $user = $this->Users->newEmptyEntity();
+        $image = $this->request->getData('image');
+        if(!empty($image)) {
+            $imageName = $image->getClientFilename();
+            $image->moveTo(WWW_ROOT . 'img/Avatar' . $imageName);
+            $user->image = $imageName;
         }
-        $this->set(compact('user'));
+
+
+        $user->name = $this->request->getData('name');
+        $user->email = $this->request->getData('email');
+        $user->password = null;
+        $user->phone = $this->request->getData('phone');
+        $user->address = $this->request->getData('address');
+        $user->position = 3;
+
+
+
+        if($this->Users->save($user)){
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "success", "id" => $user->id]));
+        }else {
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "fail"]));
+
+        }
+        return $response;
+
     }
 
     /**
@@ -104,19 +122,32 @@ class UsersController extends AppController
      */
     public function edit($id = null)
     {
-        $user = $this->Users->get($id, [
-            'contain' => [],
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
+        $this->loadModel("CategoriesProducts");
+        $id = $this->request->getData('id');
+        $user = $this->Users->get((int)$id);
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+        $image = $this->request->getData('image');
+        if(!empty($image)) {
+            unlink(WWW_ROOT . 'img/Avatar/' . $user->image);
+            $imageName = $image->getClientFilename();
+
+            $image->moveTo(WWW_ROOT . 'img/Avatar/' . $imageName);
+            $user->image = $imageName;
         }
-        $this->set(compact('user'));
+        $user->name = $this->request->getData('name');
+        $user->email = $this->request->getData('email');
+        $user->phone = $this->request->getData('phone');
+        $user->address = $this->request->getData('address');
+        if($this->Users->save($user)){
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "success"]));
+        }else {
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "fail"]));
+
+        }
+        return $response;
+
     }
 
     /**

@@ -190,6 +190,7 @@ const ProductForm: React.FC<Props> = ({
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (name !== "" && originalPrice !== "" && sellPrice !== "") {
       const formData = new FormData();
       if (action === "edit" && selectedProduct) {
@@ -230,14 +231,17 @@ const ProductForm: React.FC<Props> = ({
           },
         });
         // console.log(result.data);
-        if (result.data.status) {
+        if (result.data.status === "success") {
+          console.log("a");
           alert("Add product successfull");
+          window.location.reload(false);
+        } else {
+          console.log(result.data.status);
+          alert("Fail");
         }
       } catch (error) {
         console.log(error);
       }
-
-      window.location.reload(false);
     }
   };
 
