@@ -46,6 +46,7 @@ type Props = {
   handleSubmit: (e: React.MouseEvent<HTMLButtonElement>) => void;
   setCustomer: any;
   action: string;
+  orderState: number;
   setOrderState: (value: number) => void;
 };
 
@@ -58,6 +59,7 @@ const OrderOverViewTemplate: React.FC<Props> = ({
   handleSubmit,
   setCustomer,
   action,
+  orderState,
   setOrderState,
 }) => {
   const [keyword, setKeyword] = useState("");
@@ -71,6 +73,7 @@ const OrderOverViewTemplate: React.FC<Props> = ({
       );
       setOrderStates(result.data);
     };
+    fetchStateList();
   }, []);
   useEffect(() => {
     const findData = async () => {
@@ -138,9 +141,11 @@ const OrderOverViewTemplate: React.FC<Props> = ({
         <Text>{pay}</Text>
       </Flex>
       {/* <Box>Note</Box> */}
-      <Select onChange={changeState}>
+      <Select onChange={changeState} value={orderState}>
         {orderStates.map((item: any) => (
-          <option value={item.id}>{item.name}</option>
+          <option key={item.id} value={item.id}>
+            {item.name}
+          </option>
         ))}
       </Select>
       <Textarea

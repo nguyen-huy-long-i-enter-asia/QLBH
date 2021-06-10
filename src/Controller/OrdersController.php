@@ -193,6 +193,56 @@ class OrdersController extends AppController
 
     }
 
+    public function addByStaff() {
+        $this->loadModel('Users');
+        $this->loadModel('OrderDetails');
+        $this->loadModel('ColorsProductsSizes');
+        //get Order by Id
+
+        $staff = $this->Users->find('all')->where(['email' => ($this->request->getData('staff_email'))])->first();
+        $order = $this->Orders->newEmptyEntity();
+        debug($order);
+
+        $new_order_state_id = (int)$this->request->getData('state_id');
+        $order->customer_id = (int)$this->request->getData('customer_id');
+        $order->staff_id = $staff->id;
+        $order->state_id = (int)$this->request->getData('state_id');
+        $order->pay = $this->request->getData('pay');
+        $order->note = $this->request->getData('note');
+        $this->Orders->save($order);
+
+        $new_order_details = json_decode($this->request->getData('order_details'));
+        // //Check if need to + count in colors_products_sizes
+        // if((($old_order_state_id === 2 && $new_order_state_id === 2) || ($old_order_state_id === 2 && $new_order_state_id === 1) || ($old_order_state_id ===2 && $new_order_state_id === 3))                                                                                                                 ){
+        //     foreach($old_order_details as $ood) {
+        //         $color_product_size = $this->ColorsProductsSizes->find('all')->where(['product_id' => $ood->product_id, 'color_id' => $ood->color_id, 'size_id' => $ood->size_id])->first();
+        //         $color_product_size->count += $ood->count;
+        //     }
+        // }
+        // $this->OrderDetails->deleteMany($old_order_details);
+
+        //Create new OrderDetail
+        foreach($new_order_details as $nod) {
+            $new_order_detail = $this->OrderDetails->newEmptyEntity();
+            $new_order_detail->order_id = $order_id;
+            $new_order_detail->product_id = (int)$nod->id;
+            $new_order_detail->color_id = (int)$nod->color_id;
+            $new_order_detail->size_id = (int)$nod->size_id;
+            $new_order_detail->count = (int)$nod->count;
+            $this->OrderDetails->save($new_order_detail);
+            //Check if need to - count in colors_products_sizes
+            if($order->state_id === 2){
+                $color_product_size = $this->ColorsProductsSizes->find('all')->where(['product_id' => $new_order_detail->product_id, 'color_id' => $new_order_detail->color_id, 'size_id' => $new_order_detail->size_id])->first();
+                $color_product_size->count -= $new_order_detail->count;
+                $this->ColorsProductsSizes->save($color_product_size);
+            }
+
+        }
+
+        $response = $this->response->withType('application/json')
+        ->withStringBody(json_encode(['status' => "success"]));
+        return $response;
+    }
     /**
      * Edit method
      *
@@ -200,22 +250,57 @@ class OrdersController extends AppController
      * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit()
     {
-        $order = $this->Orders->get($id, [
-            'contain' => [],
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $order = $this->Orders->patchEntity($order, $this->request->getData());
-            if ($this->Orders->save($order)) {
-                $this->Flash->success(__('The order has been saved.'));
+        $this->loadModel('Users');
+        $this->loadModel('OrderDetails');
+        $this->loadModel('ColorsProductsSizes');
+        //get Order by Id
+        $order_id = $this->request->getData('order_id');
+        $staff = $this->Users->find('all')->where(['email' => ($this->request->getData('staff_email'))])->first();
+        $order = $this->Orders->get((int)$order_id);
+        debug($order);
+        $old_order_state_id = $order->state_id;
+        $new_order_state_id = (int)$this->request->getData('state_id');
+        $order->customer_id = (int)$this->request->getData('customer_id');
+        $order->staff_id = $staff->id;
+        $order->state_id = (int)$this->request->getData('state_id');
+        $order->pay = $this->request->getData('pay');
+        $order->note = $this->request->getData('note');
+        $this->Orders->save($order);
 
-                return $this->redirect(['action' => 'index']);
+        $new_order_details = json_decode($this->request->getData('order_details'));
+        $old_order_details = $this->OrderDetails->find('all')->where(['order_id' => $order_id])->toArray();
+        //Check if need to + count in colors_products_sizes
+        if((($old_order_state_id === 2 && $new_order_state_id === 2) || ($old_order_state_id === 2 && $new_order_state_id === 1) || ($old_order_state_id ===2 && $new_order_state_id === 3))                                                                                                                 ){
+            foreach($old_order_details as $ood) {
+                $color_product_size = $this->ColorsProductsSizes->find('all')->where(['product_id' => $ood->product_id, 'color_id' => $ood->color_id, 'size_id' => $ood->size_id])->first();
+                $color_product_size->count += $ood->count;
             }
-            $this->Flash->error(__('The order could not be saved. Please, try again.'));
         }
-        $users = $this->Orders->Users->find('list', ['limit' => 200]);
-        $this->set(compact('order', 'users'));
+        $this->OrderDetails->deleteMany($old_order_details);
+
+
+        foreach($new_order_details as $nod) {
+            $new_order_detail = $this->OrderDetails->newEmptyEntity();
+            $new_order_detail->order_id = $order_id;
+            $new_order_detail->product_id = (int)$nod->id;
+            $new_order_detail->color_id = (int)$nod->color_id;
+            $new_order_detail->size_id = (int)$nod->size_id;
+            $new_order_detail->count = (int)$nod->count;
+            $this->OrderDetails->save($new_order_detail);
+            //Check if need to - count in colors_products_sizes
+            if(($old_order_state_id === 1 && $new_order_state_id === 2) || ($old_order_state_id === 2 && $new_order_state_id === 2)){
+                $color_product_size = $this->ColorsProductsSizes->find('all')->where(['product_id' => $new_order_detail->product_id, 'color_id' => $new_order_detail->color_id, 'size_id' => $new_order_detail->size_id])->first();
+                $color_product_size->count -= $new_order_detail->count;
+                $this->ColorsProductsSizes->save($color_product_size);
+            }
+
+        }
+
+        $response = $this->response->withType('application/json')
+        ->withStringBody(json_encode(['status' => "success"]));
+        return $response;
     }
 
     /**

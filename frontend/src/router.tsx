@@ -15,6 +15,7 @@ import StaffAuth from "components/auth/StaffAuth";
 import CustomerAuth from "components/auth/CustomerAuth";
 import CartPage from "pages/Customer/CartPage";
 import LoginFacebookPage from "pages/LoginFacebookPage";
+import TimeStatisticPage from "pages/Statistic/TimeStatisticPage";
 
 export const Router: React.FC = () => {
   return (
@@ -57,6 +58,9 @@ export const Router: React.FC = () => {
       </CustomerAuth>
       <ManagerAuth path="/loginFacebook">
         <LoginFacebookPage />
+      </ManagerAuth>
+      <ManagerAuth path="/timeStatistic">
+        <TimeStatisticPage />
       </ManagerAuth>
     </Switch>
   );

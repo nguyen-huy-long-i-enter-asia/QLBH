@@ -30,7 +30,16 @@ type Filter = {
     isChecked: boolean;
   }[];
 };
-type importListType = {
+type CustomerType = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  image: string;
+  orders: any[];
+};
+type ImportListType = {
   id: number; // id san pham
   name: string;
   sell_price: number;
@@ -54,15 +63,14 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
   const [staffEmail, setStaffEmail] = useState(Cookies.get("email"));
-  const [selectedManufacturer, setSelectedManufacturer] = useState("1");
-  const [importList, setImportList] = useState<importListType>([]);
+  const [importList, setImportList] = useState<ImportListType>([]);
   const [note, setNote] = useState("");
   const [pay, setPay] = useState(0);
   const [orderState, setOrderState] = useState(1);
-  const [customer, setCustomer] = useState();
+  const [customer, setCustomer] = useState<CustomerType>();
   const history = useHistory();
   const toast = useToast();
-
+  const [mergedImportList, setMergedImportList] = useState<ImportListType>([]);
   useEffect(() => {
     const fetchData = async () => {
       if (orderId) {
@@ -204,6 +212,20 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     } else {
       setPay(0);
     }
+    const newMergedImportlist = [
+      ...importList
+        .reduce((r, current) => {
+          const key = `${current.id}-${current.size_id}-${current.color_id}`;
+
+          const item = r.get(key) || { ...current, count: 0 };
+
+          item.count += current.count;
+
+          return r.set(key, item);
+        }, new Map())
+        .values(),
+    ];
+    setMergedImportList(newMergedImportlist);
   }, [importList]);
 
   const handleCheckBoxClick = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -238,7 +260,25 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     const selectedProduct = filteredList.filter(
       (item) => item.id === parseInt(id, 10)
     )[0];
-
+    console.log(filteredList);
+    const formData = new FormData();
+    formData.append("product_id", id.toString());
+    formData.append("size_id", "1");
+    formData.append("color_id", "1");
+    const result = await axios.post(
+      `http://localhost:8765/colorsProductsSizes/getInventory/`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    let inventory = 0;
+    if (result.data !== null) {
+      inventory = result.data.count;
+      console.log(inventory);
+    }
     setImportList([
       ...importList,
       {
@@ -250,23 +290,32 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         size_id: "1",
         color_id: "1",
         total: 0,
-        inventory: selectedProduct.inventory,
+        inventory,
       },
     ]);
+    const a = [
+      {
+        color: "blue",
+        count: 3,
+      },
+      {
+        color: "green",
+        count: 2,
+      },
+    ];
   };
 
   const handleSizeChange = async (e: React.FormEvent<HTMLSelectElement>) => {
-    const productId = e.currentTarget.id;
+    const productIndex = parseInt(e.currentTarget.id, 10);
     const { value } = e.currentTarget;
-    const selectedOrder = importList.filter(
-      (item) => item.id === parseInt(productId, 10)
+    const selectedOrderDetail = importList.filter(
+      (item, index) => index === productIndex
     )[0];
-    console.log(selectedOrder);
     // Call API to get inventory of product with specific size and color
     const formData = new FormData();
-    formData.append("product_id", productId);
+    formData.append("product_id", selectedOrderDetail.id.toString());
     formData.append("size_id", value);
-    formData.append("color_id", selectedOrder.color_id);
+    formData.append("color_id", selectedOrderDetail.color_id);
     const result = await axios.post(
       `http://localhost:8765/colorsProductsSizes/getInventory/`,
       formData,
@@ -280,10 +329,8 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     if (result.data !== null) {
       inventory = result.data.count;
     }
-    console.log("a");
-    const newImportList = importList.map((item) => {
-      if (item.id === parseInt(productId, 10)) {
-        console.log("a0");
+    const newImportList = importList.map((item, index) => {
+      if (index === productIndex) {
         return {
           ...item,
           size_id: value,
@@ -296,14 +343,14 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     setImportList(newImportList);
   };
   const handleColorChange = async (e: React.FormEvent<HTMLSelectElement>) => {
-    const productId = e.currentTarget.id;
+    const productIndex = parseInt(e.currentTarget.id, 10);
     const { value } = e.currentTarget;
-    const selectedOrder = importList.filter(
-      (item) => item.id === parseInt(productId, 10)
+    const selectedOrderDetail = importList.filter(
+      (item, index) => index === productIndex
     )[0];
     const formData = new FormData();
-    formData.append("product_id", productId);
-    formData.append("size_id", selectedOrder.size_id);
+    formData.append("product_id", selectedOrderDetail.id.toString());
+    formData.append("size_id", selectedOrderDetail.size_id);
     formData.append("color_id", value);
     const result = await axios.post(
       `http://localhost:8765/colorsProductsSizes/getInventory/`,
@@ -317,13 +364,14 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     let inventory = 0;
     if (result.data !== null) {
       inventory = result.data.count;
+      console.log(inventory);
     }
-    const newImportList = importList.map((item) => {
-      if (item.id === parseInt(productId, 10)) {
-        console.log("aa");
+    const newImportList = importList.map((item, index) => {
+      if (index === productIndex) {
         return {
           ...item,
           color_id: value.toString(),
+          inventory,
         };
       }
       return item;
@@ -332,11 +380,11 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     setImportList(newImportList);
   };
   const handleCountChange = (e: React.FormEvent<HTMLInputElement>) => {
-    const productId = e.currentTarget.id;
+    const productIndex = parseInt(e.currentTarget.id, 10);
     const { value } = e.currentTarget;
 
-    const newImportList = importList.map((item) => {
-      if (item.id === parseInt(productId, 10)) {
+    const newImportList = importList.map((item, index) => {
+      if (index === productIndex) {
         return {
           ...item,
           count: value === "" ? 0 : parseInt(value, 10),
@@ -373,20 +421,26 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         outOfStockCount += 1;
       }
     });
-    if (importList.length !== 0 && outOfStockCount === 0) {
+    if (
+      customer !== undefined &&
+      importList.length !== 0 &&
+      outOfStockCount === 0
+    ) {
       const formData = new FormData();
       formData.append("order_details", JSON.stringify(importList));
+
       if (staffEmail !== undefined) {
         formData.append("staff_email", staffEmail);
       }
-      formData.append("manufacturer_id", selectedManufacturer);
+      formData.append("customer_id", customer.id.toString());
       formData.append("pay", pay.toString());
       formData.append("note", note);
-      console.log(JSON.stringify(importList));
+      formData.append("state_id", orderState.toString());
+
       try {
         if (orderId) {
           formData.append("order_id", orderId);
-          url = `http://localhost:8765/oreder/edit/`;
+          url = `http://localhost:8765/orders/edit/`;
         } else {
           url = `http://localhost:8765/orders/addByStaff`;
         }
@@ -397,7 +451,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
           },
         });
 
-        history.push("/receipts");
+        history.push("/orders");
       } catch (error) {
         console.log(error);
       }
@@ -409,9 +463,17 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         duration: 5000,
         isClosable: true,
       });
-    } else {
+    } else if (outOfStockCount > 0) {
       toast({
         title: "Some Products are out of stock",
+
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Please Select Customer ",
 
         status: "warning",
         duration: 5000,
@@ -449,6 +511,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
           handleSizeChange={handleSizeChange}
           handleCountChange={handleCountChange}
           handleDeleteRD={handleDeleteRD}
+          mergedImportList={mergedImportList}
         />
         <ProductStageTemplate
           dataList={filteredList}
@@ -466,6 +529,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         customer={customer}
         setCustomer={setCustomer}
         action={orderId ? "edit" : "update"}
+        orderState={orderState}
         setOrderState={setOrderState}
       />
     </Flex>

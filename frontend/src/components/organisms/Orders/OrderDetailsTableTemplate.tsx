@@ -55,6 +55,17 @@ type Props = {
     total: number;
     inventory: number;
   }[];
+  mergedImportList: {
+    id: number;
+    name: string;
+    sell_price: number;
+    discount: number;
+    count: number;
+    size_id: string;
+    color_id: string;
+    total: number;
+    inventory: number;
+  }[];
   handleSizeChange: (e: React.FormEvent<HTMLSelectElement>) => void;
   handleColorChange: (e: React.FormEvent<HTMLSelectElement>) => void;
   handleCountChange: (e: React.FormEvent<HTMLInputElement>) => void;
@@ -65,6 +76,7 @@ const OrderDetailsTableTemplate: React.FC<Props> = ({
   colors,
   sizes,
   importList,
+  mergedImportList,
   handleSizeChange,
   handleColorChange,
   handleCountChange,
@@ -91,7 +103,7 @@ const OrderDetailsTableTemplate: React.FC<Props> = ({
               <Td>{importItem.name}</Td>
               <Td>
                 <Select
-                  id={importItem.id.toString()}
+                  id={index.toString()}
                   name="size"
                   onChange={handleSizeChange}
                   value={importItem.size_id}
@@ -105,7 +117,7 @@ const OrderDetailsTableTemplate: React.FC<Props> = ({
               </Td>
               <Td>
                 <Select
-                  id={importItem.id.toString()}
+                  id={index.toString()}
                   name="color"
                   onChange={handleColorChange}
                   value={importItem.color_id}
@@ -120,15 +132,46 @@ const OrderDetailsTableTemplate: React.FC<Props> = ({
               <Td>
                 <Flex>
                   <Input
-                    id={importItem.id.toString()}
+                    id={index.toString()}
                     name="count"
                     value={importItem.count.toString()}
                     type="number"
                     onChange={handleCountChange}
                   />
+
                   <Box
                     display={
-                      importItem.count > importItem.inventory ? "block" : "none"
+                      // eslint-disable-next-line no-nested-ternary
+                      // mergedImportList === undefined
+                      //   ? "none"
+                      //   : mergedImportList.filter(
+                      //       (mergedItem) =>
+                      //         mergedItem.id === importItem.id &&
+                      //         mergedItem.color_id === importItem.color_id &&
+                      //         mergedItem.size_id === importItem.size_id
+                      //     )[0].count > importItem.inventory
+                      //   ? "block"
+                      //   : "none"
+                      (() => {
+                        if (mergedImportList === undefined) {
+                          return "none";
+                        }
+                        const selectedMergedImportItem = mergedImportList.filter(
+                          (mergedItem) =>
+                            mergedItem.id === importItem.id &&
+                            mergedItem.color_id === importItem.color_id &&
+                            mergedItem.size_id === importItem.size_id
+                        )[0];
+                        if (selectedMergedImportItem === undefined) {
+                          return "none";
+                        }
+                        if (
+                          selectedMergedImportItem.count > importItem.inventory
+                        ) {
+                          return "block";
+                        }
+                        return "none";
+                      })()
                     }
                   >
                     <Tooltip label={`Iventory: ${importItem.inventory}`}>

@@ -104,45 +104,6 @@ class ProductsController extends AppController
         $this->loadModel('ColorsProductsSizes');
         $this->loadModel("CategoriesProducts");
         $mapFunc = function ( $product) {
-            //Add inventory property to product
-            $colors_products_sizes= $this->ColorsProductsSizes->find()->contain(['Colors','Sizes'])->where(['product_id' => $product->id] )->toArray();
-            if(!empty($colors_products_sizes) ){
-                $sizeObject = array(
-
-                    "size" =>$colors_products_sizes[0]['size']['name'] ,
-                    "colors" => []
-                );
-                $sizesArray = [];
-                $colorObject = ['color' => '', 'count' => 0];
-                $colorsArray = array();
-                $current_size = $colors_products_sizes[0]['size']['name'];
-                foreach($colors_products_sizes as $cps) {
-
-                    if($current_size != $cps['size']['name']){
-                        $sizeObject['colors'] = $colorsArray;
-                        array_push($sizesArray,$sizeObject);
-                        $colorsArray = array();
-                        $current_size = $cps['size']['name'];
-                        $sizeObject['colors'] = [];
-                        $sizeObject['size']= $cps['size']['name'];
-
-                    }
-                    $colorObject['color'] = $cps['color']['name'];
-                    $colorObject['count'] = $cps['count'];
-                    array_push($colorsArray, $colorObject);
-
-                }
-                $sizeObject['colors'] = $colorsArray;
-                array_push($sizesArray,$sizeObject);
-                $colorsArray = array();
-                // debug($sizesArray);
-                $product['inventory']=  $sizesArray;
-                // debug($product);
-            }else {
-                $product['inventory'] = [];
-            }
-
-
             //Add Categories property to $product;
             $categories_products = $this->CategoriesProducts->find()->where(["product_id" => $product["id"]])->contain("Categories")->toArray();
             $categoriesArray = [];
@@ -163,13 +124,10 @@ class ProductsController extends AppController
             );
 
             unset($product["manufacturer_id"]);
-            unset($product["state_id"]);
-
-
             return $product;
         };
 
-        $products = $this->Products->find('all')->contain(['Manufacturers', 'ProductStates'])->where(['state_id'=> 1])->toArray();
+        $products = $this->Products->find('all')->contain(['Manufacturers'])->where(['state_id IN' =>[1, 2]])->toArray();
         foreach($products as $product){
             $product['image'] = 'http://localhost:8765/img/'.$product['image'];
         }

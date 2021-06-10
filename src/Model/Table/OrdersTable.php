@@ -51,7 +51,6 @@ class OrdersTable extends Table
 
         $this->belongsTo('Customer', [
             'foreignKey' => 'customer_id',
-
             'className' => 'Users',
 
         ]);
@@ -60,7 +59,6 @@ class OrdersTable extends Table
         ]);
         $this->belongsTo('Staff', [
             'foreignKey' => 'staff_id',
-
             'className' => 'Users'
         ]);
         $this->hasMany('OrderDetails', [
@@ -109,8 +107,8 @@ class OrdersTable extends Table
      */
     public function buildRules(RulesChecker $rules): RulesChecker
     {
-        $rules->add($rules->existsIn(['customer_id'], 'Users'), ['errorField' => 'customer_id']);
-        $rules->add($rules->existsIn(['staff_id'], 'Users'), ['errorField' => 'staff_id']);
+        // $rules->add($rules->existsIn(['customer_id'], 'Users'), ['errorField' => 'customer_id']);
+        // $rules->add($rules->existsIn(['staff_id'], 'Users'), ['errorField' => 'staff_id']);
 
         return $rules;
     }
