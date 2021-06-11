@@ -224,7 +224,7 @@ class OrdersController extends AppController
         //Create new OrderDetail
         foreach($new_order_details as $nod) {
             $new_order_detail = $this->OrderDetails->newEmptyEntity();
-            $new_order_detail->order_id = $order_id;
+            $new_order_detail->order_id = $order->id;
             $new_order_detail->product_id = (int)$nod->id;
             $new_order_detail->color_id = (int)$nod->color_id;
             $new_order_detail->size_id = (int)$nod->size_id;
@@ -276,6 +276,7 @@ class OrdersController extends AppController
             foreach($old_order_details as $ood) {
                 $color_product_size = $this->ColorsProductsSizes->find('all')->where(['product_id' => $ood->product_id, 'color_id' => $ood->color_id, 'size_id' => $ood->size_id])->first();
                 $color_product_size->count += $ood->count;
+                $this->ColorsProductsSizes->save($color_product_size);
             }
         }
         $this->OrderDetails->deleteMany($old_order_details);
@@ -312,14 +313,19 @@ class OrdersController extends AppController
      */
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $order = $this->Orders->get($id);
-        if ($this->Orders->delete($order)) {
-            $this->Flash->success(__('The order has been deleted.'));
-        } else {
-            $this->Flash->error(__('The order could not be deleted. Please, try again.'));
+        $order = $this->Orders->get((int)$id);
+        //Check if need to + count in colors_products_sizes
+        if($order->state_id === 2) {
+            $old_order_details = $this->OrderDetails->find('all')->where(['order_id' => $order_id])->toArray();
+        foreach($old_order_details as $ood) {
+            $color_product_size = $this->ColorsProductsSizes->find('all')->where(['product_id' => $ood->product_id, 'color_id' => $ood->color_id, 'size_id' => $ood->size_id])->first();
+            $color_product_size->count += $ood->count;
+            $this->ColorsProductsSizes->save($color_product_size);
         }
+        }
+        $order->state_id = 3;
+        $this->Orders->save($order);
 
-        return $this->redirect(['action' => 'index']);
+        return $this->response->withType('application/json')->withStringBody(json_encode(['status' => "success"]));
     }
 }

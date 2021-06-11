@@ -40,7 +40,11 @@ const managerMenuList = [
 
   {
     menuName: "Statistic",
-    buttonLink: "/login",
+    childrenMenus: ["By Time Statistic", "By Product Statistic"],
+    links: {
+      "By Time Statistic": "/timeStatistic",
+      "By Product Statistic": "/productStatistic",
+    },
   },
 ];
 const staffMenuList = [

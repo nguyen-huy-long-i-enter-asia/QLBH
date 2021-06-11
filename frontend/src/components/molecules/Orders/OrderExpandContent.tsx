@@ -10,7 +10,7 @@ import {
   Td,
   Button,
 } from "@chakra-ui/react";
-
+import axios from "axios";
 import { useHistory, Link } from "react-router-dom";
 
 type CategoriesList = {
@@ -84,37 +84,15 @@ const OrderExpandContent: React.FC<Props> = ({
   order,
   // receiptExpandContentProps,
 }) => {
+  const deleteOrder = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const { id } = e.currentTarget;
+    const result = await axios.get(
+      `${process.env.REACT_APP_SERVER}orders/delete/${id}`
+    );
+    window.location.reload(false);
+  };
   return (
     <Box>
-      {/* <Flex w="100%" bg="tomato">
-        <Tbody w="33%">
-          <Tr>
-            <Td>Id:</Td>
-            <Td>{receipt.id}</Td>
-          </Tr>
-          <Tr>
-            <Td>Staff:</Td>
-            <Td>{receipt.staff.name}</Td>
-          </Tr>
-        </Tbody>
-        <Tbody>
-          <Tr>
-            <Td>Manufacturer:</Td>
-            <Td>{receipt.manufacturer.name}</Td>
-          </Tr>
-          <Tr>
-            <Td>Created:</Td>
-            <Td>{receipt.created}</Td>
-          </Tr>
-        </Tbody>
-        <Tbody>
-          <Tr>
-            <Td>Note:</Td>
-            <Td>{receipt.note}</Td>
-          </Tr>
-        </Tbody>
-      </Flex> */}
-
       <Table>
         <Thead>
           <Td>Product Id</Td>
@@ -128,7 +106,7 @@ const OrderExpandContent: React.FC<Props> = ({
         </Thead>
         <Tbody>
           {order.order_details.map((detail) => (
-            <Tr>
+            <Tr key={detail.id}>
               <Td>{detail.product.id}</Td>
               <Td>{detail.product.name}</Td>
               <Td>{detail.size.name}</Td>
@@ -150,6 +128,9 @@ const OrderExpandContent: React.FC<Props> = ({
       <Link to={`/orders/update/${order.id}`}>
         <Button>Update</Button>{" "}
       </Link>
+      <Button id={order.id.toString()} onClick={deleteOrder}>
+        Delete Order
+      </Button>
       {/* <Box>{receipt.total}</Box>
 
       <Flex>

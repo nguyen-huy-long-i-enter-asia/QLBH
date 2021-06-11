@@ -68,7 +68,7 @@ type Orders = {
     name: string;
   };
 }[];
-type dateRangeType = {
+type DateRangeType = {
   startDate: Date;
   endDate: Date;
 };
@@ -86,7 +86,7 @@ const OrderListContainer: React.FC = () => {
   const [orderStates, setOrderStates] = useState([{ id: "0", name: "" }]);
   const [timeOption, setTimeOption] = useState<string>("datePicker");
   const [datePicker, setDatePicker] = useState<string>("This month");
-  const [dateRange, setDateRange] = useState<dateRangeType>({
+  const [dateRange, setDateRange] = useState<DateRangeType>({
     startDate: new Date(
       new Date().getFullYear(),
       new Date().getMonth(),
@@ -187,7 +187,6 @@ const OrderListContainer: React.FC = () => {
               const currentDay = new Date().getDate();
               newFilteredList = newFilteredList.filter((item) => {
                 const itemDay = new Date(item.created).getDate();
-                console.log("abv");
                 return currentDay === itemDay;
               });
 

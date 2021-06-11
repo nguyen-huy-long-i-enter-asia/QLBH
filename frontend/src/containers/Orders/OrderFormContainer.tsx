@@ -260,7 +260,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     const selectedProduct = filteredList.filter(
       (item) => item.id === parseInt(id, 10)
     )[0];
-    console.log(filteredList);
+
     const formData = new FormData();
     formData.append("product_id", id.toString());
     formData.append("size_id", "1");
@@ -364,7 +364,6 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     let inventory = 0;
     if (result.data !== null) {
       inventory = result.data.count;
-      console.log(inventory);
     }
     const newImportList = importList.map((item, index) => {
       if (index === productIndex) {
@@ -416,7 +415,8 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     let outOfStockCount = 0;
     let url = "";
-    importList.forEach((item) => {
+    console.log(mergedImportList);
+    mergedImportList.forEach((item) => {
       if (item.count > item.inventory) {
         outOfStockCount += 1;
       }
@@ -427,7 +427,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
       outOfStockCount === 0
     ) {
       const formData = new FormData();
-      formData.append("order_details", JSON.stringify(importList));
+      formData.append("order_details", JSON.stringify(mergedImportList));
 
       if (staffEmail !== undefined) {
         formData.append("staff_email", staffEmail);

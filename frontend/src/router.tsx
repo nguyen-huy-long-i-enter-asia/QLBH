@@ -11,11 +11,13 @@ import OrderFormPage from "pages/Orders/OrderFormPage";
 import StorePage from "pages/Customer/StorePage";
 import StoreProductPage from "pages/Customer/StoreProductPage";
 import ManagerAuth from "components/auth/ManagerAuth";
+import ManufacturerListPage from "pages/ManufacturerListPage";
 import StaffAuth from "components/auth/StaffAuth";
 import CustomerAuth from "components/auth/CustomerAuth";
 import CartPage from "pages/Customer/CartPage";
 import LoginFacebookPage from "pages/LoginFacebookPage";
 import TimeStatisticPage from "pages/Statistic/TimeStatisticPage";
+import ProductStatisticPage from "pages/Statistic/ProductStatisticPage";
 
 export const Router: React.FC = () => {
   return (
@@ -26,7 +28,9 @@ export const Router: React.FC = () => {
       <ManagerAuth path="/products">
         <ProductListPage />
       </ManagerAuth>
-
+      <ManagerAuth path="/manufacturers">
+        <ManufacturerListPage />
+      </ManagerAuth>
       <StaffAuth path="/receipts/add">
         <ReceiptFormPage />
       </StaffAuth>
@@ -61,6 +65,9 @@ export const Router: React.FC = () => {
       </ManagerAuth>
       <ManagerAuth path="/timeStatistic">
         <TimeStatisticPage />
+      </ManagerAuth>
+      <ManagerAuth path="/productStatistic">
+        <ProductStatisticPage />
       </ManagerAuth>
     </Switch>
   );

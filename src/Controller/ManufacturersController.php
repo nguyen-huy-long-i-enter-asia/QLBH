@@ -18,10 +18,13 @@ class ManufacturersController extends AppController
      */
     public function index()
     {
-        $result = $this->Manufacturers->find()->toArray();
-        $this->response = $this->response->withStringBody(json_encode($result));
-        $this->response = $this->response->withType('json');
-        return $this->response;
+        // $result = $this->Manufacturers->find('all')->toArray();
+        // $this->response = $this->response->withStringBody(json_encode($result));
+        // $this->response = $this->response->withType('json');
+        // return $this->response;
+        $query =  $this->Manufacturers->find()->leftJoinWith('Receipts');
+        $query->select(['id','name','phone','address','email','note','total' => $query->func()->sum('Receipts.total')])->group(['Manufacturers.id'])->toArray();
+        return $this->response->withStringBody(json_encode( $query))->withType('json');
     }
 
     /**
