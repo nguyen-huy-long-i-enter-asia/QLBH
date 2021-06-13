@@ -18,22 +18,20 @@ import {
 } from "@chakra-ui/react";
 import { UpDownIcon } from "@chakra-ui/icons";
 import CheckBoxFilter from "components/molecules/filter/CheckBoxFilter";
+import RangeFilter from "components/molecules/filter/RangeFilter";
 import TextFilter from "components/molecules/filter/TextFilter";
 import "layouts/layout.css";
 import { DateRangePickerComponent } from "@syncfusion/ej2-react-calendars";
 
 type RangeFilter = {
-  rangeFilterStates: {
-    smallest: number;
-    biggest: number;
-  };
-  rangeFilterConst: {
-    filterName: string;
-    handleSet: (e: React.MouseEvent<HTMLInputElement>) => void;
-    handleUnset: (e: React.MouseEvent<HTMLInputElement>) => void;
-    handleSmallestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleBiggestChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  };
+  from: number;
+  to: number;
+
+  filterName: string;
+  handleSet: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleUnset: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleToChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFromChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 type Props = {
   pageTitle: string;
@@ -179,6 +177,19 @@ const FilterTemplate: React.FC<Props> = ({
       {/* {textFilters.map((filter) => (
         <TextFilter key={filter.filterName} filterName={filter.filterName} />
       ))} */}
+      {rangeFilter !== undefined ? (
+        <RangeFilter
+          filterName={rangeFilter.filterName}
+          from={rangeFilter.from}
+          to={rangeFilter.to}
+          handleFromChange={rangeFilter.handleFromChange}
+          handleToChange={rangeFilter.handleToChange}
+          handleSetRange={rangeFilter.handleSet}
+          handleUnsetRange={rangeFilter.handleUnset}
+        />
+      ) : (
+        <> </>
+      )}
     </Box>
   );
 };

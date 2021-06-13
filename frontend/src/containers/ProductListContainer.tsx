@@ -83,6 +83,7 @@ const ProductListContainer: React.FC = () => {
       const productStatesData = await axios.get(
         `${process.env.REACT_APP_SERVER}productStates/index`
       );
+
       setProducts([...productsData.data]);
       setFilteredList([...productsData.data]);
 

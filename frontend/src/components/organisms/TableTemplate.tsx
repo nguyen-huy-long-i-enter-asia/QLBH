@@ -5,6 +5,7 @@ import CustomThead from "components/atoms/CustomThead";
 import ProductExpandContent from "components/molecules/Products/ProductExpandContent";
 import ReceiptExpandContent from "components/molecules/Receipts/ReceiptExpandContent";
 import OrderExpandContent from "components/molecules/Orders/OrderExpandContent";
+import ManufacturerExpandContent from "components/molecules/Manufacturers/ManufacturerExpandContent";
 
 const tableStyle = css`
   border: groove;
@@ -121,6 +122,16 @@ const TableTemplate: React.FC<Props> = ({
                     }
                     if (itemType === "order") {
                       return <OrderExpandContent order={item} />;
+                    }
+                    if (itemType === "manufacturer") {
+                      return (
+                        <ManufacturerExpandContent
+                          manufacturer={item}
+                          isDisplay={
+                            displayItem ? displayItem.display : undefined
+                          }
+                        />
+                      );
                     }
                     return <></>;
                   })()}

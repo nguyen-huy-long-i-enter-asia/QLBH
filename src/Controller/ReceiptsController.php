@@ -199,7 +199,10 @@ class ReceiptsController extends AppController
         return $this->response;
 
     }
-
+    public function findRecentByManufacturer($id = null){
+        $result = $this->Receipts->find('all', [ 'order' => ['Receipts.created' =>'DESC']])->contain(['Users'])->where(['manufacturer_id' => (int)$id])->sortBy('created',SORT_DESC)->toArray();
+        return $this->response->withStringBody(json_encode($result))->withType('json');
+    }
     /**
      * Delete method
      *

@@ -70,28 +70,6 @@ const StoreContainer: React.FC = () => {
 
   const [displayList, setDisplayList] = useState<any[]>([]);
   const [checkBoxFilters, setCheckBoxFilters] = useState<CheckBoxFilter[]>([]);
-  const rangeFilterConst = {
-    filterName: "sell_price",
-
-    handleSet: (e: React.MouseEvent<HTMLInputElement>) => {
-      setRangeFilterStates({ ...rangeFilterStates, isApplied: true });
-    },
-    handleUnset: (e: React.MouseEvent<HTMLInputElement>) => {
-      setRangeFilterStates({ ...rangeFilterStates, isApplied: false });
-    },
-    handleSmallestChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      setRangeFilterStates({
-        ...rangeFilterStates,
-        smallest: parseInt(e.currentTarget.value, 10),
-      });
-    },
-    handleBiggestChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      setRangeFilterStates({
-        ...rangeFilterStates,
-        biggest: parseInt(e.currentTarget.value, 10),
-      });
-    },
-  };
   const [categories, setCategories] = useState<CategoriesList>([]);
   const [rangeFilterStates, setRangeFilterStates] = useState({
     smallest: 0,
@@ -250,6 +228,24 @@ const StoreContainer: React.FC = () => {
   const searchProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyWord(e.currentTarget.value);
   };
+  const handleSet = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setRangeFilterStates({ ...rangeFilterStates, isApplied: true });
+  };
+  const handleUnset = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setRangeFilterStates({ ...rangeFilterStates, isApplied: false });
+  };
+  const handleSmallestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRangeFilterStates({
+      ...rangeFilterStates,
+      smallest: parseInt(e.currentTarget.value, 10),
+    });
+  };
+  const handleBiggestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRangeFilterStates({
+      ...rangeFilterStates,
+      biggest: parseInt(e.currentTarget.value, 10),
+    });
+  };
   return (
     <div>
       <Flex className="content">
@@ -258,7 +254,15 @@ const StoreContainer: React.FC = () => {
             pageTitle="Product"
             checkboxFilters={checkBoxFilters}
             handleCheckBoxClick={handleCheckBoxClick}
-            rangeFilter={{ rangeFilterConst, rangeFilterStates }}
+            rangeFilter={{
+              from: rangeFilterStates.smallest,
+              to: rangeFilterStates.biggest,
+              filterName: "Price",
+              handleFromChange: handleSmallestChange,
+              handleToChange: handleBiggestChange,
+              handleSet,
+              handleUnset,
+            }}
           />
         </Box>
         <VStack className="right-column">

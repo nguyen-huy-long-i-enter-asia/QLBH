@@ -25,7 +25,7 @@ const managerMenuList = [
     menuName: "Warehouse",
     childrenMenus: ["Manufacture", "Receipts Management"],
     links: {
-      Manufacture: "/login",
+      Manufacture: "/manufacturers",
       "Receipts Management": "/receipts",
     },
   },
@@ -63,9 +63,8 @@ const staffMenuList = [
   },
   {
     menuName: "Warehouse",
-    childrenMenus: ["Manufacture", "Receipts Management"],
+    childrenMenus: ["Receipts Management"],
     links: {
-      Manufacture: "/login",
       "Receipts Management": "/receipts",
     },
   },

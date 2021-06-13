@@ -252,13 +252,15 @@ const ProductForm: React.FC<Props> = ({
         onClick={onOpen}
         bgColor="#3399ff"
         color="white"
-      >{`${action.charAt(0).toUpperCase() + action.slice(1)} Product`}</Button>
+      >{`${
+        action.charAt(0).toUpperCase() + action.slice(1)
+      } Manufacturer`}</Button>
       <Modal isOpen={isOpen} onClose={onClose} size="full">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader bgColor="#ededed">{`${
-            action.charAt(0).toUpperCase() + action.slice(1)
-          } Product`}</ModalHeader>
+          <ModalHeader bgColor="#ededed">
+            {action === "add" ? "Add new Manufacturer" : "Edit Manufacturer"}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <form onSubmit={handleSubmit}>
