@@ -15,6 +15,7 @@ type Props = {
   filterName: string;
   from: number;
   to: number;
+  isApplied: boolean;
   handleFromChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleToChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSetRange: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -24,6 +25,7 @@ const CheckBoxFilter: React.FC<Props> = ({
   filterName,
   from,
   to,
+  isApplied,
   handleFromChange,
   handleToChange,
   handleSetRange,
@@ -40,18 +42,30 @@ const CheckBoxFilter: React.FC<Props> = ({
         <FormControl id="from">
           <Flex>
             <FormLabel>From</FormLabel>
-            <Input type="number" value={from} onChange={handleFromChange} />
+            <Input value={from.toLocaleString()} onChange={handleFromChange} />
           </Flex>
         </FormControl>
         <FormControl id="to">
           <Flex>
             <FormLabel>To</FormLabel>
-            <Input type="number" value={to} onChange={handleToChange} />
+            <Input value={to.toLocaleString()} onChange={handleToChange} />
           </Flex>
         </FormControl>
         <Flex>
-          <Button onClick={handleSetRange}>Set</Button>
-          <Button onClick={handleUnsetRange}>UnSet</Button>
+          <Button
+            onClick={handleSetRange}
+            color={isApplied === true ? "white" : "black"}
+            bgColor={isApplied === true ? "#3399ff" : undefined}
+          >
+            Set
+          </Button>
+          <Button
+            onClick={handleUnsetRange}
+            color={isApplied === false ? "white" : "black"}
+            bgColor={isApplied === false ? "#3399ff" : undefined}
+          >
+            UnSet
+          </Button>
         </Flex>
       </Box>
     </Box>

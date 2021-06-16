@@ -27,6 +27,7 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
 
 type CategoriesList = {
@@ -35,36 +36,40 @@ type CategoriesList = {
   isChecked: boolean | false;
 }[];
 type Props = {
-  customer?: {
+  type: string;
+  user?: {
     id: number;
     name: string;
     email: string;
+    password?: string;
     phone: string;
     address: string;
     image: string;
-    orders: any[];
+    orders?: any[];
   };
-  closeModal: any;
+  closeModal?: any;
   handleAddNewCustomerToOrder?: (id: string) => void;
 };
 const UserForm: React.FC<Props> = ({
-  customer,
+  type,
+  user,
   closeModal,
   handleAddNewCustomerToOrder,
 }) => {
-  console.log(customer);
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const history = useHistory();
   const toast = useToast();
-  const [name, setName] = useState(customer ? customer.name : "");
-  const [email, setEmail] = useState(customer ? customer.email : "");
-  const [phone, setPhone] = useState(customer ? customer.phone : "");
-  const [address, setAddress] = useState(customer ? customer.address : "");
+  const [name, setName] = useState(user ? user.name : "");
+  const [email, setEmail] = useState(user ? user.email : "");
+  const [phone, setPhone] = useState(user ? user.phone : "");
+  const [address, setAddress] = useState(user ? user.address : "");
+  const [password, setPassword] = useState(
+    user && user.password ? user.password : ""
+  );
+  const [passwordType, setPasswordType] = useState("password");
   const [image, setImage] = useState<File>();
   const [imageLink, setImageLink] = useState(
-    customer
-      ? `${process.env.REACT_APP_IMG_SERVER}Avatar/${customer.image}`
+    user
+      ? `${process.env.REACT_APP_IMG_SERVER}Avatar/${user.image}`
       : `${process.env.PUBLIC_URL}/image_upload.png`
   );
 
@@ -100,6 +105,10 @@ const UserForm: React.FC<Props> = ({
     const { value } = e.currentTarget;
     setEmail(value);
   };
+  const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.currentTarget;
+    setPassword(value);
+  };
   const changePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
     setPhone(value);
@@ -120,12 +129,14 @@ const UserForm: React.FC<Props> = ({
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (name !== "" && email !== "") {
       const formData = new FormData();
 
-      if (customer) {
-        formData.append("id", customer.id.toString());
+      if (user) {
+        formData.append("id", user.id.toString());
       }
+      formData.append("type", type);
       formData.append("name", name);
       formData.append("email", email);
       formData.append("phone", phone);
@@ -133,30 +144,38 @@ const UserForm: React.FC<Props> = ({
       if (image !== undefined) {
         formData.append("image", image);
       }
+      if (type === "staff") {
+        formData.append("password", password);
+      }
+
       try {
         const url = `http://localhost:8765/users/${
-          customer === undefined ? "add" : "edit"
+          user === undefined ? "add" : "edit"
         }`;
         const result = await axios.post(url, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
-        // console.log(result.data);
+
+        // setCustomer of Order after add new Customer to DB
         if (result.data.status === "success") {
-          console.log(customer);
-          if (
-            customer === undefined &&
-            handleAddNewCustomerToOrder !== undefined
-          ) {
-            console.log("add new User");
-            handleAddNewCustomerToOrder(result.data.id);
+          if (handleAddNewCustomerToOrder !== undefined) {
+            handleAddNewCustomerToOrder(
+              user === undefined ? result.data.id : user.id
+            );
+          } else {
+            sessionStorage.setItem("action", user ? "edit" : "add");
+            window.location.reload(false);
           }
-          closeModal();
+          if (closeModal) {
+            closeModal();
+          }
+
           toast({
             title: "Update User Infomation successful",
             status: "success",
-            duration: 5000,
+            duration: 1500,
             isClosable: true,
           });
         } else {
@@ -166,57 +185,8 @@ const UserForm: React.FC<Props> = ({
         console.log(error);
       }
     }
-    // if (name !== "" && originalPrice !== "" && sellPrice !== "") {
-    //   const formData = new FormData();
-    //   if (action === "edit" && selectedProduct) {
-    //     formData.append("id", selectedProduct.id);
-    //   }
-    //   formData.append("name", name);
-    //   formData.append("manufacturer", manufacturer);
-    //   formData.append("discount", discount);
-    //   formData.append("state_id", stateId);
-    //   formData.append("original_price", originalPrice);
-    //   formData.append("sell_price", sellPrice);
-    //   // console.log(
-    //   //   JSON.stringify(
-    //   //     categories
-    //   //       .filter((item) => item.isChecked === true)
-    //   //       .map((item) => item.id)
-    //   //   )
-    //   // );
-    //   formData.append(
-    //     "categories",
-    //     JSON.stringify(
-    //       categories
-    //         .filter((item) => item.isChecked === true)
-    //         .map((item) => item.id)
-    //     )
-    //   );
-
-    //   if (image !== undefined) {
-    //     formData.append("image", image);
-    //   }
-    //   formData.append("note", note);
-
-    //   try {
-    //     const url = `http://localhost:8765/products/${action}`;
-    //     const result = await axios.post(url, formData, {
-    //       headers: {
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     });
-    //     // console.log(result.data);
-    //     if (result.data.status) {
-    //       alert("Add product successfull");
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-
-    //   window.location.reload(false);
-    // }
   };
-
+  console.log(imageLink);
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -260,6 +230,43 @@ const UserForm: React.FC<Props> = ({
                   />
                 </Td>
               </Tr>
+              {type === "staff" ? (
+                <Tr>
+                  <Td>
+                    Password
+                    <Text color="red" display="inline">
+                      *
+                    </Text>
+                  </Td>
+                  <Td>
+                    <Flex>
+                      <Input
+                        value={password}
+                        type={passwordType}
+                        onChange={changePassword}
+                        required
+                      />
+                      {passwordType === "password" ? (
+                        <ViewIcon
+                          onClick={() => {
+                            setPasswordType("text");
+                          }}
+                          cursor="pointer"
+                        />
+                      ) : (
+                        <ViewOffIcon
+                          onClick={() => {
+                            setPasswordType("password");
+                          }}
+                          cursor="pointer"
+                        />
+                      )}
+                    </Flex>
+                  </Td>
+                </Tr>
+              ) : (
+                <></>
+              )}
             </Tbody>
           </Table>
 
@@ -282,7 +289,7 @@ const UserForm: React.FC<Props> = ({
         </Flex>
         <Input
           type="submit"
-          value={customer ? "Save" : "Add"}
+          value={user ? "Save" : "Add"}
           w="10%"
           m="auto"
           display="block"

@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import {
   Box,
+  Flex,
   Stack,
   Select,
   Radio,
@@ -26,7 +27,7 @@ import { DateRangePickerComponent } from "@syncfusion/ej2-react-calendars";
 type RangeFilter = {
   from: number;
   to: number;
-
+  isApplied: boolean;
   filterName: string;
   handleSet: (e: React.MouseEvent<HTMLButtonElement>) => void;
   handleUnset: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -89,15 +90,27 @@ const FilterTemplate: React.FC<Props> = ({
                 id="datePicker"
                 value="datePicker"
                 onChange={timeFilter.handleTimeOptionChange}
+                w="100%"
               >
-                <Box>
+                <Flex
+                  className="ABCXYZ"
+                  w="9.38vw"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
                   {timeFilter.datePicker}
                   <Menu placement="right">
                     <MenuButton
                       id="date_picker_menu"
                       as={IconButton}
-                      icon={<UpDownIcon />}
-                    />
+                      // icon={<UpDownIcon />}
+                      bgColor="white"
+                      _hover={{ background: "white" }}
+                      p="0px"
+                      mr="0px"
+                    >
+                      <UpDownIcon />
+                    </MenuButton>
                     <MenuList>
                       <MenuOptionGroup defaultValue="This month" type="radio">
                         <MenuItemOption
@@ -127,18 +140,21 @@ const FilterTemplate: React.FC<Props> = ({
                       </MenuOptionGroup>
                     </MenuList>
                   </Menu>
-                </Box>
+                </Flex>
               </Radio>
               <Radio
+                w="100%"
                 value="dateRange"
                 onChange={timeFilter.handleTimeOptionChange}
               >
-                <DateRangePickerComponent
-                  placeholder="Enter Date range"
-                  startDate={timeFilter.dateRange.startDate}
-                  endDate={timeFilter.dateRange.endDate}
-                  change={timeFilter.handleRangeTimeChange}
-                />
+                <Box w="9vw">
+                  <DateRangePickerComponent
+                    placeholder="Enter Date range"
+                    startDate={timeFilter.dateRange.startDate}
+                    endDate={timeFilter.dateRange.endDate}
+                    change={timeFilter.handleRangeTimeChange}
+                  />
+                </Box>
               </Radio>
             </Stack>
           </RadioGroup>
@@ -182,6 +198,7 @@ const FilterTemplate: React.FC<Props> = ({
           filterName={rangeFilter.filterName}
           from={rangeFilter.from}
           to={rangeFilter.to}
+          isApplied={rangeFilter.isApplied}
           handleFromChange={rangeFilter.handleFromChange}
           handleToChange={rangeFilter.handleToChange}
           handleSetRange={rangeFilter.handleSet}

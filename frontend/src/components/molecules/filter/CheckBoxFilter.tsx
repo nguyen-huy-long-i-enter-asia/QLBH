@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Checkbox, Text } from "@chakra-ui/react";
+import { Box, Checkbox, Text, Stack } from "@chakra-ui/react";
 import "components/molecules/filter/filter.css";
 
 type Props = {
@@ -17,15 +17,13 @@ const CheckBoxFilter: React.FC<Props> = ({
 }) => {
   return (
     <Box className="filter-box" p="4% 0">
-      <Box className="filter-name" p="0 4%">
-        <Text fontSize="16px" fontWeight="bold">
-          {filterName}
-        </Text>
-      </Box>
-      <Box className="filter-conditions" p="4% 4% 0">
+      <Text fontSize="16px" fontWeight="bold" p="0 4%">
+        {filterName}
+      </Text>
+
+      <Stack className="filter-conditions" p="4% 4% 0">
         {filterConditions.map((condition) => (
           <Checkbox
-            d="block"
             className="checkbox"
             key={`condition${condition.name}`}
             name={filterName}
@@ -36,7 +34,7 @@ const CheckBoxFilter: React.FC<Props> = ({
             {condition.name}
           </Checkbox>
         ))}
-      </Box>
+      </Stack>
     </Box>
   );
 };

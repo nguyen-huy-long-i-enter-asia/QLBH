@@ -1,6 +1,7 @@
 * {
   margin: 0;
   padding: 0;
+  font-size: 100%;
 }
 .body {
   background-color: #f1f1f1;
@@ -39,9 +40,17 @@
   margin-bottom: 3%;
   border-radius: 5px;
 }
-.button {
+/* .button {
   background-color: aqua;
-}
+} */
+/* .button {
+  background: #3399ff;
+  color: white;
+} */
 .table {
   background-color: white;
+}
+.td {
+  text-align: center;
+  width: 100px;
 }

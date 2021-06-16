@@ -62,7 +62,15 @@ class UsersController extends AppController
         $response = $this->response->withType('application/json')->withStringBody(json_encode($staffs));
         return $response;
     }
-
+    public function getCustomersByStaff(){
+        $query =  $this->Users->find()->leftJoinWith('Orders');
+        $query->select(['id','name','phone','address','email','image','total_pay' => $query->func()->coalesce([$query->func()->sum('Orders.pay'), 0])])->where(['position' => 3])->group(['Users.id'])->toArray();
+        return $this->response->withStringBody(json_encode( $query))->withType('json');
+    }
+    public function getStaffsByManager(){
+        $result = $this->Users->find('all')->select(['id','name','password','phone','address','email','image'])->where(['position' => 2])->toArray();
+        return $this->response->withStringBody(json_encode( $result))->withType('json');
+    }
     /**
      * View method
      *
@@ -94,10 +102,21 @@ class UsersController extends AppController
 
         $user->name = $this->request->getData('name');
         $user->email = $this->request->getData('email');
-        $user->password = null;
+        $password = $this->request->getData('password');
+        if($password){
+            $user->password = $password;
+
+        } else {
+            $user->password = null;
+        }
+
         $user->phone = $this->request->getData('phone');
         $user->address = $this->request->getData('address');
-        $user->position = 3;
+        if($this->request->getData('type') ==="customer"){
+            $user->position = 3;
+        } else {
+            $user->position = 2;
+        }
 
 
 
@@ -140,7 +159,7 @@ class UsersController extends AppController
         $user->address = $this->request->getData('address');
         if($this->Users->save($user)){
             $response = $this->response->withType('application/json')
-                    ->withStringBody(json_encode(['status' => "success"]));
+                    ->withStringBody(json_encode(['status' => "success",]));
         }else {
             $response = $this->response->withType('application/json')
                     ->withStringBody(json_encode(['status' => "fail"]));
@@ -157,17 +176,15 @@ class UsersController extends AppController
      * @return \Cake\Http\Response|null|void Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function deleteCustomer($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $user = $this->Users->get($id);
-        if ($this->Users->delete($user)) {
-            $this->Flash->success(__('The user has been deleted.'));
-        } else {
-            $this->Flash->error(__('The user could not be deleted. Please, try again.'));
-        }
+       $customer = $this->Users->get((int)$id);
+       if($this->Users->delete($customer)){
+        return $this->response->withType('application/json')->withStringBody(json_encode(['status' =>'success']));
+       } else {
+        return $this->response->withType('application/json')->withStringBody(json_encode(['status' =>'fail']));
+       }
 
-        return $this->redirect(['action' => 'index']);
     }
     //Find Customer By ID
     public function findCustomer($id = null)

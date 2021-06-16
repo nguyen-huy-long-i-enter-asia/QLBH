@@ -240,7 +240,7 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
             "Content-Type": "multipart/form-data",
           },
         });
-
+        sessionStorage.setItem("action", receiptId ? "Edit" : "Add");
         history.push("/receipts");
       } catch (error) {
         console.log(error);

@@ -6,6 +6,8 @@ import ProductExpandContent from "components/molecules/Products/ProductExpandCon
 import ReceiptExpandContent from "components/molecules/Receipts/ReceiptExpandContent";
 import OrderExpandContent from "components/molecules/Orders/OrderExpandContent";
 import ManufacturerExpandContent from "components/molecules/Manufacturers/ManufacturerExpandContent";
+import CustomerExpandContent from "components/molecules/Users/CustomerExpandContent";
+import StaffExpandContent from "components/molecules/Users/StaffExpandContent";
 
 const tableStyle = css`
   border: groove;
@@ -47,41 +49,63 @@ const TableTemplate: React.FC<Props> = ({
 }) => {
   const [expandList, setExpandList] = useState<
     { id: number; display: boolean }[]
-  >([]);
+  >(dataList.map((item: any) => ({ id: item.id, display: false })));
 
   useEffect(() => {
-    setExpandList(
-      dataList.map((item: any) => ({ id: item.id, display: false }))
-    );
+    if (dataList.length > 0) {
+      setExpandList(dataList.map((item: any) => ({ ...item, display: false })));
+    } else {
+      setExpandList([]);
+    }
   }, [dataList]);
   const handleItemClick = (e: React.MouseEvent<HTMLTableRowElement>) => {
     const newExpandList = expandList.map((item: any) =>
       String(item.id) === e.currentTarget.id
-        ? { id: item.id, display: !item.display }
-        : { id: item.id, display: false }
+        ? { ...item, display: !item.display }
+        : { ...item, display: false }
     );
 
     setExpandList(newExpandList);
   };
+  if (expandList.length === 0) {
+    return (
+      <Table className="table">
+        <CustomThead fields={fields} handleSort={handleSort} />
+      </Table>
+    );
+  }
 
   return (
     <Table className="table">
       <CustomThead fields={fields} handleSort={handleSort} />
 
       <Tbody>
-        {dataList.map((item: any) => {
-          const displayItem = expandList.filter(
-            (expandItem) => expandItem.id === Number(item.id)
-          )[0];
-
+        {expandList.map((item: any) => {
+          // const displayItem = expandList.filter(
+          //   (expandItem) => expandItem.id === Number(item.id)
+          // )[0];
+          // console.log(displayItem);
           return (
             <React.Fragment key={item.id}>
-              <Tr id={item.id} onClick={handleItemClick}>
+              <Tr
+                id={item.id}
+                onClick={handleItemClick}
+                bgColor={item.display === true ? "#51cdc426" : "white"}
+                borderTop={
+                  item.display === true ? "2px solid #3cc7bd" : undefined
+                }
+                borderLeft={
+                  item.display === true ? "2px solid #3cc7bd" : undefined
+                }
+                borderRight={
+                  item.display === true ? "2px solid #3cc7bd" : undefined
+                }
+              >
                 {fields.map((field) => (
                   <Td key={field}>
                     {(() => {
                       if (item[field] === null) {
-                        return "null";
+                        return "";
                       }
                       if (typeof item[field] === "object") {
                         return item[field].name;
@@ -96,19 +120,26 @@ const TableTemplate: React.FC<Props> = ({
                 bg="white"
                 id={`${item.id}-content`}
                 style={{
-                  display:
-                    displayItem !== undefined && displayItem.display === true
-                      ? "table-row"
-                      : "none",
+                  display: item.display === true ? "table-row" : "none",
                 }}
+                borderLeft={
+                  item.display === true ? "2px solid #3cc7bd" : undefined
+                }
+                borderRight={
+                  item.display === true ? "2px solid #3cc7bd" : undefined
+                }
+                borderBottom={
+                  item.display === true ? "2px solid #3cc7bd" : undefined
+                }
               >
-                <Td colSpan={fields.length}>
+                <Td colSpan={fields.length} p="0%">
                   {(() => {
                     if (itemType === "product") {
                       return (
                         <ProductExpandContent
                           product={item}
                           productExpandContentProps={productExpandContentProps}
+                          isDisplay={item ? item.display : undefined}
                         />
                       );
                     }
@@ -127,9 +158,23 @@ const TableTemplate: React.FC<Props> = ({
                       return (
                         <ManufacturerExpandContent
                           manufacturer={item}
-                          isDisplay={
-                            displayItem ? displayItem.display : undefined
-                          }
+                          isDisplay={item ? item.display : undefined}
+                        />
+                      );
+                    }
+                    if (itemType === "customer") {
+                      return (
+                        <CustomerExpandContent
+                          customer={item}
+                          isDisplay={item ? item.display : undefined}
+                        />
+                      );
+                    }
+                    if (itemType === "staff") {
+                      return (
+                        <StaffExpandContent
+                          staff={item}
+                          isDisplay={item ? item.display : undefined}
                         />
                       );
                     }

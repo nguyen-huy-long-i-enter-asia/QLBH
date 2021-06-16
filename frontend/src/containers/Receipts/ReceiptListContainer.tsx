@@ -4,7 +4,7 @@ import axios from "axios";
 import Pagination from "components/atoms/Pagination";
 import Cookies from "js-cookie";
 
-import { useDisclosure, Box, Flex, VStack } from "@chakra-ui/react";
+import { useDisclosure, Box, Flex, VStack, useToast } from "@chakra-ui/react";
 import MenuBarTemplate from "components/organisms/MenuBarTemplate";
 import TableTemplate from "components/organisms/TableTemplate";
 import FilterTemplate from "components/organisms/FilterTemplate";
@@ -24,6 +24,7 @@ type dateRangeType = {
   endDate: Date;
 };
 const ReceiptListContainer: React.FC = () => {
+  const toast = useToast();
   const position = Cookies.get("position");
   const [receipts, setReceipts] = useState<any[]>([]);
   const [keyWord, setKeyWord] = useState("");
@@ -91,6 +92,16 @@ const ReceiptListContainer: React.FC = () => {
       );
     };
     fetchData();
+    const action = sessionStorage.getItem("action");
+    if (action) {
+      toast({
+        title: `${action} receipt successful`,
+
+        status: "success",
+        duration: 1500,
+        isClosable: true,
+      });
+    }
   }, []);
 
   // Update DisplayList by Changing Filter
@@ -106,7 +117,7 @@ const ReceiptListContainer: React.FC = () => {
           name: condition.name,
         })),
     }));
-
+    console.log(receipts);
     // CheckStaff
     let newFilteredList;
     if (checkedFilters.length !== 0) {
@@ -119,6 +130,7 @@ const ReceiptListContainer: React.FC = () => {
           )
         );
       }
+      console.log(newFilteredList);
 
       // Check Manufacturer
       if (checkedFilters[1].filterConditions.length !== 0) {
@@ -198,16 +210,8 @@ const ReceiptListContainer: React.FC = () => {
     }
   }, [checkBoxFilters, timeOption, datePicker, dateRange, keyWord]);
 
-  const handleProductClick = (e: React.MouseEvent<HTMLTableRowElement>) => {
-    const newExpandList = expandList.map((item: any) =>
-      String(item.id) === e.currentTarget.id
-        ? { id: item.id, display: !item.display }
-        : { id: item.id, display: false }
-    );
-    setExpandList(newExpandList);
-  };
-
   const handlePagination = (newDisplayList: any) => {
+    console.log(newDisplayList);
     setDisplayList(newDisplayList);
   };
   const searchReceipts = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -257,7 +261,13 @@ const ReceiptListContainer: React.FC = () => {
 
       const result = await axios.get(url);
       if (result.data.status === "success") {
-        alert("Delete Succes");
+        toast({
+          title: "Return Products successful",
+
+          status: "success",
+          duration: 1500,
+          isClosable: true,
+        });
         const newFilteredList = filteredList.filter((item) => {
           return item.id.toString() !== id;
         });

@@ -303,7 +303,10 @@ class OrdersController extends AppController
         ->withStringBody(json_encode(['status' => "success"]));
         return $response;
     }
-
+    public function findRecentByCustomer($id = null){
+        $result = $this->Orders->find('all', [ 'order' => ['Orders.created' =>'DESC']])->contain(['Staff', 'TransactionStates'])->where(['customer_id' => (int)$id])->sortBy('created',SORT_DESC)->toArray();
+        return $this->response->withStringBody(json_encode($result))->withType('json');
+    }
     /**
      * Delete method
      *

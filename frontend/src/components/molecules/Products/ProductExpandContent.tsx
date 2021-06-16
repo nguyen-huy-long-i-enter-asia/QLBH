@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { css } from "@emotion/react";
 import {
   Box,
   Flex,
@@ -7,13 +8,21 @@ import {
   Table,
   Thead,
   Tbody,
+  Th,
   Tr,
   Td,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import ProductForm from "components/atoms/Products/ProductForm";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import "components/molecules/Products/ProductExpandContent.css";
 
 type CategoriesList = {
   id: string;
@@ -47,21 +56,24 @@ type Props = {
       id: string;
       name: string;
     }[];
-    inventory: {
-      size: string;
-      colors: {
-        color: string;
-        count: number;
-      }[];
-    }[];
   };
   productExpandContentProps: ProductExpandContentProps | undefined;
+  isDisplay?: boolean;
 };
-
+type inventoryType = {
+  size: string;
+  colors: {
+    color: string;
+    count: number;
+  }[];
+}[];
 const ProductExpandContent: React.FC<Props> = ({
   product,
   productExpandContentProps,
+  isDisplay,
 }) => {
+  const [inventory, setInventory] = useState<inventoryType>([]);
+  const [nullFlag, setNullFlag] = useState(0);
   const {
     id,
     name,
@@ -73,9 +85,21 @@ const ProductExpandContent: React.FC<Props> = ({
     manufacturer,
 
     categories,
-    inventory,
   } = product;
-
+  const fetchInventory = async () => {
+    const result = await axios.get(
+      `${process.env.REACT_APP_SERVER}products/getInventoryById/${product.id}`
+    );
+    console.log(result.data.inventory);
+    setInventory(result.data.inventory);
+  };
+  useEffect(() => {
+    if (inventory.length === 0 && nullFlag === 0 && isDisplay === true) {
+      fetchInventory();
+      setNullFlag(1);
+    }
+  }, [isDisplay]);
+  const toast = useToast();
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     const result = await axios.post(
       `${process.env.REACT_APP_SERVER}products/delete`,
@@ -83,101 +107,197 @@ const ProductExpandContent: React.FC<Props> = ({
     );
 
     if (result.data.status === "success") {
-      // history.push("/products");
+      sessionStorage.setItem("action", "delete");
       window.location.reload(false);
     } else {
-      alert(result.data.status);
+      toast({
+        title: `Delete Product fail`,
+
+        status: "error",
+        duration: 1500,
+        isClosable: true,
+      });
     }
   };
   return (
-    <Box>
-      <Flex>
-        <Box w="33.3%">
-          <Image w="50%" src={image} alt="Error" />
-        </Box>
-        <Box>
-          <Flex w="100%" bg="tomato">
-            <Box>
-              <Box>Id:</Box>
-              <Box>Name:</Box>
-              <Box>Original Price:</Box>
-              <Box>Sell Price:</Box>
-              <Box>Discount:</Box>
-              <Box>Brand:</Box>
+    <Tabs className="longhuy" w="100%" p="0px">
+      <TabList bgColor="#51cdc426">
+        <Tab _selected={{ bgColor: "white", color: "black" }}>Info</Tab>
+        <Tab _selected={{ bgColor: "white", color: "black" }}>Inventory</Tab>
+      </TabList>
+
+      <TabPanels>
+        <TabPanel>
+          <Flex mb="1vh">
+            <Box w="33.3%">
+              <Image w="90%" src={image} alt="Error" />
             </Box>
-            <Box>
-              <Box>{id}</Box>
-              <Box>{name}</Box>
-              <Box>{original_price}</Box>
-              <Box>{sell_price}</Box>
-              <Box>{discount}</Box>
-              <Box>{manufacturer.name}</Box>
-            </Box>
-            <Box>
-              <Box>Description</Box>
-              <Box>{note}</Box>
-              <Box>Categories</Box>
-              {categories !== undefined ? (
-                categories.map((category) => (
-                  <Box key={category.name}>{category.name}</Box>
-                ))
-              ) : (
-                <> </>
-              )}
+            <Box w="66.7%">
+              <Flex w="100%">
+                <Box w="50%">
+                  <Table w="80%">
+                    <Tbody>
+                      <Tr>
+                        <Td>Id:</Td>
+                        <Td>{id}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>Name:</Td>
+                        <Td>{name}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>Original Price:</Td>
+                        <Td>{original_price}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>Sell Price:</Td>
+                        <Td>{sell_price}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>Discount:</Td>
+                        <Td>{discount}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>Manufacturer: </Td>
+                        <Td>{manufacturer.name}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </Box>
+                <Box w="50%">
+                  <Table>
+                    <Tbody>
+                      <Tr>
+                        <Td colSpan={2}>Note:</Td>
+                      </Tr>
+                      <Box ml="1.5rem" minH="5rem">
+                        {note}
+                      </Box>
+                      <Tr>
+                        <Td colSpan={2}>Categories:</Td>
+                      </Tr>
+                      {categories !== undefined ? (
+                        categories.map((category) => (
+                          <Box ml="1.5rem" key={category.name}>
+                            {category.name}
+                          </Box>
+                        ))
+                      ) : (
+                        <></>
+                      )}
+                    </Tbody>
+                  </Table>
+                </Box>
+              </Flex>
             </Box>
           </Flex>
-
-          <Table>
-            <Thead>
-              <Td>Size</Td>
-              <Td>Color</Td>
-              <Td>Count</Td>
+          <Flex justifyContent="flex-end" mt="1vh">
+            <ProductForm
+              categoriesList={
+                productExpandContentProps
+                  ? productExpandContentProps.categoriesList
+                  : undefined
+              }
+              manufacturersList={
+                productExpandContentProps
+                  ? productExpandContentProps.manufacturersList
+                  : undefined
+              }
+              productStatesList={
+                productExpandContentProps
+                  ? productExpandContentProps.productStatesList
+                  : undefined
+              }
+              action="edit"
+              selectedProduct={product}
+              buttonStyle={css`
+                margin: 0vh 1vw;
+              `}
+            />
+            <Button
+              className="button"
+              bgColor="#3399ff"
+              color="white"
+              onClick={handleDelete}
+              m="0vh 1vw"
+            >
+              Delete
+            </Button>
+            <Button
+              className="button"
+              bgColor="#3399ff"
+              color="white"
+              m="0vh 1vw"
+            >
+              Stop Selling
+            </Button>
+          </Flex>
+        </TabPanel>
+        <TabPanel>
+          <Table w="60%" m="auto" border="1px solid #dce6ef">
+            <Thead backgroundColor="#3399ff" border="1px solid #dce6ef">
+              <Th textAlign="center" color="white" border="1px solid #dce6ef">
+                Size
+              </Th>
+              <Th textAlign="center" color="white" border="1px solid #dce6ef">
+                Color
+              </Th>
+              <Th textAlign="center" color="white" border="1px solid #dce6ef">
+                Count
+              </Th>
             </Thead>
             <Tbody>
-              {inventory !== undefined ? (
-                inventory.map((itemSize) => {
-                  return itemSize.colors.map((itemColor) => {
-                    return (
-                      <Tr key={itemSize.size + itemColor.color}>
-                        <td>{itemSize.size}</td>
-                        <td>{itemColor.color}</td>
-                        <td>{itemColor.count}</td>
-                      </Tr>
-                    );
-                  });
-                })
-              ) : (
-                <></>
-              )}
+              {inventory.map((itemSize: any) => {
+                return (
+                  <>
+                    <Tr border="1px solid #dce6ef">
+                      <Td
+                        textAlign="center"
+                        rowSpan={itemSize.colors.length}
+                        border="1px solid #dce6ef"
+                      >
+                        {itemSize.size}
+                      </Td>
+                      <Td border="1px solid #dce6ef" textAlign="center">
+                        {itemSize.colors[0].color}
+                      </Td>
+
+                      <Td border="1px solid #dce6ef" textAlign="center">
+                        {itemSize.colors[0].count}
+                      </Td>
+                    </Tr>
+                    {itemSize.colors.slice(1).map((itemColor: any) => {
+                      return (
+                        <Tr
+                          key={itemSize.size + itemColor.color}
+                          border="1px solid #dce6ef"
+                        >
+                          <Td border="1px solid #dce6ef" textAlign="center">
+                            {itemColor.color}
+                          </Td>
+                          <Td border="1px solid #dce6ef" textAlign="center">
+                            {itemColor.count}
+                          </Td>
+                        </Tr>
+                      );
+                    })}
+                  </>
+                );
+                // return itemSize.colors.map((itemColor: any) => {
+                //   return (
+                //     <Tr key={itemSize.size + itemColor.color}>
+                //       <Td>{itemSize.size}</Td>
+                //       <Td>{itemColor.color}</Td>
+                //       <Td>{itemColor.count}</Td>
+                //     </Tr>
+                //   );
+                // });
+              })}
             </Tbody>
           </Table>
-        </Box>
-      </Flex>
-      <Flex>
-        <ProductForm
-          categoriesList={
-            productExpandContentProps
-              ? productExpandContentProps.categoriesList
-              : undefined
-          }
-          manufacturersList={
-            productExpandContentProps
-              ? productExpandContentProps.manufacturersList
-              : undefined
-          }
-          productStatesList={
-            productExpandContentProps
-              ? productExpandContentProps.productStatesList
-              : undefined
-          }
-          action="edit"
-          selectedProduct={product}
-        />
-        <Button onClick={handleDelete}>Delete</Button>
-        <Button>Post FaceBook</Button>
-        <Button>Stop Selling</Button>
-      </Flex>
-    </Box>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
   );
 };
 export default ProductExpandContent;

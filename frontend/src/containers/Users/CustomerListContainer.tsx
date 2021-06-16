@@ -8,7 +8,7 @@ import { useDisclosure, Box, Flex, VStack, useToast } from "@chakra-ui/react";
 import MenuBarTemplate from "components/organisms/MenuBarTemplate";
 import TableTemplate from "components/organisms/TableTemplate";
 import FilterTemplate from "components/organisms/FilterTemplate";
-import Header from "components/organisms/Manufacturers/Header";
+import CustomerHeader from "components/organisms/Users/CustomerHeader";
 import "layouts/layout.css";
 
 type Filter = {
@@ -25,15 +25,15 @@ type RangeFilterState = {
   biggest: number;
   isApplied: boolean;
 };
-const ManufacturerListContainer: React.FC = () => {
+const CustomerListContainer: React.FC = () => {
   const position = Cookies.get("position");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [keyword, setKeyword] = useState("");
   // const [expandList, setExpandList] = useState<any>([]);
   const [filteredList, setFilteredList] = useState<any[]>([]);
   const [displayList, setDisplayList] = useState<any[]>([]);
-  const [manufacturers, setManufacturers] = useState<any>([]);
-  const fields = ["id", "name", "phone", "email", "total"];
+  const [customers, setCustomers] = useState<any>([]);
+  const fields = ["id", "name", "phone", "email", "total_pay"];
   const [rangeFilterStates, setRangeFilterStates] = useState({
     smallest: 0,
     biggest: 0,
@@ -41,14 +41,14 @@ const ManufacturerListContainer: React.FC = () => {
   });
   const [sortState, setSortState] = useState(fields.map((item) => false));
   const toast = useToast();
-  // Fetch ProductsList and CategoriesList, Manufacturers List
+  // Fetch Customer List
   useEffect(() => {
     const fetchData = async () => {
-      const manufacturersData = await axios.get(
-        `${process.env.REACT_APP_SERVER}manufacturers/index`
+      const customersData = await axios.get(
+        `${process.env.REACT_APP_SERVER}users/getCustomersByStaff`
       );
-      setManufacturers(manufacturersData.data);
-      setFilteredList(manufacturersData.data);
+      setCustomers(customersData.data);
+      setFilteredList(customersData.data);
       // setExpandList(
       //   manufacturersData.data.map((item: any) => ({
       //     id: item.id,
@@ -64,7 +64,7 @@ const ManufacturerListContainer: React.FC = () => {
         title: `${
           // eslint-disable-next-line no-nested-ternary
           action === "add" ? "Add" : action === "edit" ? "Edit" : "Delete"
-        } Manufacturer successful`,
+        } Customer successful`,
 
         status: "success",
         duration: 1500,
@@ -75,10 +75,10 @@ const ManufacturerListContainer: React.FC = () => {
 
   // Update DisplayList by Changing Filter
   useEffect(() => {
-    let newFilteredList = manufacturers;
-    // check Keyword
+    // CheckState
+    let newFilteredList = customers;
+    const lowerCaseKeyword = keyword.toLowerCase();
     if (keyword !== "") {
-      const lowerCaseKeyword = keyword.toLocaleLowerCase();
       newFilteredList = newFilteredList.filter(
         (item: any) =>
           item.name.toLowerCase().includes(lowerCaseKeyword) ||
@@ -86,12 +86,11 @@ const ManufacturerListContainer: React.FC = () => {
           item.phone.toLowerCase().includes(lowerCaseKeyword)
       );
     }
-    // check By Total of receipt
     if (rangeFilterStates.isApplied === true) {
       newFilteredList = newFilteredList.filter((item: any) => {
         return (
-          rangeFilterStates.smallest <= item.total &&
-          item.total <= rangeFilterStates.biggest
+          rangeFilterStates.smallest <= item.total_pay &&
+          item.total_pay <= rangeFilterStates.biggest
         );
       });
     }
@@ -101,7 +100,7 @@ const ManufacturerListContainer: React.FC = () => {
   const handlePagination = (newDisplayList: any) => {
     setDisplayList(newDisplayList);
   };
-  const searchManufacturer = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const searchCustomer = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.currentTarget.value);
   };
   // Sort Display list by field
@@ -157,32 +156,23 @@ const ManufacturerListContainer: React.FC = () => {
     setRangeFilterStates({ ...rangeFilterStates, isApplied: false });
   };
   const handleSmallestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.value === "") {
-      setRangeFilterStates({ ...rangeFilterStates, smallest: 0 });
-    } else {
-      setRangeFilterStates({
-        ...rangeFilterStates,
-        smallest: parseInt(e.currentTarget.value.replaceAll(",", ""), 10),
-      });
-    }
+    setRangeFilterStates({
+      ...rangeFilterStates,
+      smallest: parseInt(e.currentTarget.value, 10),
+    });
   };
   const handleBiggestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.value === "") {
-      setRangeFilterStates({ ...rangeFilterStates, biggest: 0 });
-    } else {
-      setRangeFilterStates({
-        ...rangeFilterStates,
-        biggest: parseInt(e.currentTarget.value.replaceAll(",", ""), 10),
-      });
-      // console.log(e.currentTarget.value.replace("[,]", ""));
-    }
+    setRangeFilterStates({
+      ...rangeFilterStates,
+      biggest: parseInt(e.currentTarget.value, 10),
+    });
   };
   return (
     <div>
       <Flex className="content">
         <Box className="left-column">
           <FilterTemplate
-            pageTitle="Manufacturer"
+            pageTitle="Customer"
             rangeFilter={{
               from: rangeFilterStates.smallest,
               to: rangeFilterStates.biggest,
@@ -196,12 +186,12 @@ const ManufacturerListContainer: React.FC = () => {
           />
         </Box>
         <VStack className="right-column">
-          <Header handleSearch={searchManufacturer} />
+          <CustomerHeader handleSearch={searchCustomer} />
           <TableTemplate
             fields={fields}
             handleSort={handleSort}
             dataList={displayList}
-            itemType="manufacturer"
+            itemType="customer"
           />
           <Pagination
             items={filteredList}
@@ -214,4 +204,4 @@ const ManufacturerListContainer: React.FC = () => {
   );
 };
 
-export default ManufacturerListContainer;
+export default CustomerListContainer;

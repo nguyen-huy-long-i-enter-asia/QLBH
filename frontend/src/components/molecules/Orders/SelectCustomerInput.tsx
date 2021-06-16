@@ -79,6 +79,7 @@ const SelectCustomerInput: React.FC<Props> = ({
     const result = await axios.get(
       `${process.env.REACT_APP_SERVER}users/findCustomer/${id}`
     );
+    console.log(result.data);
     setCustomer(result.data);
   };
   const removeSelectedUser = () => {
@@ -122,7 +123,8 @@ const SelectCustomerInput: React.FC<Props> = ({
                 <TabPanels>
                   <TabPanel>
                     <UserForm
-                      customer={customer}
+                      type="customer"
+                      user={customer}
                       closeModal={onCloseUpdateModal}
                       handleAddNewCustomerToOrder={handleAddNewCustomerToOrder}
                     />
@@ -194,6 +196,7 @@ const SelectCustomerInput: React.FC<Props> = ({
           <ModalOverlay />
           <ModalContent>
             <UserForm
+              type="customer"
               closeModal={onCloseAddModal}
               handleAddNewCustomerToOrder={handleAddNewCustomerToOrder}
             />

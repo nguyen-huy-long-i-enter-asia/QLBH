@@ -31,7 +31,7 @@ const managerMenuList = [
   },
   {
     menuName: "Customer",
-    buttonLink: "/login",
+    buttonLink: "/customers",
   },
   {
     menuName: "Staff",
@@ -70,7 +70,7 @@ const staffMenuList = [
   },
   {
     menuName: "Customer",
-    buttonLink: "/login",
+    buttonLink: "/customers",
   },
 ];
 

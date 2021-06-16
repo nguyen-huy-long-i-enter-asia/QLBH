@@ -38,6 +38,7 @@ const ManagerAuth: React.FC<Props> = ({ path, children }) => {
       </Route>
     );
   }
+  sessionStorage.setItem("msg", "Your are not a Manager");
   return <Redirect to="login" />;
 };
 

@@ -29,42 +29,42 @@ class ProductsController extends AppController
         $this->loadModel("CategoriesProducts");
         $mapFunc = function ( $product) {
             //Add inventory property to product
-            $colors_products_sizes= $this->ColorsProductsSizes->find()->contain(['Colors','Sizes'])->where(['product_id' => $product->id] )->toArray();
-            if(!empty($colors_products_sizes) ){
-                $sizeObject = array(
+            // $colors_products_sizes= $this->ColorsProductsSizes->find()->contain(['Colors','Sizes'])->where(['product_id' => $product->id] )->toArray();
+            // if(!empty($colors_products_sizes) ){
+            //     $sizeObject = array(
 
-                    "size" =>$colors_products_sizes[0]['size']['name'] ,
-                    "colors" => []
-                );
-                $sizesArray = [];
-                $colorObject = ['color' => '', 'count' => 0];
-                $colorsArray = array();
-                $current_size = $colors_products_sizes[0]['size']['name'];
-                foreach($colors_products_sizes as $cps) {
+            //         "size" =>$colors_products_sizes[0]['size']['name'] ,
+            //         "colors" => []
+            //     );
+            //     $sizesArray = [];
+            //     $colorObject = ['color' => '', 'count' => 0];
+            //     $colorsArray = array();
+            //     $current_size = $colors_products_sizes[0]['size']['name'];
+            //     foreach($colors_products_sizes as $cps) {
 
-                    if($current_size != $cps['size']['name']){
-                        $sizeObject['colors'] = $colorsArray;
-                        array_push($sizesArray,$sizeObject);
-                        $colorsArray = array();
-                        $current_size = $cps['size']['name'];
-                        $sizeObject['colors'] = [];
-                        $sizeObject['size']= $cps['size']['name'];
+            //         if($current_size != $cps['size']['name']){
+            //             $sizeObject['colors'] = $colorsArray;
+            //             array_push($sizesArray,$sizeObject);
+            //             $colorsArray = array();
+            //             $current_size = $cps['size']['name'];
+            //             $sizeObject['colors'] = [];
+            //             $sizeObject['size']= $cps['size']['name'];
 
-                    }
-                    $colorObject['color'] = $cps['color']['name'];
-                    $colorObject['count'] = $cps['count'];
-                    array_push($colorsArray, $colorObject);
+            //         }
+            //         $colorObject['color'] = $cps['color']['name'];
+            //         $colorObject['count'] = $cps['count'];
+            //         array_push($colorsArray, $colorObject);
 
-                }
-                $sizeObject['colors'] = $colorsArray;
-                array_push($sizesArray,$sizeObject);
-                $colorsArray = array();
-                // debug($sizesArray);
-                $product['inventory']=  $sizesArray;
-                // debug($product);
-            }else {
-                $product['inventory'] = [];
-            }
+            //     }
+            //     $sizeObject['colors'] = $colorsArray;
+            //     array_push($sizesArray,$sizeObject);
+            //     $colorsArray = array();
+            //     // debug($sizesArray);
+            //     $product['inventory']=  $sizesArray;
+            //     // debug($product);
+            // }else {
+            //     $product['inventory'] = [];
+            // }
 
 
             //Add Categories property to $product;
@@ -99,6 +99,51 @@ class ProductsController extends AppController
         $this->response = $this->response->withType('json');
         return $this->response;
 
+    }
+
+    public function getInventoryById($id = null)
+    {
+        $this->loadModel('ColorsProductsSizes');
+        $colors_products_sizes= $this->ColorsProductsSizes->find()->contain(['Colors','Sizes'])->where(['product_id' => (int)$id] )->sortBy('size_id',SORT_ASC)->toArray();
+
+        if(!empty($colors_products_sizes) ){
+            // debug($colors_products_sizes);
+
+            // debug($colors_products_sizes[0]['size']['name']);
+            $sizeObject = array(
+                "size" =>array_values($colors_products_sizes)[0]['size']['name'] ,
+                "colors" => []
+            );
+            $sizesArray = [];
+            $colorObject = ['color' => '', 'count' => 0];
+            $colorsArray = array();
+            $current_size = array_values($colors_products_sizes)[0]['size']['name'];
+            foreach($colors_products_sizes as $cps) {
+
+                if($current_size != $cps['size']['name']){
+                    $sizeObject['colors'] = $colorsArray;
+                    array_push($sizesArray,$sizeObject);
+                    $colorsArray = array();
+                    $current_size = $cps['size']['name'];
+                    $sizeObject['colors'] = [];
+                    $sizeObject['size']= $cps['size']['name'];
+
+                }
+                $colorObject['color'] = $cps['color']['name'];
+                $colorObject['count'] = $cps['count'];
+                array_push($colorsArray, $colorObject);
+
+                }
+                $sizeObject['colors'] = $colorsArray;
+                array_push($sizesArray,$sizeObject);
+                $colorsArray = array();
+                // debug($sizesArray);
+                $inventory=  $sizesArray;
+                // debug($product);
+            }else {
+                $inventory = [];
+            }
+            return  $this->response->withStringBody(json_encode(['inventory' => $inventory]))->withType('json');
     }
     public function getSellList(){
         $this->loadModel('ColorsProductsSizes');
@@ -192,7 +237,7 @@ class ProductsController extends AppController
                     ->withStringBody(json_encode(['status' => "success"]));
         }else {
             $response = $this->response->withType('application/json')
-                    ->withStringBody(json_encode(['status' => $name]));
+                    ->withStringBody(json_encode(['status' => "fail"]));
 
         }
         return $response;

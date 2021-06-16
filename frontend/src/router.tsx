@@ -18,6 +18,8 @@ import CartPage from "pages/Customer/CartPage";
 import LoginFacebookPage from "pages/LoginFacebookPage";
 import TimeStatisticPage from "pages/Statistic/TimeStatisticPage";
 import ProductStatisticPage from "pages/Statistic/ProductStatisticPage";
+import CustomerListPage from "pages/Users/CustomerListPage";
+import StaffListPage from "pages/Users/StaffListPage";
 
 export const Router: React.FC = () => {
   return (
@@ -25,9 +27,9 @@ export const Router: React.FC = () => {
       <Route path="/login" exact>
         <LoginPage />
       </Route>
-      <ManagerAuth path="/products">
+      <StaffAuth path="/products">
         <ProductListPage />
-      </ManagerAuth>
+      </StaffAuth>
       <ManagerAuth path="/manufacturers">
         <ManufacturerListPage />
       </ManagerAuth>
@@ -50,6 +52,9 @@ export const Router: React.FC = () => {
       <StaffAuth path="/orders">
         <OrderListPage />
       </StaffAuth>
+      <StaffAuth path="/customers">
+        <CustomerListPage />
+      </StaffAuth>
 
       <CustomerAuth path="/store/product/:id">
         <StoreProductPage />
@@ -68,6 +73,9 @@ export const Router: React.FC = () => {
       </ManagerAuth>
       <ManagerAuth path="/productStatistic">
         <ProductStatisticPage />
+      </ManagerAuth>
+      <ManagerAuth path="/staff">
+        <StaffListPage />
       </ManagerAuth>
     </Switch>
   );

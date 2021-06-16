@@ -23,7 +23,7 @@ class ManufacturersController extends AppController
         // $this->response = $this->response->withType('json');
         // return $this->response;
         $query =  $this->Manufacturers->find()->leftJoinWith('Receipts');
-        $query->select(['id','name','phone','address','email','note','total' => $query->func()->sum('Receipts.total')])->group(['Manufacturers.id'])->toArray();
+        $query->select(['id','name','phone','address','email','note','total' => $query->func()->coalesce([$query->func()->sum('Receipts.total'),0])])->group(['Manufacturers.id'])->toArray();
         return $this->response->withStringBody(json_encode( $query))->withType('json');
     }
 
@@ -50,17 +50,21 @@ class ManufacturersController extends AppController
      */
     public function add()
     {
-        $manufacture = $this->Manufacturers->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $manufacture = $this->Manufacturers->patchEntity($manufacturer, $this->request->getData());
-            if ($this->Manufacturers->save($manufacturer)) {
-                $this->Flash->success(__('The manufacture has been saved.'));
+        $manufacturer = $this->Manufacturers->newEmptyEntity();
+        $manufacturer->name= $this->request->getData('name');
+        $manufacturer->email = $this->request->getData('email');
+        $manufacturer->phone = $this->request->getData('phone');
+        $manufacturer->address = $this->request->getData('address');
+        $manufacturer->note = $this->request->getData('note');
+        if($this->Manufacturers->save($manufacturer)){
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "success"]));
+        }else {
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "fail"]));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The manufacture could not be saved. Please, try again.'));
         }
-        $this->set(compact('manufacturer'));
+        return $response;
     }
 
     /**
@@ -70,21 +74,23 @@ class ManufacturersController extends AppController
      * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit()
     {
-        $manufacture = $this->Manufacturers->get($id, [
-            'contain' => [],
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $manufacture = $this->Manufacturers->patchEntity($manufacturer, $this->request->getData());
-            if ($this->Manufacturers->save($manufacturer)) {
-                $this->Flash->success(__('The manufacture has been saved.'));
+        $manufacturer = $this->Manufacturers->get($this->request->getData('id'));
+        $manufacturer->name= $this->request->getData('name');
+        $manufacturer->email = $this->request->getData('email');
+        $manufacturer->phone = $this->request->getData('phone');
+        $manufacturer->address = $this->request->getData('address');
+        $manufacturer->note = $this->request->getData('note');
+        if($this->Manufacturers->save($manufacturer)){
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "success"]));
+        }else {
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "fail"]));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The manufacture could not be saved. Please, try again.'));
         }
-        $this->set(compact('manufacturer'));
+        return $response;
     }
 
     /**
@@ -96,14 +102,14 @@ class ManufacturersController extends AppController
      */
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $manufacture = $this->Manufacturers->get($id);
-        if ($this->Manufacturers->delete($manufacturer)) {
-            $this->Flash->success(__('The manufacture has been deleted.'));
+        $manufacturer = $this->Manufacturers->get($id);
+        if($this->Manufacturers->delete($manufacturer)){
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "success"]));
         } else {
-            $this->Flash->error(__('The manufacture could not be deleted. Please, try again.'));
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "fail"]));
         }
-
-        return $this->redirect(['action' => 'index']);
+        return $response;
     }
 }

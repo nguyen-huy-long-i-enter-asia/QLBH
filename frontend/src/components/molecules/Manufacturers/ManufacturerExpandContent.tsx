@@ -11,9 +11,15 @@ import {
   Tr,
   Td,
   Text,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
   Button,
+  useToast,
 } from "@chakra-ui/react";
-import ProductForm from "components/atoms/Products/ProductForm";
+import ManufacturerForm from "components/atoms/Manufacturers/ManufacturerForm";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
@@ -33,6 +39,7 @@ const ManufacturerExpandContent: React.FC<Props> = ({
   isDisplay,
 }) => {
   const [transactions, setTransactions] = useState<any[]>();
+  const toast = useToast();
   useEffect(() => {
     const fetchTransactions = async () => {
       const result = await axios.get(
@@ -57,62 +64,114 @@ const ManufacturerExpandContent: React.FC<Props> = ({
   //       alert(result.data.status);
   //     }
   //   };
+  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const url = `${process.env.REACT_APP_SERVER}manufacturers/delete/${manufacturer.id}`;
+    const result = await axios.get(url);
+    if (result.data.status === "success") {
+      sessionStorage.setItem("action", "delete");
+      window.location.reload(false);
+    } else {
+      toast({
+        title: `Delete Manufacturer fail`,
+
+        status: "error",
+        duration: 1500,
+        isClosable: true,
+      });
+    }
+  };
   if (isDisplay) {
     return (
-      <Box>
-        <Box>
-          <Flex>
+      <Tabs>
+        <TabList bgColor="#51cdc426">
+          <Tab _selected={{ bgColor: "white", color: "black" }}>Info</Tab>
+          <Tab _selected={{ bgColor: "white", color: "black" }}>
+            Recent Receipt
+          </Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <Flex w="100%">
+              <Box w="31%" mr="2%">
+                <Table>
+                  <Tbody>
+                    <Tr>
+                      <Td>Name:</Td>
+                      <Td>{manufacturer.name}</Td>
+                    </Tr>
+                    <Tr>
+                      <Td>Phone:</Td>
+                      <Td>{manufacturer.phone}</Td>
+                    </Tr>
+                  </Tbody>
+                </Table>
+              </Box>
+              <Box w="31%" mr="2%">
+                <Table>
+                  <Tbody>
+                    <Tr>
+                      <Td>Email:</Td>
+                      <Td>{manufacturer.email}</Td>
+                    </Tr>
+                    <Tr>
+                      <Td>Address:</Td>
+                      <Td>{manufacturer.address}</Td>
+                    </Tr>
+                  </Tbody>
+                </Table>
+              </Box>
+              <Box w="33%">
+                <Table>
+                  <Tbody>
+                    <Tr>
+                      <Td>Total:</Td>
+                      <Td>{manufacturer.total}</Td>
+                    </Tr>
+                    <Tr>
+                      <Td>Note</Td>
+                    </Tr>
+                    <Box ml="1.5rem" minH="5rem">
+                      {manufacturer.note}
+                    </Box>
+                  </Tbody>
+                </Table>
+              </Box>
+            </Flex>
+          </TabPanel>
+          <TabPanel>
             <Box>
+              <Box>
+                <Table>
+                  <Thead>
+                    <Th>Id</Th>
+                    <Th>Time</Th>
+                    <Th>Staff</Th>
+                    <Th>Total</Th>
+                  </Thead>
+                  <Tbody>
+                    {transactions?.map((item) => (
+                      <Tr>
+                        <Td>{item.id}</Td>
+                        <Td>{item.created}</Td>
+                        <Td>{item.user.name}</Td>
+                        <Td>{item.total}</Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </Box>
               <Flex>
-                <Text>Name</Text>
-                <Text>{manufacturer.name}</Text>
-              </Flex>
-              <Flex>
-                <Text>Phone</Text>
-                <Text>{manufacturer.phone}</Text>
-              </Flex>
-              <Flex>
-                <Text>Address</Text>
-                <Text>{manufacturer.address}</Text>
+                <ManufacturerForm
+                  action="edit"
+                  selectedManufacturer={manufacturer}
+                />
+                <Button onClick={handleDelete}>Delete</Button>
+                {/* <Button onClick={handleDeleteManufacturer}>Delelte this Manufacturer</Button> */}
               </Flex>
             </Box>
-            <Box>
-              <Flex>
-                <Text>Email</Text>
-                <Text>{manufacturer.email}</Text>
-              </Flex>
-              <Flex>
-                <Text>Note</Text>
-                <Text>{manufacturer.note}</Text>
-              </Flex>
-              <Flex>
-                <Text>Total</Text>
-                <Text>{manufacturer.total}</Text>
-              </Flex>
-            </Box>
-          </Flex>
-        </Box>
-        <Box>
-          <Table>
-            <Thead>
-              <Th>Id</Th>
-              <Th>Time</Th>
-              <Th>Staff</Th>
-              <Th>Total</Th>
-            </Thead>
-            <Tbody>
-              {transactions?.map((item) => (
-                <Tr>
-                  <Td>{item.id}</Td>
-                  <Td>{item.created}</Td>
-                  <Td>{item.user.name}</Td>
-                  <Td>{item.total}</Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </Box>
-      </Box>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     );
   }
   return <></>;

@@ -4,7 +4,7 @@ import axios from "axios";
 import Pagination from "components/atoms/Pagination";
 import Cookies from "js-cookie";
 
-import { useDisclosure, Box, Flex, VStack } from "@chakra-ui/react";
+import { useDisclosure, Box, Flex, VStack, useToast } from "@chakra-ui/react";
 import MenuBarTemplate from "components/organisms/MenuBarTemplate";
 import TableTemplate from "components/organisms/TableTemplate";
 import FilterTemplate from "components/organisms/FilterTemplate";
@@ -39,13 +39,6 @@ type Products = {
     id: string;
     name: string;
   }[];
-  inventory: {
-    size: string;
-    colors: {
-      color: string;
-      count: number;
-    }[];
-  }[];
 }[];
 
 const ProductListContainer: React.FC = () => {
@@ -68,6 +61,7 @@ const ProductListContainer: React.FC = () => {
     "product_state",
   ];
   const [sortState, setSortState] = useState(fields.map((item) => false));
+  const toast = useToast();
   // Fetch ProductsList and CategoriesList, Manufacturers List
   useEffect(() => {
     const fetchData = async () => {
@@ -127,10 +121,25 @@ const ProductListContainer: React.FC = () => {
       );
     };
     fetchData();
+    const action = sessionStorage.getItem("action");
+    sessionStorage.removeItem("action");
+    if (action) {
+      toast({
+        title: `${
+          // eslint-disable-next-line no-nested-ternary
+          action === "add" ? "Add" : action === "edit" ? "Edit" : "Delete"
+        } Product successful`,
+
+        status: "success",
+        duration: 1500,
+        isClosable: true,
+      });
+    }
   }, []);
 
   // Update DisplayList by Changing Filter
   useEffect(() => {
+    // console.log(products);
     const checkedFilters = checkBoxFilters.map((item) => ({
       filterName: item.filterName,
       filterConditions: item.filterConditions
@@ -169,7 +178,8 @@ const ProductListContainer: React.FC = () => {
           return false;
         });
       }
-
+      // CheckManufacturer
+      console.log(newFilteredList);
       if (checkedFilters[2].filterConditions.length !== 0) {
         newFilteredList = newFilteredList.filter((item) => {
           return checkedFilters[2].filterConditions.some(
@@ -183,7 +193,7 @@ const ProductListContainer: React.FC = () => {
           item.name.includes(keyWord)
         );
       }
-
+      console.log(newFilteredList);
       setFilteredList(newFilteredList);
     }
   }, [checkBoxFilters, keyWord]);
@@ -208,11 +218,11 @@ const ProductListContainer: React.FC = () => {
             }),
           };
     });
-
     setCheckBoxFilters(newCBFilter);
   };
   const handlePagination = (newDisplayList: Products) => {
     setDisplayList(newDisplayList);
+    console.log(newDisplayList);
   };
   const searchProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyWord(e.currentTarget.value);
@@ -263,6 +273,7 @@ const ProductListContainer: React.FC = () => {
       );
     }
   };
+
   return (
     <div>
       <Flex className="content">
@@ -298,6 +309,7 @@ const ProductListContainer: React.FC = () => {
               productStatesList: productStates,
             }}
           />
+
           <Pagination
             items={filteredList}
             onChangePage={handlePagination}

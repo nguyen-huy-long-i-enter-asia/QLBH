@@ -257,6 +257,7 @@ const StoreContainer: React.FC = () => {
             rangeFilter={{
               from: rangeFilterStates.smallest,
               to: rangeFilterStates.biggest,
+              isApplied: rangeFilterStates.isApplied,
               filterName: "Price",
               handleFromChange: handleSmallestChange,
               handleToChange: handleBiggestChange,

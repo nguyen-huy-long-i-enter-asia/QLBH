@@ -38,6 +38,7 @@ const StaffAuth: React.FC<Props> = ({ path, children }) => {
       </Route>
     );
   }
+  sessionStorage.setItem("msg", "Your are not a Staff");
   return <Redirect to="/login" />;
 };
 

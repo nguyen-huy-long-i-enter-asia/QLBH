@@ -26,6 +26,7 @@ import {
   Tbody,
   Textarea,
   TabsProvider,
+  useToast,
 } from "@chakra-ui/react";
 import { css, SerializedStyles } from "@emotion/react";
 import Cookies from "js-cookie";
@@ -47,7 +48,17 @@ const LoginContainer: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const history = useHistory();
-
+  const toast = useToast();
+  const msg = sessionStorage.getItem("msg");
+  if (msg) {
+    toast({
+      title: msg,
+      status: "error",
+      duration: 1500,
+      isClosable: true,
+    });
+    sessionStorage.removeItem("msg");
+  }
   const changeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.currentTarget.value);
   };
@@ -71,7 +82,7 @@ const LoginContainer: React.FC = () => {
         }
       );
       if (result.data.email !== "") {
-        alert(result.data.email);
+        alert(`${result.data.email}/${result.data.position}`);
 
         Cookies.set("email", result.data.email);
         Cookies.set("position", result.data.position);

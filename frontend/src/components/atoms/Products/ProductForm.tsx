@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { css, SerializedStyles } from "@emotion/react";
 import {
   Input,
   Button,
@@ -18,6 +19,7 @@ import {
   VStack,
   Select,
   Checkbox,
+  Stack,
   Table,
   Text,
   Tr,
@@ -57,13 +59,6 @@ type Props = {
       id: string;
       name: string;
     }[];
-    inventory: {
-      size: string;
-      colors: {
-        color: string;
-        count: number;
-      }[];
-    }[];
   };
   productStatesList:
     | {
@@ -72,6 +67,7 @@ type Props = {
       }[]
     | undefined;
   action: string;
+  buttonStyle?: SerializedStyles;
 };
 const ProductForm: React.FC<Props> = ({
   categoriesList,
@@ -79,6 +75,7 @@ const ProductForm: React.FC<Props> = ({
   selectedProduct,
   productStatesList,
   action,
+  buttonStyle,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [name, setName] = useState(selectedProduct ? selectedProduct.name : "");
@@ -202,13 +199,6 @@ const ProductForm: React.FC<Props> = ({
       formData.append("state_id", stateId);
       formData.append("original_price", originalPrice);
       formData.append("sell_price", sellPrice);
-      // console.log(
-      //   JSON.stringify(
-      //     categories
-      //       .filter((item) => item.isChecked === true)
-      //       .map((item) => item.id)
-      //   )
-      // );
       formData.append(
         "categories",
         JSON.stringify(
@@ -230,10 +220,10 @@ const ProductForm: React.FC<Props> = ({
             "Content-Type": "multipart/form-data",
           },
         });
-        // console.log(result.data);
+
         if (result.data.status === "success") {
-          console.log("a");
-          alert("Add product successfull");
+          sessionStorage.setItem("action", action);
+
           window.location.reload(false);
         } else {
           console.log(result.data.status);
@@ -248,10 +238,11 @@ const ProductForm: React.FC<Props> = ({
   return (
     <>
       <Button
-        className="button "
+        className="button"
         onClick={onOpen}
         bgColor="#3399ff"
         color="white"
+        css={buttonStyle}
       >{`${action.charAt(0).toUpperCase() + action.slice(1)} Product`}</Button>
       <Modal isOpen={isOpen} onClose={onClose} size="full">
         <ModalOverlay />
@@ -360,7 +351,7 @@ const ProductForm: React.FC<Props> = ({
                     <Tr>
                       <Td fontWeight="bold">Categories</Td>
                       <Td>
-                        <VStack>
+                        <Stack>
                           {categories.map((item) => (
                             <Checkbox
                               key={item.id}
@@ -372,7 +363,7 @@ const ProductForm: React.FC<Props> = ({
                               {item.name}
                             </Checkbox>
                           ))}
-                        </VStack>
+                        </Stack>
                       </Td>
                     </Tr>
                   </Tbody>
