@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import Cookies from "js-cookie";
 import { Center } from "@chakra-ui/react";
-import imageBg from "assets/images/clark-street-mercantile-P3pI6xzovu0-unsplash.jpg";
+import imageBg from "assets/images/shoe-background.jpg";
 
 type LayoutProps = {
   children?: ReactNode;

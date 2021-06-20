@@ -261,7 +261,7 @@ const ManufacturerForm: React.FC<Props> = ({
       >{`${
         action.charAt(0).toUpperCase() + action.slice(1)
       } Manufacturer`}</Button>
-      <Modal isOpen={isOpen} onClose={onClose} size="full">
+      <Modal isOpen={isOpen} onClose={onClose} size="6xl">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader bgColor="#ededed">

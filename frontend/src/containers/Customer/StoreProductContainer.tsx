@@ -14,6 +14,7 @@ import {
   Input,
   Button,
   color,
+  Link,
 } from "@chakra-ui/react";
 import "layouts/layout.css";
 import RadioCard from "components/atoms/RadioCard/RadioCard";
@@ -140,42 +141,50 @@ const StoreProductContainer: React.FC<Props> = ({ id }) => {
     <Box className="content">
       <Flex>
         <Box w="33.3%" pl="5">
+          <Button bgColor="#3498fd" color="white" fontSize="16px">
+            <Link href="http://localhost:3000/store">Back to Main page</Link>
+          </Button>
+
           <Image
-            h="20rem"
-            w="14rem"
+            w="90%"
+            m="3rem 10% 0% 0%"
             src={`http://localhost:8765/img/${product.image}`}
           />
         </Box>
         <Box w="66.7%">
           <Box>
-            <Text fontSize="2.25rem"> {product.name}</Text>
+            <Text fontSize="2.5rem"> {product.name}</Text>
           </Box>
           <Box>
-            <Box
+            <Text
+              fontSize="25px"
               bgColor="#00FFFF"
               textAlign="center"
-              w="35%"
-              borderRadius="1rem"
+              d="inline-block"
+              p="0.25rem 1rem"
             >
-              <Text>{product.manufacturer.name}</Text>
-            </Box>
+              {product.manufacturer.name}
+            </Text>
           </Box>
           {product.discount > 0 ? (
-            <Box>
-              <Text>
-                {((100 - product.discount) * product.sell_price) / 100}
-              </Text>
-            </Box>
+            <Text fontSize="25px" mt="1rem">
+              {((100 - product.discount) * product.sell_price) / 100}
+            </Text>
           ) : (
             <></>
           )}
-          <Box textDecoration={product.discount > 0 ? "line-through" : "none"}>
+          <Box
+            textDecoration={product.discount > 0 ? "line-through" : "none"}
+            fontSize="25px"
+          >
             {product.sell_price}
           </Box>
           <Table>
             <Tbody>
               <Tr>
-                <Td>Color</Td>
+                <Td pl="0px" fontSize="25px">
+                  Color
+                </Td>
                 <Td>
                   <RadioCard
                     options={product.colors}
@@ -184,7 +193,9 @@ const StoreProductContainer: React.FC<Props> = ({ id }) => {
                 </Td>
               </Tr>
               <Tr>
-                <Td>Color</Td>
+                <Td pl="0px" fontSize="25px">
+                  Color
+                </Td>
                 <Td>
                   <RadioCard
                     options={product.sizes}
@@ -196,20 +207,32 @@ const StoreProductContainer: React.FC<Props> = ({ id }) => {
           </Table>
           <Flex>
             <Input
+              w="3.4rem"
               placeholder="Count"
               type="number"
               value={count !== 0 ? count : undefined}
               onChange={handleCountChange}
+              size="lg"
+              mr="1rem"
             />
-            <Button onClick={handleAddToCart}>Add to cart</Button>
+            <Button
+              onClick={handleAddToCart}
+              size="lg"
+              bgColor="#3498fd"
+              color="white"
+            >
+              Add to cart
+            </Button>
           </Flex>
         </Box>
       </Flex>
       <Box>
-        <Box>
-          <Text>Description</Text>
+        <Box pl="2.3%">
+          <Text fontSize="25px" fontWeight="bold">
+            Description
+          </Text>
         </Box>
-        <Box>
+        <Box pl="2.3%">
           <Text>{product.note}</Text>
         </Box>
       </Box>

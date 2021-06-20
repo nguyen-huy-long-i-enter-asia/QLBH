@@ -16,7 +16,7 @@ const CustomerAuth: React.FC<Props> = ({ path, children }) => {
     const checkLogged = async () => {
       const email = Cookies.get("email");
       if (!email) {
-        setIsAuth(false);
+        setIsAuth(true);
       } else {
         const result = await axios.post(
           `${process.env.REACT_APP_SERVER}users/auth`,

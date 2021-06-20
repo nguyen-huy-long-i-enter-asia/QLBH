@@ -486,7 +486,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     <Flex pt="1%" w="100%" justify="center" minH="90vh">
       <VStack w="60%" mr="1%">
         <Flex justify="space-between" w="100%">
-          <Flex align="center" ml="3%">
+          <Flex align="center" ml="0%" mr="3%">
             <Text fontWeight="bold" fontSize="3xl">
               {orderId ? "Update" : "New"}
             </Text>
@@ -497,6 +497,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
             setImportList={setImportList}
           /> */}
           <Input
+            w="40%"
             placeholder="Type product id or name"
             bgColor="white"
             value={keyword === "" ? undefined : keyword}

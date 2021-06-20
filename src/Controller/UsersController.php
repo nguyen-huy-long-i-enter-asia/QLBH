@@ -20,7 +20,7 @@ class UsersController extends AppController
         $user = $this->Users->find()->where(["email"=>$email])->first();
         if(empty($user)) {
             $response = $this->response->withType('application/json')
-                    ->withStringBody(json_encode(['email' => ""]));
+                    ->withStringBody(json_encode(['email' => "", 'msg' => "Account not found"]));
         }else {
 
             $session->write('email', $email);

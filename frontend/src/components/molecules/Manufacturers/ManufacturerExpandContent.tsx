@@ -137,37 +137,78 @@ const ManufacturerExpandContent: React.FC<Props> = ({
                 </Table>
               </Box>
             </Flex>
+            <Flex justifyContent="flex-end" mt="1vh">
+              <ManufacturerForm
+                action="edit"
+                selectedManufacturer={manufacturer}
+              />
+              <Button
+                onClick={handleDelete}
+                className="button"
+                bgColor="#3399ff"
+                color="white"
+                m="0vh 1vw"
+              >
+                Delete
+              </Button>
+              {/* <Button onClick={handleDeleteManufacturer}>Delelte this Manufacturer</Button> */}
+            </Flex>
           </TabPanel>
           <TabPanel>
             <Box>
               <Box>
-                <Table>
-                  <Thead>
-                    <Th>Id</Th>
-                    <Th>Time</Th>
-                    <Th>Staff</Th>
-                    <Th>Total</Th>
+                <Table w="60%" m="auto" border="1px solid #dce6ef">
+                  <Thead backgroundColor="#3399ff" border="1px solid #dce6ef">
+                    <Th
+                      textAlign="center"
+                      color="white"
+                      border="1px solid #dce6ef"
+                    >
+                      Id
+                    </Th>
+                    <Th
+                      textAlign="center"
+                      color="white"
+                      border="1px solid #dce6ef"
+                    >
+                      Time
+                    </Th>
+                    <Th
+                      textAlign="center"
+                      color="white"
+                      border="1px solid #dce6ef"
+                    >
+                      Staff
+                    </Th>
+                    <Th
+                      textAlign="center"
+                      color="white"
+                      border="1px solid #dce6ef"
+                    >
+                      {" "}
+                      Total
+                    </Th>
                   </Thead>
                   <Tbody>
                     {transactions?.map((item) => (
-                      <Tr>
-                        <Td>{item.id}</Td>
-                        <Td>{item.created}</Td>
-                        <Td>{item.user.name}</Td>
-                        <Td>{item.total}</Td>
+                      <Tr border="1px solid #dce6ef">
+                        <Td textAlign="center" border="1px solid #dce6ef">
+                          {item.id}
+                        </Td>
+                        <Td textAlign="center" border="1px solid #dce6ef">
+                          {item.created}
+                        </Td>
+                        <Td textAlign="center" border="1px solid #dce6ef">
+                          {item.user.name}
+                        </Td>
+                        <Td textAlign="center" border="1px solid #dce6ef">
+                          {item.total}
+                        </Td>
                       </Tr>
                     ))}
                   </Tbody>
                 </Table>
               </Box>
-              <Flex>
-                <ManufacturerForm
-                  action="edit"
-                  selectedManufacturer={manufacturer}
-                />
-                <Button onClick={handleDelete}>Delete</Button>
-                {/* <Button onClick={handleDeleteManufacturer}>Delelte this Manufacturer</Button> */}
-              </Flex>
             </Box>
           </TabPanel>
         </TabPanels>

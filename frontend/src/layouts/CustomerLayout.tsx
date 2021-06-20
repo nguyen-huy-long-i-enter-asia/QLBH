@@ -9,7 +9,6 @@ type LayoutProps = {
 };
 
 const CustomerLayout: React.FC<LayoutProps> = ({ children }) => {
-  const position = Cookies.get("position");
   return (
     <>
       <Box className="body" w="100%">

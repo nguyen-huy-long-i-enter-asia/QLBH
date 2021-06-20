@@ -19,6 +19,7 @@ import {
   Image,
   InputGroup,
   InputLeftElement,
+  Icon,
   FormLabel,
   VStack,
   Select,
@@ -32,8 +33,9 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { EmailIcon, LockIcon } from "@chakra-ui/icons";
-
+import { EmailIcon, LockIcon, PhoneIcon } from "@chakra-ui/icons";
+import { BiUser } from "react-icons/bi";
+import { GiPositionMarker } from "react-icons/gi";
 import { css, SerializedStyles } from "@emotion/react";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom";
@@ -58,9 +60,12 @@ type User = {
   password: string;
 };
 
-const LoginContainer: React.FC = () => {
+const StoreRegisterContainer: React.FC = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const history = useHistory();
   const toast = useToast();
   const msg = sessionStorage.getItem("msg");
@@ -79,6 +84,15 @@ const LoginContainer: React.FC = () => {
   const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.currentTarget.value);
   };
+  const changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.currentTarget.value);
+  };
+  const changePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.currentTarget.value);
+  };
+  const changeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddress(e.currentTarget.value);
+  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -96,28 +110,58 @@ const LoginContainer: React.FC = () => {
         }
       );
       if (result.data.email !== "") {
-        alert(`${result.data.email}/${result.data.position}`);
-
-        Cookies.set("email", result.data.email);
-        Cookies.set("position", result.data.position);
         if (result.data.position === 3) {
+          Cookies.set("email", result.data.email);
+          Cookies.set("position", result.data.position);
+
           history.push("/store");
         } else {
-          history.push("/products");
+          toast({
+            title: "Account not found",
+            status: "error",
+            duration: 1500,
+            isClosable: true,
+          });
         }
       } else {
-        window.location.reload(false);
+        toast({
+          title: result.data.msg,
+          status: "error",
+          duration: 1500,
+          isClosable: true,
+        });
       }
     }
   };
   return (
     <Box className="LongHuy" css={loginCss}>
+      <Text color="Black" fontSize="20px" fontWeight="bold">
+        Register
+      </Text>
       <form onSubmit={handleSubmit}>
+        <InputGroup css={input}>
+          <InputLeftElement
+            pointerEvents="none"
+            // eslint-disable-next-line react/no-children-prop
+            children={<Icon as={BiUser} color="black" boxSize="1.5em" />}
+            t="10%"
+          />
+          <Input
+            type="text"
+            placeholder="Enter your Name"
+            value={name === "" ? undefined : name}
+            onChange={changeName}
+            required
+            bgColor="white"
+            size="lg"
+          />
+        </InputGroup>
         <InputGroup css={input} d="flex" alignItems="center">
           <InputLeftElement
             pointerEvents="none"
             // eslint-disable-next-line react/no-children-prop
-            children={<EmailIcon color="black" fontSize="1.5em" t="10%" />}
+            children={<EmailIcon color="black" fontSize="1.5em" />}
+            t="10%"
           />
           <Input
             type="email"
@@ -128,7 +172,6 @@ const LoginContainer: React.FC = () => {
             bgColor="white"
             size="lg"
             opacity={1}
-            fontSize="1.5em"
           />
         </InputGroup>
 
@@ -136,7 +179,8 @@ const LoginContainer: React.FC = () => {
           <InputLeftElement
             pointerEvents="none"
             // eslint-disable-next-line react/no-children-prop
-            children={<LockIcon color="black" boxSize="1.5em" t="10%" />}
+            children={<LockIcon color="black" boxSize="1.5em" />}
+            t="10%"
           />
           <Input
             type="password"
@@ -146,14 +190,51 @@ const LoginContainer: React.FC = () => {
             required
             bgColor="white"
             size="lg"
-            fontSize="1.5em"
+          />
+        </InputGroup>
+
+        <InputGroup css={input}>
+          <InputLeftElement
+            pointerEvents="none"
+            // eslint-disable-next-line react/no-children-prop
+            children={<PhoneIcon color="black" boxSize="1.5em" />}
+            t="10%"
+          />
+          <Input
+            type="number"
+            placeholder="Enter your Phone"
+            value={phone === "" ? undefined : phone}
+            onChange={changePhone}
+            required
+            bgColor="white"
+            size="lg"
+          />
+        </InputGroup>
+        <InputGroup css={input}>
+          <InputLeftElement
+            pointerEvents="none"
+            // eslint-disable-next-line react/no-children-prop
+            children={
+              <Icon as={GiPositionMarker} color="black" boxSize="1.5em" />
+            }
+            t="10%"
+          />
+          <Input
+            as={Textarea}
+            type="text"
+            placeholder="Enter your Address"
+            value={address === "" ? undefined : address}
+            onChange={changeAddress}
+            required
+            bgColor="white"
+            size="lg"
           />
         </InputGroup>
 
         <Input
           m="1rem 20%"
           type="submit"
-          value="Login"
+          value="Sign Up"
           color="white"
           bgColor="#53c7bd"
           w="60%"
@@ -167,4 +248,4 @@ const LoginContainer: React.FC = () => {
   );
 };
 
-export default LoginContainer;
+export default StoreRegisterContainer;

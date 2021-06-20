@@ -40,18 +40,26 @@ const CheckBoxFilter: React.FC<Props> = ({
       </Box>
       <Box className="filter-conditions" p="4% 4% 0">
         <FormControl id="from">
-          <Flex>
-            <FormLabel>From</FormLabel>
-            <Input value={from.toLocaleString()} onChange={handleFromChange} />
+          <Flex alignItems="center">
+            <FormLabel w="20%">From</FormLabel>
+            <Input
+              w="80%"
+              value={from.toLocaleString()}
+              onChange={handleFromChange}
+            />
           </Flex>
         </FormControl>
         <FormControl id="to">
-          <Flex>
-            <FormLabel>To</FormLabel>
-            <Input value={to.toLocaleString()} onChange={handleToChange} />
+          <Flex alignItems="center">
+            <FormLabel w="20%">To</FormLabel>
+            <Input
+              w="80%"
+              value={to.toLocaleString()}
+              onChange={handleToChange}
+            />
           </Flex>
         </FormControl>
-        <Flex>
+        <Flex mt="1rem" justifyContent="space-around">
           <Button
             onClick={handleSetRange}
             color={isApplied === true ? "white" : "black"}

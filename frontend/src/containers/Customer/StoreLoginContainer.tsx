@@ -33,7 +33,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { EmailIcon, LockIcon } from "@chakra-ui/icons";
-
 import { css, SerializedStyles } from "@emotion/react";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom";
@@ -58,7 +57,7 @@ type User = {
   password: string;
 };
 
-const LoginContainer: React.FC = () => {
+const StoreLoginContainer: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const history = useHistory();
@@ -96,17 +95,26 @@ const LoginContainer: React.FC = () => {
         }
       );
       if (result.data.email !== "") {
-        alert(`${result.data.email}/${result.data.position}`);
-
-        Cookies.set("email", result.data.email);
-        Cookies.set("position", result.data.position);
         if (result.data.position === 3) {
+          Cookies.set("email", result.data.email);
+          Cookies.set("position", result.data.position);
+
           history.push("/store");
         } else {
-          history.push("/products");
+          toast({
+            title: "Account not found",
+            status: "error",
+            duration: 1500,
+            isClosable: true,
+          });
         }
       } else {
-        window.location.reload(false);
+        toast({
+          title: result.data.msg,
+          status: "error",
+          duration: 1500,
+          isClosable: true,
+        });
       }
     }
   };
@@ -117,7 +125,8 @@ const LoginContainer: React.FC = () => {
           <InputLeftElement
             pointerEvents="none"
             // eslint-disable-next-line react/no-children-prop
-            children={<EmailIcon color="black" fontSize="1.5em" t="10%" />}
+            children={<EmailIcon color="black" fontSize="1.5em" />}
+            t="10%"
           />
           <Input
             type="email"
@@ -136,7 +145,8 @@ const LoginContainer: React.FC = () => {
           <InputLeftElement
             pointerEvents="none"
             // eslint-disable-next-line react/no-children-prop
-            children={<LockIcon color="black" boxSize="1.5em" t="10%" />}
+            children={<LockIcon color="black" boxSize="1.5em" />}
+            t="10%"
           />
           <Input
             type="password"
@@ -162,9 +172,16 @@ const LoginContainer: React.FC = () => {
           fontWeight="bold"
           size="lg"
         />
+
+        <Text m="auto">
+          Dont have account?
+          <Link href="http://localhost:3000/store/register" color="#329a91">
+            SignUp Now
+          </Link>
+        </Text>
       </form>
     </Box>
   );
 };
 
-export default LoginContainer;
+export default StoreLoginContainer;

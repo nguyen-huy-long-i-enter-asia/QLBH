@@ -20,6 +20,8 @@ import TimeStatisticPage from "pages/Statistic/TimeStatisticPage";
 import ProductStatisticPage from "pages/Statistic/ProductStatisticPage";
 import CustomerListPage from "pages/Users/CustomerListPage";
 import StaffListPage from "pages/Users/StaffListPage";
+import StoreLoginPage from "pages/Customer/StoreLoginPage";
+import StoreRegisterPage from "pages/Customer/StoreRegisterPage";
 
 export const Router: React.FC = () => {
   return (
@@ -56,6 +58,12 @@ export const Router: React.FC = () => {
         <CustomerListPage />
       </StaffAuth>
 
+      <Route path="/store/login" exact>
+        <StoreLoginPage />
+      </Route>
+      <Route path="/store/register" exact>
+        <StoreRegisterPage />
+      </Route>
       <CustomerAuth path="/store/product/:id">
         <StoreProductPage />
       </CustomerAuth>

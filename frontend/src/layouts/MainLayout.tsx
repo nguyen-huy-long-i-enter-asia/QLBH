@@ -9,11 +9,6 @@ type LayoutProps = {
 };
 const managerMenuList = [
   {
-    menuName: "OverView",
-
-    buttonLink: "/login",
-  },
-  {
     menuName: "Product",
     buttonLink: "/products",
   },
@@ -49,11 +44,6 @@ const managerMenuList = [
 ];
 const staffMenuList = [
   {
-    menuName: "OverView",
-
-    buttonLink: "/login",
-  },
-  {
     menuName: "Product",
     buttonLink: "/products",
   },
@@ -82,7 +72,7 @@ const MainLayout: React.FC<LayoutProps> = ({ children }) => {
         <Box bgColor="#3cc7bd" w="100%">
           <MenuBarTemplate
             menuList={position === "1" ? managerMenuList : staffMenuList}
-            menuWidth="11.1%"
+            menuWidth="13%"
           />
         </Box>
 

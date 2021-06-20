@@ -10,7 +10,7 @@ body {
 
 .radio-button-groups label {
   float: left;
-  width: 170px;
+  width: 100px;
   margin: 4px;
   background-color: #efefef;
   border-radius: 4px;
@@ -30,6 +30,6 @@ body {
   top: -20px;
 }
 .radio-button-groups input:checked + span {
-  background-color: #404040;
+  background-color: #53c7bd;
   color: #f7f7f7;
 }
