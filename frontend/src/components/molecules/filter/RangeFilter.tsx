@@ -39,7 +39,7 @@ const CheckBoxFilter: React.FC<Props> = ({
         </Text>
       </Box>
       <Box className="filter-conditions" p="4% 4% 0">
-        <FormControl id="from">
+        <FormControl id="from" w="100%">
           <Flex alignItems="center">
             <FormLabel w="20%">From</FormLabel>
             <Input
@@ -49,7 +49,7 @@ const CheckBoxFilter: React.FC<Props> = ({
             />
           </Flex>
         </FormControl>
-        <FormControl id="to">
+        <FormControl id="to" w="100%">
           <Flex alignItems="center">
             <FormLabel w="20%">To</FormLabel>
             <Input

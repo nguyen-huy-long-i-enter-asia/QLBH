@@ -15,6 +15,9 @@ import {
   MenuList,
   MenuItem,
   Modal,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
   ModalOverlay,
   ModalContent,
   Stack,
@@ -24,6 +27,7 @@ import {
 } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import axios from "axios";
+import UserForm from "components/atoms/Users/UserForm";
 import CustomMenu from "components/atoms/CustomMenu";
 import SearchModal from "components/molecules/Customer/SearchModal";
 
@@ -41,6 +45,12 @@ const MenuBarContainer: React.FC = () => {
   const [totalCount, setTotalCount] = useState(0);
   const email = Cookies.get("email");
   const position = Cookies.get("position");
+  const [customer, setCustomer] = useState();
+  const fetchUserData = async (customerEmail: string) => {
+    const url = `${process.env.REACT_APP_SERVER}users/getCustomerByEmail/${customerEmail}`;
+    const result = await axios.get(url);
+    setCustomer(result.data);
+  };
   useEffect(() => {
     const cartString = sessionStorage.getItem("cart");
     // if (cartString !== null) {
@@ -59,13 +69,15 @@ const MenuBarContainer: React.FC = () => {
       );
       setTotalCount(productsCount);
     }
-
-    window.addEventListener("storage", () => {
-      handleStorageChange();
-    });
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    if (email) {
+      fetchUserData(email);
+    }
+    // window.addEventListener("storage", () => {
+    //   handleStorageChange();
+    // });
+    // return () => {
+    //   window.removeEventListener("storage", handleStorageChange);
+    // };
   }, []);
   useEffect(() => {
     const findData = async () => {
@@ -80,7 +92,6 @@ const MenuBarContainer: React.FC = () => {
         //   },
         // }
       );
-      console.log(result.data);
       setSearchResult(result.data);
     };
     if (keyword !== "") {
@@ -156,8 +167,27 @@ const MenuBarContainer: React.FC = () => {
                 </Flex>
               </MenuButton>
               <MenuList>
-                <MenuItem>View Profile</MenuItem>
-                <MenuItem>Order History</MenuItem>
+                <MenuItem>
+                  <Box onClick={onOpen}>Profile</Box>
+
+                  <Modal isOpen={isOpen} onClose={onClose} size="5xl">
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>Profile</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody>
+                        <UserForm
+                          type="customer"
+                          user={customer}
+                          closeModal={onClose}
+                        />
+                      </ModalBody>
+                    </ModalContent>
+                  </Modal>
+                </MenuItem>
+                <MenuItem>
+                  <Link to="/store/orderHistory">Order History</Link>
+                </MenuItem>
 
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </MenuList>

@@ -22,6 +22,7 @@ import CustomerListPage from "pages/Users/CustomerListPage";
 import StaffListPage from "pages/Users/StaffListPage";
 import StoreLoginPage from "pages/Customer/StoreLoginPage";
 import StoreRegisterPage from "pages/Customer/StoreRegisterPage";
+import OrderHistoryPage from "pages/Customer/OrderHistoryPage";
 
 export const Router: React.FC = () => {
   return (
@@ -66,6 +67,9 @@ export const Router: React.FC = () => {
       </Route>
       <CustomerAuth path="/store/product/:id">
         <StoreProductPage />
+      </CustomerAuth>
+      <CustomerAuth path="/store/orderHistory">
+        <OrderHistoryPage />
       </CustomerAuth>
       <CustomerAuth path="/store">
         <StorePage />

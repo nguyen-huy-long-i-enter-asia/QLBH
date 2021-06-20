@@ -56,6 +56,12 @@ class UsersController extends AppController
         $this->set(compact('users'));
     }
 
+    public function getCustomerByEmail($email = null) 
+    {   
+        $user = $this->Users->find('all')->where(['email' => $email])->first();
+        return $this->response->withType('application/json')->withStringBody(json_encode($user));
+    }
+
     public function staffs()
     {
         $staffs = $this->Users->find('all')->where(['OR'=> [['position'=> 1], ['position' => 2]]])->toArray();

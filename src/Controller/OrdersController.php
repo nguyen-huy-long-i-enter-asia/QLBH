@@ -103,6 +103,61 @@ class OrdersController extends AppController
         return $this->response;
         // $this->set(compact('products'));
     }
+
+    public function getOrdersByEmail($email = null)
+    {
+        $this->loadModel('Users');
+        $this->loadModel('OrderDetails');
+        $this->loadModel("Colors");
+        $this->loadModel("Sizes");
+        $this->loadModel('Products');
+        $this->loadModel('TransactionStates');
+        $orderMapFunc = function ( $order) {
+            //Get full info of color,size
+            $orderDetailMapFunc = function( $orderDetail) {
+                $color = $this->Colors->find('all')->where(['id' => $orderDetail->color_id])->first();
+                $size = $this->Sizes->find('all')->where(['id'  => $orderDetail->size_id] )->first();
+                $product = $this->Products->find('all')->where(['id' => $orderDetail->product_id])->first();
+                $orderDetail['color'] = $color;
+                $orderDetail['size'] = $size;
+                $orderDetail['product'] = $product;
+                unset($orderDetail['color_id']);
+                unset($orderDetail['size_id']);
+                unset($orderDetail['product_id']);
+                return $orderDetail;
+            };
+            $customer = $this->Users->find('all')->select(['id', 'name'])->where(['id' => $order->customer_id])->first();
+            if($order->staff_id !== null) {
+                $staff = $this->Users->find('all')->select(['id', 'name'])->where(['id' => $order->staff_id])->first();
+            } else {
+                $staff = null;
+            }
+            $state = $this->TransactionStates->find('all')->where(['id' => $order->state_id])->first();
+
+            $order->staff= $staff;
+            $order->customer = $customer;
+            $order->state= $state;
+            unset($order->customer_id);
+            unset($order->staff_id);
+            unset($order->state_id);
+            unset($order->point);
+            $order->created = $order->created->format('Y-m-d');
+            $order->order_details=  array_map($orderDetailMapFunc, $order->order_details);
+            return $order;
+
+        };
+        $user = $this->Users->find('all')->where(['email'=> $email])->first();
+        $orders = $this->Orders->find('all')->contain(['TransactionStates', 'OrderDetails'])->where(['customer_id'=> $user->id])->toArray();
+
+
+
+        // $this->set(compact('products'));
+        // $this->viewBuilder()->setOption('_serialize', 'products');
+        $this->response = $this->response->withStringBody(json_encode(array_map($orderMapFunc, $orders)));
+        $this->response = $this->response->withType('json');
+        return $this->response;
+        // $this->set(compact('products'));
+    }
     /**
      * View method
      *

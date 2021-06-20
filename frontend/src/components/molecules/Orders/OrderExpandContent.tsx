@@ -11,6 +11,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import { useHistory, Link } from "react-router-dom";
 
 type CategoriesList = {
@@ -84,6 +85,7 @@ const OrderExpandContent: React.FC<Props> = ({
   order,
   // receiptExpandContentProps,
 }) => {
+  const position = Cookies.get("position");
   const deleteOrder = async (e: React.MouseEvent<HTMLButtonElement>) => {
     const { id } = e.currentTarget;
     const result = await axios.get(
@@ -124,13 +126,33 @@ const OrderExpandContent: React.FC<Props> = ({
           ))}
         </Tbody>
       </Table>
+      {(() => {
+        if (position !== undefined) {
+          if (parseInt(position, 10) === 3) {
+            if (order.transaction_state.id === 1) {
+              return (
+                <Button id={order.id.toString()} onClick={deleteOrder}>
+                  Delete Order
+                </Button>
+              );
+            }
+            return <></>;
+          }
+          return (
+            <>
+              {" "}
+              <Link to={`/orders/update/${order.id}`}>
+                <Button>Update</Button>{" "}
+              </Link>
+              <Button id={order.id.toString()} onClick={deleteOrder}>
+                Delete Order
+              </Button>
+            </>
+          );
+        }
+        return <></>;
+      })()}
 
-      <Link to={`/orders/update/${order.id}`}>
-        <Button>Update</Button>{" "}
-      </Link>
-      <Button id={order.id.toString()} onClick={deleteOrder}>
-        Delete Order
-      </Button>
       {/* <Box>{receipt.total}</Box>
 
       <Flex>
