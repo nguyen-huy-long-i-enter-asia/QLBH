@@ -43,7 +43,8 @@ const StaffListContainer: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const staffsData = await axios.get(
-        `${process.env.REACT_APP_SERVER}users/getStaffsByManager`
+        `${process.env.REACT_APP_SERVER}users/getStaffsByManager`,
+        { withCredentials: true }
       );
       setStaffs(staffsData.data);
       setFilteredList(staffsData.data);

@@ -92,6 +92,7 @@ const StoreLoginContainer: React.FC = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         }
       );
       if (result.data.email !== "") {

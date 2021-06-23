@@ -45,7 +45,7 @@ const ProductListContainer: React.FC = () => {
   const position = Cookies.get("position");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [products, setProducts] = useState<any[]>([]);
-  const [keyWord, setKeyWord] = useState("");
+  const [keyword, setKeyword] = useState("");
   const [expandList, setExpandList] = useState<any>([]);
   const [filteredList, setFilteredList] = useState<any[]>([]);
   const [displayList, setDisplayList] = useState<any[]>([]);
@@ -63,19 +63,26 @@ const ProductListContainer: React.FC = () => {
   const [sortState, setSortState] = useState(fields.map((item) => false));
   const toast = useToast();
   // Fetch ProductsList and CategoriesList, Manufacturers List
+  console.log(Cookies.get("email"));
   useEffect(() => {
     const fetchData = async () => {
       const productsData = await axios.get(
-        `${process.env.REACT_APP_SERVER}products/index`
+        `${process.env.REACT_APP_SERVER}products/index`,
+        { withCredentials: true }
       );
+
+      console.log(productsData.data);
       const categoriesData = await axios.get(
-        `${process.env.REACT_APP_SERVER}categories/index`
+        `${process.env.REACT_APP_SERVER}categories/index`,
+        { withCredentials: true }
       );
       const manufacturersData = await axios.get(
-        `${process.env.REACT_APP_SERVER}manufacturers/index`
+        `${process.env.REACT_APP_SERVER}manufacturers/index`,
+        { withCredentials: true }
       );
       const productStatesData = await axios.get(
-        `${process.env.REACT_APP_SERVER}productStates/index`
+        `${process.env.REACT_APP_SERVER}productStates/index`,
+        { withCredentials: true }
       );
 
       setProducts([...productsData.data]);
@@ -179,7 +186,6 @@ const ProductListContainer: React.FC = () => {
         });
       }
       // CheckManufacturer
-      console.log(newFilteredList);
       if (checkedFilters[2].filterConditions.length !== 0) {
         newFilteredList = newFilteredList.filter((item) => {
           return checkedFilters[2].filterConditions.some(
@@ -188,15 +194,16 @@ const ProductListContainer: React.FC = () => {
         });
       }
 
-      if (keyWord !== "") {
-        newFilteredList = newFilteredList.filter((item) =>
-          item.name.includes(keyWord)
+      if (keyword !== "") {
+        newFilteredList = newFilteredList.filter(
+          (item) =>
+            item.name.toLowerCase().includes(keyword.toLowerCase()) ||
+            item.id.toString().toLowerCase().includes(keyword.toLowerCase())
         );
       }
-      console.log(newFilteredList);
       setFilteredList(newFilteredList);
     }
-  }, [checkBoxFilters, keyWord]);
+  }, [checkBoxFilters, keyword]);
 
   const handleCheckBoxClick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
@@ -222,10 +229,9 @@ const ProductListContainer: React.FC = () => {
   };
   const handlePagination = (newDisplayList: Products) => {
     setDisplayList(newDisplayList);
-    console.log(newDisplayList);
   };
   const searchProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setKeyWord(e.currentTarget.value);
+    setKeyword(e.currentTarget.value);
   };
   // Sort Display list by field
   const handleSort = (e: React.MouseEvent<HTMLTableCaptionElement>) => {

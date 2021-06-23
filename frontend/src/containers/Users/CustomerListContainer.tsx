@@ -45,7 +45,8 @@ const CustomerListContainer: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const customersData = await axios.get(
-        `${process.env.REACT_APP_SERVER}users/getCustomersByStaff`
+        `${process.env.REACT_APP_SERVER}users/getCustomersByStaff`,
+        { withCredentials: true }
       );
       setCustomers(customersData.data);
       setFilteredList(customersData.data);

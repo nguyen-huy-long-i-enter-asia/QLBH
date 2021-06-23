@@ -19,6 +19,11 @@ use Cake\Model\Table\Sizes;
 
 class ReceiptsController extends AppController
 {
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->loadComponent('MyAuth');
+    }
     /**
      * Index method
      *
@@ -43,6 +48,9 @@ class ReceiptsController extends AppController
     }
     public function index()
     {
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel('ReceiptDetails');
         $this->loadModel("Products");
         $this->loadModel("Manufacturers");
@@ -70,21 +78,6 @@ class ReceiptsController extends AppController
         return $this->response;
     }
 
-    /**
-     * View method
-     *
-     * @param string|null $id Receipt id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $receipt = $this->Receipts->get($id, [
-            'contain' => ['Manufacturers', 'Users', 'ReceiptDetails'],
-        ]);
-
-        $this->set(compact('receipt'));
-    }
 
     /**
      * Add method
@@ -93,6 +86,9 @@ class ReceiptsController extends AppController
      */
     public function add()
     {
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $receipt = $this->Receipts->newEmptyEntity();
         if ($this->request->is('post')) {
             $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData());
@@ -117,6 +113,9 @@ class ReceiptsController extends AppController
      */
     public function edit()
     {
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel('ColorsProductsSizes');
         $this->loadModel("ReceiptDetails");
         $this->loadModel('Users');
@@ -176,7 +175,11 @@ class ReceiptsController extends AppController
 
         return $response;
     }
+    //Get Detail of a receipt
     public function find($id = null){
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel('ReceiptDetails');
         $this->loadModel("Products");
         $this->loadModel("Manufacturers");
@@ -200,6 +203,9 @@ class ReceiptsController extends AppController
 
     }
     public function findRecentByManufacturer($id = null){
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $result = $this->Receipts->find('all', [ 'order' => ['Receipts.created' =>'DESC']])->contain(['Users'])->where(['manufacturer_id' => (int)$id])->sortBy('created',SORT_DESC)->toArray();
         return $this->response->withStringBody(json_encode($result))->withType('json');
     }
@@ -212,6 +218,9 @@ class ReceiptsController extends AppController
      */
     public function delete($id = null)
     {
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel('ColorsProductsSizes');
         $this->loadModel("ReceiptDetails");
         $this->loadModel('Users');
@@ -240,6 +249,9 @@ class ReceiptsController extends AppController
         return $response;
     }
     public function import() {
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel('ColorsProductsSizes');
         $this->loadModel("ReceiptDetails");
         $this->loadModel('Users');

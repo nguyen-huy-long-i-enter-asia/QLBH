@@ -88,7 +88,8 @@ const ProductExpandContent: React.FC<Props> = ({
   } = product;
   const fetchInventory = async () => {
     const result = await axios.get(
-      `${process.env.REACT_APP_SERVER}products/getInventoryById/${product.id}`
+      `${process.env.REACT_APP_SERVER}products/getInventoryById/${product.id}`,
+      { withCredentials: true }
     );
     console.log(result.data.inventory);
     setInventory(result.data.inventory);
@@ -103,7 +104,8 @@ const ProductExpandContent: React.FC<Props> = ({
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     const result = await axios.post(
       `${process.env.REACT_APP_SERVER}products/delete`,
-      { id }
+      { id },
+      { withCredentials: true }
     );
 
     if (result.data.status === "success") {

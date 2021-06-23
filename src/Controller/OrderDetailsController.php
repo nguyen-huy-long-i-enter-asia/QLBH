@@ -11,6 +11,11 @@ namespace App\Controller;
  */
 class OrderDetailsController extends AppController
 {
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->loadComponent('MyAuth');
+    }
     /**
      * Index method
      *

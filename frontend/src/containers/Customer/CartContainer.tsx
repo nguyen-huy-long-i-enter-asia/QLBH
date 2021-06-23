@@ -106,6 +106,7 @@ const CartContainer: React.FC = () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       });
       alert(result.data.status);
       sessionStorage.removeItem("cart");
@@ -113,43 +114,6 @@ const CartContainer: React.FC = () => {
     } catch (error) {
       console.log(error);
     }
-    // if (importList.length !== 0) {
-    //   const formData = new FormData();
-    //   formData.append("receipt_details", JSON.stringify(importList));
-    //   if (staffEmail !== undefined) {
-    //     formData.append("staff_email", staffEmail);
-    //   }
-    //   formData.append("manufacturer_id", selectedManufacturer);
-    //   formData.append("total", sum.toString());
-    //   formData.append("note", note);
-    //   console.log(JSON.stringify(importList));
-    //   try {
-    //     if (receiptId) {
-    //       formData.append("receipt_id", receiptId);
-    //       url = `http://localhost:8765/receipts/edit/`;
-    //     } else {
-    //       url = `http://localhost:8765/receipts/import`;
-    //     }
-
-    //     const result = await axios.post(url, formData, {
-    //       headers: {
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     });
-
-    //     history.push("/receipts");
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // } else {
-    //   toast({
-    //     title: "Import at least 1 product.",
-
-    //     status: "warning",
-    //     duration: 5000,
-    //     isClosable: true,
-    //   });
-    // }
   };
   if (cart !== undefined) {
     return (

@@ -45,7 +45,8 @@ const ManufacturerListContainer: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const manufacturersData = await axios.get(
-        `${process.env.REACT_APP_SERVER}manufacturers/index`
+        `${process.env.REACT_APP_SERVER}manufacturers/index`,
+        { withCredentials: true }
       );
       setManufacturers(manufacturersData.data);
       setFilteredList(manufacturersData.data);

@@ -55,14 +55,17 @@ const ReceiptListContainer: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const receiptsData = await axios.get(
-        `${process.env.REACT_APP_SERVER}receipts/index`
+        `${process.env.REACT_APP_SERVER}receipts/index`,
+        { withCredentials: true }
       );
 
       const manufacturersData = await axios.get(
-        `${process.env.REACT_APP_SERVER}manufacturers/index`
+        `${process.env.REACT_APP_SERVER}manufacturers/index`,
+        { withCredentials: true }
       );
       const staffsData = await axios.get(
-        `${process.env.REACT_APP_SERVER}users/staffs`
+        `${process.env.REACT_APP_SERVER}users/staffs`,
+        { withCredentials: true }
       );
       setReceipts([...receiptsData.data]);
       setFilteredList(receiptsData.data);
@@ -259,7 +262,7 @@ const ReceiptListContainer: React.FC = () => {
     const deleteReceipt = async () => {
       const url = `${process.env.REACT_APP_SERVER}receipts/delete/${id}`;
 
-      const result = await axios.get(url);
+      const result = await axios.get(url, { withCredentials: true });
       if (result.data.status === "success") {
         toast({
           title: "Return Products successful",

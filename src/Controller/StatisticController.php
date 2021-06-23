@@ -19,8 +19,16 @@ use Cake\ORM\Query;
  */
 class StatisticController extends AppController
 {
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->loadComponent('MyAuth');
+    }
     public function reportDatePicker()
     {
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $dsn = 'mysql://long7aclass:Long7aclass@@localhost/projectDB';
         ConnectionManager::drop('default');
         ConnectionManager::setConfig('default', ['url' => $dsn]);
@@ -80,6 +88,9 @@ class StatisticController extends AppController
 
     public function reportDateRange()
     {
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $dsn = 'mysql://long7aclass:Long7aclass@@localhost/projectDB';
         ConnectionManager::drop('default');
         ConnectionManager::setConfig('default', ['url' => $dsn]);
@@ -119,6 +130,9 @@ class StatisticController extends AppController
 
     public function reportProductIncomeDatePicker()
     {
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $dsn = 'mysql://long7aclass:Long7aclass@@localhost/projectDB';
         ConnectionManager::drop('default');
         ConnectionManager::setConfig('default', ['url' => $dsn]);
@@ -171,6 +185,9 @@ class StatisticController extends AppController
 
     public function reportProductIncomeDateRange()
     {
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $dsn = 'mysql://long7aclass:Long7aclass@@localhost/projectDB';
         ConnectionManager::drop('default');
         ConnectionManager::setConfig('default', ['url' => $dsn]);
@@ -196,6 +213,9 @@ class StatisticController extends AppController
     }
     public function reportProductSellCountDatePicker()
     {
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $dsn = 'mysql://long7aclass:Long7aclass@@localhost/projectDB';
         ConnectionManager::drop('default');
         ConnectionManager::setConfig('default', ['url' => $dsn]);
@@ -247,6 +267,9 @@ class StatisticController extends AppController
     }
     public function reportProductSellCountDateRange()
     {
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $dsn = 'mysql://long7aclass:Long7aclass@@localhost/projectDB';
         ConnectionManager::drop('default');
         ConnectionManager::setConfig('default', ['url' => $dsn]);

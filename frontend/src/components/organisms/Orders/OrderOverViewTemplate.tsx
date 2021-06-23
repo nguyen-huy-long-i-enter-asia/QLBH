@@ -69,7 +69,8 @@ const OrderOverViewTemplate: React.FC<Props> = ({
   useEffect(() => {
     const fetchStateList = async () => {
       const result = await axios.get(
-        `${process.env.REACT_APP_SERVER}transactionStates/index`
+        `${process.env.REACT_APP_SERVER}transactionStates/index`,
+        { withCredentials: true }
       );
       setOrderStates(result.data);
     };
@@ -86,6 +87,7 @@ const OrderOverViewTemplate: React.FC<Props> = ({
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         }
       );
 
@@ -107,7 +109,8 @@ const OrderOverViewTemplate: React.FC<Props> = ({
   const handleCustomerClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     const { id } = e.currentTarget;
     const result = await axios.get(
-      `${process.env.REACT_APP_SERVER}users/findCustomer/${id}`
+      `${process.env.REACT_APP_SERVER}users/findCustomer/${id}`,
+      { withCredentials: true }
     );
 
     setCustomer(result.data);

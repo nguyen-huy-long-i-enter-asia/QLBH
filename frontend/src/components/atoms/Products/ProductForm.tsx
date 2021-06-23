@@ -219,6 +219,7 @@ const ProductForm: React.FC<Props> = ({
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         });
 
         if (result.data.status === "success") {

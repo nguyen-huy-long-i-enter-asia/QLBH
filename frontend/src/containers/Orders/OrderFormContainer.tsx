@@ -75,7 +75,8 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
     const fetchData = async () => {
       if (orderId) {
         const orderData = await axios.get(
-          `${process.env.REACT_APP_SERVER}orders/find/${orderId}`
+          `${process.env.REACT_APP_SERVER}orders/find/${orderId}`,
+          { withCredentials: true }
         );
         const oldImportedList = orderData.data.order_details.map(
           (item: any) => ({
@@ -102,19 +103,24 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         setCustomer(orderData.data.customer);
       }
       const productsData = await axios.get(
-        `${process.env.REACT_APP_SERVER}products/getSellList`
+        `${process.env.REACT_APP_SERVER}products/getSellList`,
+        { withCredentials: true }
       );
       const categoriesData = await axios.get(
-        `${process.env.REACT_APP_SERVER}categories/index`
+        `${process.env.REACT_APP_SERVER}categories/index`,
+        { withCredentials: true }
       );
       const manufacturersData = await axios.get(
-        `${process.env.REACT_APP_SERVER}manufacturers/index`
+        `${process.env.REACT_APP_SERVER}manufacturers/index`,
+        { withCredentials: true }
       );
       const sizesData = await axios.get(
-        `${process.env.REACT_APP_SERVER}sizes/index`
+        `${process.env.REACT_APP_SERVER}sizes/index`,
+        { withCredentials: true }
       );
       const colorsData = await axios.get(
-        `${process.env.REACT_APP_SERVER}colors/index`
+        `${process.env.REACT_APP_SERVER}colors/index`,
+        { withCredentials: true }
       );
       setProducts(productsData.data);
       setFilteredList([...productsData.data]);
@@ -272,6 +278,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       }
     );
     let inventory = 0;
@@ -323,6 +330,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       }
     );
     let inventory = 0;
@@ -359,6 +367,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       }
     );
     let inventory = 0;
@@ -449,6 +458,7 @@ const OrderFormContainer: React.FC<Props> = ({ orderId }) => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         });
 
         history.push("/orders");

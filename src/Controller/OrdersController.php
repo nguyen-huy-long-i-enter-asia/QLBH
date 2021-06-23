@@ -17,6 +17,11 @@ use Cake\Model\Table\ColorsProductsSizes;
  */
 class OrdersController extends AppController
 {
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->loadComponent('MyAuth');
+    }
     private function orderDetailMapFunc($orderDetail){
         // Add field Inventory to orderDetail
         $inventory = $this->ColorsProductsSizes->find('all')->select(['count'])->where(['product_id' => (int)$orderDetail->product_id, 'size_id' => (int)$orderDetail->size_id, 'color_id' => (int)$orderDetail->color_id])->first();
@@ -51,6 +56,9 @@ class OrdersController extends AppController
      */
     public function index()
     {
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel('Users');
         $this->loadModel('OrderDetails');
         $this->loadModel("Colors");
@@ -103,9 +111,12 @@ class OrdersController extends AppController
         return $this->response;
         // $this->set(compact('products'));
     }
-
+    //Get Order List of a Customer
     public function getOrdersByEmail($email = null)
     {
+        if($this->MyAuth->logedAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel('Users');
         $this->loadModel('OrderDetails');
         $this->loadModel("Colors");
@@ -158,23 +169,13 @@ class OrdersController extends AppController
         return $this->response;
         // $this->set(compact('products'));
     }
-    /**
-     * View method
-     *
-     * @param string|null $id Order id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
+
+    //Get Order Detail of an Order
+    public function find($id = null)
     {
-        $order = $this->Orders->get($id, [
-            'contain' => ['Users', 'OrdersDetails'],
-        ]);
-
-        $this->set(compact('order'));
-    }
-
-    public function find($id = null){
+        if($this->MyAuth->logedAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel('OrderDetails');
         $this->loadModel("Products");
         $this->loadModel('Colors');
@@ -213,8 +214,12 @@ class OrdersController extends AppController
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
+    //A Customer create a Order
     public function addByCustomer()
     {
+        if($this->MyAuth->customerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->request->allowMethod(['post']);
         $this->loadModel('Users');
         $this->loadModel('OrderDetails');
@@ -249,6 +254,9 @@ class OrdersController extends AppController
     }
 
     public function addByStaff() {
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel('Users');
         $this->loadModel('OrderDetails');
         $this->loadModel('ColorsProductsSizes');
@@ -307,7 +315,11 @@ class OrdersController extends AppController
      */
     public function edit()
     {
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel('Users');
+        $this->loadModel('Products');
         $this->loadModel('OrderDetails');
         $this->loadModel('ColorsProductsSizes');
         //get Order by Id
@@ -327,11 +339,14 @@ class OrdersController extends AppController
         $new_order_details = json_decode($this->request->getData('order_details'));
         $old_order_details = $this->OrderDetails->find('all')->where(['order_id' => $order_id])->toArray();
         //Check if need to + count in colors_products_sizes
-        if((($old_order_state_id === 2 && $new_order_state_id === 2) || ($old_order_state_id === 2 && $new_order_state_id === 1) || ($old_order_state_id ===2 && $new_order_state_id === 3))                                                                                                                 ){
-            foreach($old_order_details as $ood) {
+        if(($old_order_state_id === 2 && $new_order_state_id === 2) || ($old_order_state_id === 2 && $new_order_state_id === 1) || ($old_order_state_id ===2 && $new_order_state_id === 3)){
+           foreach($old_order_details as $ood) {
                 $color_product_size = $this->ColorsProductsSizes->find('all')->where(['product_id' => $ood->product_id, 'color_id' => $ood->color_id, 'size_id' => $ood->size_id])->first();
                 $color_product_size->count += $ood->count;
                 $this->ColorsProductsSizes->save($color_product_size);
+                $product = $this->Products->get($ood->product_id);
+                $product->state = 1;
+                $this->Products->save($product);
             }
         }
         $this->OrderDetails->deleteMany($old_order_details);
@@ -350,15 +365,26 @@ class OrdersController extends AppController
                 $color_product_size = $this->ColorsProductsSizes->find('all')->where(['product_id' => $new_order_detail->product_id, 'color_id' => $new_order_detail->color_id, 'size_id' => $new_order_detail->size_id])->first();
                 $color_product_size->count -= $new_order_detail->count;
                 $this->ColorsProductsSizes->save($color_product_size);
+                //Check Product out of stock
+                $stockQuery = $this->ColorsProductsSizes->find('all');
+                $totalStock = $stockeQuery->select(['total' => $stockQuery->func()->coalesce([$stockQuery->func()->sum('count'),0])])->where(['product_id' => $new_order_detail->product_id])->group(['product_id'])->first()->count;
+                if($totalStock <=  0){
+                    $product = $this->Products->get($new_order_detail->product_id);
+                    $product->state = 2;
+                    $this->Products->save($product);
+                }
+
             }
 
         }
 
-        $response = $this->response->withType('application/json')
-        ->withStringBody(json_encode(['status' => "success"]));
+        $response = $this->response->withType('application/json')->withStringBody(json_encode(['status' => "success"]));
         return $response;
     }
     public function findRecentByCustomer($id = null){
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $result = $this->Orders->find('all', [ 'order' => ['Orders.created' =>'DESC']])->contain(['Staff', 'TransactionStates'])->where(['customer_id' => (int)$id])->sortBy('created',SORT_DESC)->toArray();
         return $this->response->withStringBody(json_encode($result))->withType('json');
     }
@@ -371,6 +397,9 @@ class OrdersController extends AppController
      */
     public function delete($id = null)
     {
+        if($this->MyAuth->logedAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $order = $this->Orders->get((int)$id);
         //Check if need to + count in colors_products_sizes
         if($order->state_id === 2) {

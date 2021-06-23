@@ -11,6 +11,11 @@ namespace App\Controller;
  */
 class ManufacturersController extends AppController
 {
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->loadComponent('MyAuth');
+    }
     /**
      * Index method
      *
@@ -50,6 +55,9 @@ class ManufacturersController extends AppController
      */
     public function add()
     {
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $manufacturer = $this->Manufacturers->newEmptyEntity();
         $manufacturer->name= $this->request->getData('name');
         $manufacturer->email = $this->request->getData('email');
@@ -76,6 +84,9 @@ class ManufacturersController extends AppController
      */
     public function edit()
     {
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $manufacturer = $this->Manufacturers->get($this->request->getData('id'));
         $manufacturer->name= $this->request->getData('name');
         $manufacturer->email = $this->request->getData('email');
@@ -102,6 +113,9 @@ class ManufacturersController extends AppController
      */
     public function delete($id = null)
     {
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $manufacturer = $this->Manufacturers->get($id);
         if($this->Manufacturers->delete($manufacturer)){
             $response = $this->response->withType('application/json')

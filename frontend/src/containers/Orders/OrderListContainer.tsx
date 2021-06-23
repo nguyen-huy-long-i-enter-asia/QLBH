@@ -105,16 +105,20 @@ const OrderListContainer: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const ordersData = await axios.get(
-        `${process.env.REACT_APP_SERVER}orders/index`
+        `${process.env.REACT_APP_SERVER}orders/index`,
+        { withCredentials: true }
       );
       const staffsData = await axios.get(
-        `${process.env.REACT_APP_SERVER}users/staffs`
+        `${process.env.REACT_APP_SERVER}users/staffs`,
+        { withCredentials: true }
       );
       const orderStatesData = await axios.get(
-        `${process.env.REACT_APP_SERVER}transactionStates/index`
+        `${process.env.REACT_APP_SERVER}transactionStates/index`,
+        { withCredentials: true }
       );
       const productStatesData = await axios.get(
-        `${process.env.REACT_APP_SERVER}productStates/index`
+        `${process.env.REACT_APP_SERVER}productStates/index`,
+        { withCredentials: true }
       );
       setOrders([...ordersData.data]);
 

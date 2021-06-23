@@ -112,112 +112,6 @@ const ManufacturerForm: React.FC<Props> = ({
     setNote(value);
   };
 
-  // const changeManufacturer = (e: React.FormEvent<HTMLSelectElement>) => {
-  //   const { value } = e.currentTarget;
-  //   setManufacturer(value);
-  // };
-  // const changeDiscount = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = e.currentTarget;
-  //   setDiscount(value);
-  // };
-  // const changeStateId = (e: React.FormEvent<HTMLSelectElement>) => {
-  //   const { value } = e.currentTarget;
-
-  //   setStateId(value);
-  // };
-  // const changeOriginalPrice = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = e.currentTarget;
-  //   setOriginalPrice(value);
-  // };
-  // const changeSellPrice = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = e.currentTarget;
-  //   setSellPrice(value);
-  // };
-  // const changeCategories = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = e.currentTarget;
-  //   const newCategoriesState = categories.map((item) => {
-  //     if (String(item.id) === value) {
-  //       return {
-  //         id: item.id,
-  //         name: item.name,
-  //         isChecked: !item.isChecked,
-  //       };
-  //     }
-  //     return item;
-  //   });
-  //   setCategories(newCategoriesState);
-  // };
-
-  // const changeNote = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  //   const { value } = e.currentTarget;
-  //   setNote(value);
-  // };
-  // const changeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   // console.log(URL.createObjectURL(e.target.files[0]));
-  //   if (e.target) {
-  //     if (e.target.files) {
-  //       setImage(e.target.files[0]);
-
-  //       setImageLink(URL.createObjectURL(e.target.files[0]));
-  //     }
-  //   }
-  // };
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-
-  //   if (name !== "" && originalPrice !== "" && sellPrice !== "") {
-  //     const formData = new FormData();
-  //     if (action === "edit" && selectedProduct) {
-  //       formData.append("id", selectedProduct.id);
-  //     }
-  //     formData.append("name", name);
-  //     formData.append("manufacturer", manufacturer);
-  //     formData.append("discount", discount);
-  //     formData.append("state_id", stateId);
-  //     formData.append("original_price", originalPrice);
-  //     formData.append("sell_price", sellPrice);
-  //     // console.log(
-  //     //   JSON.stringify(
-  //     //     categories
-  //     //       .filter((item) => item.isChecked === true)
-  //     //       .map((item) => item.id)
-  //     //   )
-  //     // );
-  //     formData.append(
-  //       "categories",
-  //       JSON.stringify(
-  //         categories
-  //           .filter((item) => item.isChecked === true)
-  //           .map((item) => item.id)
-  //       )
-  //     );
-
-  //     if (image !== undefined) {
-  //       formData.append("image", image);
-  //     }
-  //     formData.append("note", note);
-
-  //     try {
-  //       const url = `http://localhost:8765/products/${action}`;
-  // const result = await axios.post(url, formData, {
-  //   headers: {
-  //     "Content-Type": "multipart/form-data",
-  //   },
-  //       });
-  //       // console.log(result.data);
-  //       if (result.data.status === "success") {
-  //         console.log("a");
-  //         alert("Add product successfull");
-  //         window.location.reload(false);
-  //       } else {
-  //         console.log(result.data.status);
-  //         alert("Fail");
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  // };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (name !== "") {
@@ -235,6 +129,7 @@ const ManufacturerForm: React.FC<Props> = ({
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       });
       if (result.data.status === "success") {
         sessionStorage.setItem("action", action);

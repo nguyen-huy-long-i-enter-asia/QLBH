@@ -88,7 +88,7 @@ const StoreRegisterContainer: React.FC = () => {
     setName(e.currentTarget.value);
   };
   const changePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.currentTarget.value);
+    setPhone(e.currentTarget.value);
   };
   const changeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.currentTarget.value);
@@ -96,36 +96,32 @@ const StoreRegisterContainer: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (email !== "" && password !== "") {
+    if (email !== "" && password !== "" && name !== "" && phone !== "") {
       const formData = new FormData();
       formData.append("email", email);
       formData.append("password", password);
+      formData.append("name", name);
+      formData.append("phone", phone);
+      formData.append("address", address);
+      formData.append("type", "customer");
       const result = await axios.post(
-        `${process.env.REACT_APP_SERVER}users/login`,
+        `${process.env.REACT_APP_SERVER}users/register`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         }
       );
-      if (result.data.email !== "") {
-        if (result.data.position === 3) {
-          Cookies.set("email", result.data.email);
-          Cookies.set("position", result.data.position);
+      if (result.data.status === "success") {
+        Cookies.set("email", email);
+        Cookies.set("position", "3");
 
-          history.push("/store");
-        } else {
-          toast({
-            title: "Account not found",
-            status: "error",
-            duration: 1500,
-            isClosable: true,
-          });
-        }
+        history.push("/store");
       } else {
         toast({
-          title: result.data.msg,
+          title: "Account already exist",
           status: "error",
           duration: 1500,
           isClosable: true,
@@ -225,9 +221,9 @@ const StoreRegisterContainer: React.FC = () => {
             placeholder="Enter your Address"
             value={address === "" ? undefined : address}
             onChange={changeAddress}
-            required
             bgColor="white"
             size="lg"
+            isRequired={false}
           />
         </InputGroup>
 

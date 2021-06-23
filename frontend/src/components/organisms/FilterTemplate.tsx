@@ -80,7 +80,9 @@ const FilterTemplate: React.FC<Props> = ({
   return (
     <Box className="filter-list">
       <Box className="page-title">
-        <Text fontSize="3xl">{pageTitle}</Text>
+        <Text fontSize="3xl" w="100%">
+          {pageTitle}
+        </Text>
       </Box>
       {timeFilter !== undefined ? (
         <Box className="filter-box">

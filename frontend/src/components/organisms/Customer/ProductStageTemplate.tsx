@@ -9,7 +9,11 @@ const ProductStageTemplate: React.FC<Props> = ({ dataList }) => {
   return (
     <Flex wrap="wrap" w="100%">
       {dataList.map((item: any) => (
-        <Link to={`/store/product/${item.id}`} style={{ width: "20%" }}>
+        <Link
+          key={item.id}
+          to={`/store/product/${item.id}`}
+          style={{ width: "20%" }}
+        >
           <Box border="1px solid gray" bgColor="white" position="relative">
             <Box>
               <Image src={item.image} display="block" w="100%" h="20rem" />

@@ -89,7 +89,8 @@ const OrderExpandContent: React.FC<Props> = ({
   const deleteOrder = async (e: React.MouseEvent<HTMLButtonElement>) => {
     const { id } = e.currentTarget;
     const result = await axios.get(
-      `${process.env.REACT_APP_SERVER}orders/delete/${id}`
+      `${process.env.REACT_APP_SERVER}orders/delete/${id}`,
+      { withCredentials: true }
     );
     window.location.reload(false);
   };

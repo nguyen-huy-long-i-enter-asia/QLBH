@@ -23,7 +23,7 @@ import {
   Stack,
   useDisclosure,
   Text,
-  IconButton,
+  useToast,
 } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -46,9 +46,11 @@ const MenuBarContainer: React.FC = () => {
   const email = Cookies.get("email");
   const position = Cookies.get("position");
   const [customer, setCustomer] = useState();
+  const action = sessionStorage.getItem("action");
+  const toast = useToast();
   const fetchUserData = async (customerEmail: string) => {
-    const url = `${process.env.REACT_APP_SERVER}users/getCustomerByEmail/${customerEmail}`;
-    const result = await axios.get(url);
+    const url = `${process.env.REACT_APP_SERVER}users/getUserByEmail/${customerEmail}`;
+    const result = await axios.get(url, { withCredentials: true });
     setCustomer(result.data);
   };
   useEffect(() => {
@@ -70,7 +72,16 @@ const MenuBarContainer: React.FC = () => {
       setTotalCount(productsCount);
     }
     if (email) {
+      console.log("abc");
       fetchUserData(email);
+    }
+    if (action) {
+      toast({
+        title: "Update Profile successful",
+        status: "success",
+        duration: 1500,
+        isClosable: true,
+      });
     }
     // window.addEventListener("storage", () => {
     //   handleStorageChange();
@@ -83,8 +94,9 @@ const MenuBarContainer: React.FC = () => {
     const findData = async () => {
       // const formData = new FormData();
       // formData.append("keyword", keyword);
-      const result = await axios.post(
-        `${process.env.REACT_APP_SERVER}store/findByName/${keyword}`
+      const result = await axios.get(
+        `${process.env.REACT_APP_SERVER}store/findByName/${keyword}`,
+        { withCredentials: true }
         // formData,
         // {
         //   headers: {
@@ -105,12 +117,11 @@ const MenuBarContainer: React.FC = () => {
       Cookies.remove("email");
       Cookies.remove("position");
       await axios.post(`${process.env.REACT_APP_SERVER}users/logout`, email);
-      history.push("/login");
+      history.push("/store/login");
     };
     logoutBackEnd();
   };
   const handleStorageChange = () => {
-    console.log("Storage changed");
     const cartString = sessionStorage.getItem("cart");
     if (cartString !== null) {
       setCart(JSON.parse(cartString));
@@ -169,21 +180,6 @@ const MenuBarContainer: React.FC = () => {
               <MenuList>
                 <MenuItem>
                   <Box onClick={onOpen}>Profile</Box>
-
-                  <Modal isOpen={isOpen} onClose={onClose} size="5xl">
-                    <ModalOverlay />
-                    <ModalContent>
-                      <ModalHeader>Profile</ModalHeader>
-                      <ModalCloseButton />
-                      <ModalBody>
-                        <UserForm
-                          type="customer"
-                          user={customer}
-                          closeModal={onClose}
-                        />
-                      </ModalBody>
-                    </ModalContent>
-                  </Modal>
                 </MenuItem>
                 <MenuItem>
                   <Link to="/store/orderHistory">Order History</Link>
@@ -192,6 +188,21 @@ const MenuBarContainer: React.FC = () => {
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </MenuList>
             </Menu>
+            <Modal isOpen={isOpen} onClose={onClose} size="5xl">
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Profile</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <UserForm
+                    type="customer"
+                    user={customer}
+                    closeModal={onClose}
+                    containPassword
+                  />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
           </>
         ) : (
           <>

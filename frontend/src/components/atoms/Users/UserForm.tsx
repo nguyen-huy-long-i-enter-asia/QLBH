@@ -49,12 +49,14 @@ type Props = {
   };
   closeModal?: any;
   handleAddNewCustomerToOrder?: (id: string) => void;
+  containPassword?: boolean;
 };
 const UserForm: React.FC<Props> = ({
   type,
   user,
   closeModal,
   handleAddNewCustomerToOrder,
+  containPassword,
 }) => {
   const history = useHistory();
   const toast = useToast();
@@ -73,30 +75,6 @@ const UserForm: React.FC<Props> = ({
       : `${process.env.PUBLIC_URL}/image_upload.png`
   );
 
-  // if (selectedProduct) {
-  //   const [name,setName] = useState(selectedProduct.name);
-  //   const[manufact](selectedProduct.manufacturer.id);
-  //   setDiscount(selectedProduct.discount);
-  //   setState(selectedProduct.state);
-  //   setOriginalPrice(selectedProduct.original_price);
-  //   setSellPrice(selectedProduct.sell_price);
-
-  //   setNote(selectedProduct.note);
-
-  //   setImageLink(selectedProduct.image);
-  // }
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const url = `http://localhost:8765/users/findCustomer/${customerId}`;
-  //     const result = await axios.get(url);
-  //     const customerData = result.data;
-  //     setName(customerData.name);
-  //     setEmail(customerData.email);
-  //     setPhone(customerData.phone);
-  //     setAddress(customerData.address);
-  //     setImageLink(customerData.image);
-  //   };
-  // }, [customerId]);
   const changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
     setName(value);
@@ -144,7 +122,7 @@ const UserForm: React.FC<Props> = ({
       if (image !== undefined) {
         formData.append("image", image);
       }
-      if (type === "staff") {
+      if (type === "staff" || type === "manager") {
         formData.append("password", password);
       }
 
@@ -156,6 +134,7 @@ const UserForm: React.FC<Props> = ({
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         });
 
         // setCustomer of Order after add new Customer to DB
@@ -186,12 +165,11 @@ const UserForm: React.FC<Props> = ({
       }
     }
   };
-  console.log(imageLink);
   return (
     <>
       <form onSubmit={handleSubmit}>
         <Flex>
-          <FormLabel pl="1.5rem">
+          <FormLabel pl="1.5rem" w="20%">
             <Input
               display="none"
               name="image"
@@ -201,45 +179,46 @@ const UserForm: React.FC<Props> = ({
             />
             <Image src={imageLink} cursor="pointer" boxSize="10rem" />
           </FormLabel>
-          <Table>
-            <Tbody>
-              <Tr>
-                <Td>
-                  Name
-                  <Text color="red" display="inline">
-                    *
-                  </Text>
-                </Td>
-                <Td>
-                  <Input value={name} onChange={changeName} required />
-                </Td>
-              </Tr>
-              <Tr>
-                <Td>
-                  Email
-                  <Text color="red" display="inline">
-                    *
-                  </Text>
-                </Td>
-                <Td>
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={changeEmail}
-                    required
-                  />
-                </Td>
-              </Tr>
-              {type === "staff" ? (
+          <Box w="37.5%">
+            <Table>
+              <Tbody>
                 <Tr>
                   <Td>
-                    Password
+                    Name
                     <Text color="red" display="inline">
                       *
                     </Text>
                   </Td>
                   <Td>
-                    <Flex>
+                    <Input value={name} onChange={changeName} required />
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td>
+                    Email
+                    <Text color="red" display="inline">
+                      *
+                    </Text>
+                  </Td>
+                  <Td>
+                    <Input
+                      type="email"
+                      value={email}
+                      onChange={changeEmail}
+                      required
+                    />
+                  </Td>
+                </Tr>
+                {containPassword ? (
+                  <Tr>
+                    <Td>
+                      Password
+                      <Text color="red" display="inline">
+                        *
+                      </Text>
+                    </Td>
+                    <Td position="relative">
+                      {/* <Flex alignItems="center"> */}
                       <Input
                         value={password}
                         type={passwordType}
@@ -252,6 +231,11 @@ const UserForm: React.FC<Props> = ({
                             setPasswordType("text");
                           }}
                           cursor="pointer"
+                          position="absolute"
+                          right="0px"
+                          top="50%"
+                          mt="-0.5em"
+                          boxSize="1em"
                         />
                       ) : (
                         <ViewOffIcon
@@ -259,33 +243,40 @@ const UserForm: React.FC<Props> = ({
                             setPasswordType("password");
                           }}
                           cursor="pointer"
+                          position="absolute"
+                          right="0px"
+                          top="50%"
+                          mt="-0.5em"
+                          boxSize="1em"
                         />
                       )}
-                    </Flex>
+                      {/* </Flex> */}
+                    </Td>
+                  </Tr>
+                ) : (
+                  <></>
+                )}
+              </Tbody>
+            </Table>
+          </Box>
+          <Box w="42.5%">
+            <Table>
+              <Tbody>
+                <Tr>
+                  <Td>Phone</Td>
+                  <Td>
+                    <Input value={phone} onChange={changePhone} />
                   </Td>
                 </Tr>
-              ) : (
-                <></>
-              )}
-            </Tbody>
-          </Table>
-
-          <Table>
-            <Tbody>
-              <Tr>
-                <Td>Phone</Td>
-                <Td>
-                  <Input value={phone} onChange={changePhone} />
-                </Td>
-              </Tr>
-              <Tr>
-                <Td>Address</Td>
-                <Td>
-                  <Input value={address} onChange={changeAddress} />
-                </Td>
-              </Tr>
-            </Tbody>
-          </Table>
+                <Tr>
+                  <Td>Address</Td>
+                  <Td>
+                    <Input value={address} onChange={changeAddress} />
+                  </Td>
+                </Tr>
+              </Tbody>
+            </Table>
+          </Box>
         </Flex>
         <Input
           type="submit"

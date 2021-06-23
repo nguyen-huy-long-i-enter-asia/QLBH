@@ -11,26 +11,37 @@ type Props = {
 };
 const CustomerAuth: React.FC<Props> = ({ path, children }) => {
   const [isAuth, setIsAuth] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const position = Cookies.get("position");
   useEffect(() => {
     const checkLogged = async () => {
       const email = Cookies.get("email");
       if (!email) {
         setIsAuth(true);
+        setIsLoading(false);
       } else {
+        const formData = new FormData();
+        formData.append("email", email);
         const result = await axios.post(
           `${process.env.REACT_APP_SERVER}users/auth`,
-          email
+          formData,
+          { withCredentials: true }
         );
+        console.log(result.data.isAuth);
         if (result.data.isAuth && position === "3") {
           setIsAuth(true);
+          setIsLoading(false);
         } else {
           setIsAuth(false);
+          setIsLoading(false);
         }
       }
     };
     checkLogged();
   }, []);
+  if (isLoading) {
+    return <></>;
+  }
   if (isAuth) {
     return (
       <Route path={path} exact>

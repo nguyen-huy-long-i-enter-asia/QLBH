@@ -53,6 +53,7 @@ const TimeStatisticContainer: React.FC = () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       });
       console.log(result.data.map((item: any) => item.Label));
       setLabels(result.data.map((item: any) => item.Label));

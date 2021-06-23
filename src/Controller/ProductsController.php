@@ -17,7 +17,11 @@ use Cake\ORM\Query;
  */
 class ProductsController extends AppController
 {
-
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->loadComponent('MyAuth');
+    }
     /**
      * Index method
      *
@@ -27,6 +31,16 @@ class ProductsController extends AppController
     {
         $this->loadModel('ColorsProductsSizes');
         $this->loadModel("CategoriesProducts");
+        // debug($this->request->getSession()->read('email'));
+        // debug($this->request->getCookie('position'));
+        // if( $this->request->getCookie('email') !== $this->request->getSession()->read('email')){
+        // //     $this->response = $this->response->withStringBody(json_encode(array_map($mapFunc, $products)));
+        // // $this->response = $this->response->withType('json');
+        // return $this->response->withStringBody(json_encode(['status' => false]))->withType('json');
+        // }
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $mapFunc = function ( $product) {
             //Add inventory property to product
             // $colors_products_sizes= $this->ColorsProductsSizes->find()->contain(['Colors','Sizes'])->where(['product_id' => $product->id] )->toArray();
@@ -65,7 +79,8 @@ class ProductsController extends AppController
             // }else {
             //     $product['inventory'] = [];
             // }
-
+            
+            //
 
             //Add Categories property to $product;
             $categories_products = $this->CategoriesProducts->find()->where(["product_id" => $product["id"]])->contain("Categories")->toArray();
@@ -89,7 +104,6 @@ class ProductsController extends AppController
             unset($product["state_id"]);
             return $product;
         };
-
         $products = $this->Products->find('all')->contain(['Manufacturers', 'ProductStates'])->toArray();
         foreach($products as $product){
             $product['image'] = 'http://localhost:8765/img/'.$product['image'];
@@ -103,6 +117,9 @@ class ProductsController extends AppController
 
     public function getInventoryById($id = null)
     {
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel('ColorsProductsSizes');
         $colors_products_sizes= $this->ColorsProductsSizes->find()->contain(['Colors','Sizes'])->where(['product_id' => (int)$id] )->sortBy('size_id',SORT_ASC)->toArray();
 
@@ -183,21 +200,7 @@ class ProductsController extends AppController
     }
 
 
-    /**
-     * View method
-     *
-     * @param string|null $id Product id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $product = $this->Products->get($id, [
-            'contain' => ['Manufacturers', 'Categories', 'ColorsProductsSize', 'OrdersDetails', 'ReceiptDetails'],
-        ]);
 
-        $this->set(compact('product'));
-    }
 
     /**
      * Add method
@@ -206,6 +209,9 @@ class ProductsController extends AppController
      */
     public function add()
     {
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel("CategoriesProducts");
         $image = $this->request->getData('image');
         $imageName = $image->getClientFilename();
@@ -253,6 +259,9 @@ class ProductsController extends AppController
      */
     public function edit($id = null)
     {
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $this->loadModel("CategoriesProducts");
         $id = $this->request->getData('id');
         $product = $this->Products->get((int)$id);
@@ -308,7 +317,9 @@ class ProductsController extends AppController
      */
     public function delete()
     {
-
+        if($this->MyAuth->managerAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $id = $this->request->getData('id');
         $product = $this->Products->get($id);
         if ($this->Products->delete($product)) {
@@ -326,6 +337,9 @@ class ProductsController extends AppController
     }
 
     public function findByKeywordAndManufacturer() {
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $keyword = $this->request->getData('keyword');
         $manufacturer_id = $this->request->getData('id');
 
@@ -358,6 +372,9 @@ class ProductsController extends AppController
         return $this->response;
     }
     public function findByKeyword() {
+        if($this->MyAuth->staffAuth() === false){
+            return $this->response->withStringBody(json_encode(['status' => "fail"]))->withType('json');
+        }
         $keyword = $this->request->getData('keyword');
         if(is_numeric($keyword)){
             $result = $this->Products->find('all')->select(['id','name', 'sell_price', 'image'])->where(['OR'=> [['id LIKE' => '%'.(int)$keyword.'%'], ['name LIKE' => '%'.$keyword.'%' ]]])->toArray();

@@ -63,7 +63,8 @@ const StoreProductContainer: React.FC<Props> = ({ id }) => {
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(
-        `${process.env.REACT_APP_SERVER}store/findById/${id}`
+        `${process.env.REACT_APP_SERVER}store/findById/${id}`,
+        { withCredentials: true }
       );
       setProduct(result.data);
     };

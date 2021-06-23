@@ -84,6 +84,7 @@ const LoginContainer: React.FC = () => {
 
     if (email !== "" && password !== "") {
       const formData = new FormData();
+
       formData.append("email", email);
       formData.append("password", password);
       const result = await axios.post(
@@ -93,20 +94,24 @@ const LoginContainer: React.FC = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         }
       );
-      if (result.data.email !== "") {
-        alert(`${result.data.email}/${result.data.position}`);
-
-        Cookies.set("email", result.data.email);
-        Cookies.set("position", result.data.position);
+      if (result.data.status === "success") {
         if (result.data.position === 3) {
           history.push("/store");
         } else {
           history.push("/products");
         }
       } else {
-        window.location.reload(false);
+        toast({
+          title: result.data.msg,
+          status: "error",
+          duration: 1500,
+          isClosable: true,
+        });
+
+        // window.location.reload(false);
       }
     }
   };

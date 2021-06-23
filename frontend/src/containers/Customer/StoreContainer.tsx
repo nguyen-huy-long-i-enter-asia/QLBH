@@ -82,14 +82,17 @@ const StoreContainer: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const productsData = await axios.get(
-        `${process.env.REACT_APP_SERVER}store/index`
+        `${process.env.REACT_APP_SERVER}store/index`,
+        { withCredentials: true }
       );
       // console.log(productsData.data);
       const categoriesData = await axios.get(
-        `${process.env.REACT_APP_SERVER}categories/index`
+        `${process.env.REACT_APP_SERVER}categories/index`,
+        { withCredentials: true }
       );
       const manufacturersData = await axios.get(
-        `${process.env.REACT_APP_SERVER}manufacturers/index`
+        `${process.env.REACT_APP_SERVER}manufacturers/index`,
+        { withCredentials: true }
       );
       // const productStatesData = await axios.get(
       //   `${process.env.REACT_APP_SERVER}productStates/index`

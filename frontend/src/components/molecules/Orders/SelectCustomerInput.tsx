@@ -77,7 +77,8 @@ const SelectCustomerInput: React.FC<Props> = ({
   };
   const handleAddNewCustomerToOrder = async (id: string) => {
     const result = await axios.get(
-      `${process.env.REACT_APP_SERVER}users/findCustomer/${id}`
+      `${process.env.REACT_APP_SERVER}users/findCustomer/${id}`,
+      { withCredentials: true }
     );
     console.log(result.data);
     setCustomer(result.data);

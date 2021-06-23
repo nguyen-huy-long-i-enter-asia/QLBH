@@ -30,12 +30,10 @@ const Pagination: React.FC<Props> = ({ items, onChangePage, pageSizeProp }) => {
     endIndex: 1,
     pages: [],
   });
-  console.log(items);
   useEffect(() => {
     if (items && items.length > 0) {
       setPage(1);
     } else {
-      console.log("aa");
       const newPager = pager;
       newPager.pages = [];
       setPager(newPager);

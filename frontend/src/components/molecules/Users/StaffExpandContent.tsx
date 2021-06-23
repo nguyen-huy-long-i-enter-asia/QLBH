@@ -41,33 +41,10 @@ const CustomerExpandContent: React.FC<Props> = ({ staff, isDisplay }) => {
   const [transactions, setTransactions] = useState<any[]>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-  // useEffect(() => {
-  //   const fetchTransactions = async () => {
-  //     const result = await axios.get(
-  //       `${process.env.REACT_APP_SERVER}orders/findRecentByCustomer/${customer.id}`
-  //     );
-  //     if (transactions === undefined) {
-  //       setTransactions(result.data);
-  //     }
-  //   };
-  //   fetchTransactions();
-  // }, [isDisplay]);
-  //   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
-  //     const result = await axios.post(
-  //       `${process.env.REACT_APP_SERVER}products/delete`,
-  //       { id }
-  //     );
 
-  //     if (result.data.status === "success") {
-  //       // history.push("/products");
-  //       window.location.reload(false);
-  //     } else {
-  //       alert(result.data.status);
-  //     }
-  //   };
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     const url = `${process.env.REACT_APP_SERVER}users/deleteStaffs/${staff.id}`;
-    const result = await axios.get(url);
+    const result = await axios.get(url, { withCredentials: true });
     if (result.data.status === "success") {
       sessionStorage.setItem("action", "delete");
       window.location.reload(false);

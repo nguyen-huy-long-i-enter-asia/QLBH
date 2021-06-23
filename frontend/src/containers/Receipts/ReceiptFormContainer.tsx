@@ -61,7 +61,8 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
     const fetchData = async () => {
       if (receiptId) {
         const receiptData = await axios.get(
-          `${process.env.REACT_APP_SERVER}receipts/find/${receiptId}`
+          `${process.env.REACT_APP_SERVER}receipts/find/${receiptId}`,
+          { withCredentials: true }
         );
         const oldImportedList = receiptData.data.receipt_details.map(
           (item: any) => ({
@@ -81,13 +82,16 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
         setSelectedManufacturer(receiptData.data.manufacturer.id);
       }
       const manufacturersData = await axios.get(
-        `${process.env.REACT_APP_SERVER}manufacturers/index`
+        `${process.env.REACT_APP_SERVER}manufacturers/index`,
+        { withCredentials: true }
       );
       const sizesData = await axios.get(
-        `${process.env.REACT_APP_SERVER}sizes/index`
+        `${process.env.REACT_APP_SERVER}sizes/index`,
+        { withCredentials: true }
       );
       const colorsData = await axios.get(
-        `${process.env.REACT_APP_SERVER}colors/index`
+        `${process.env.REACT_APP_SERVER}colors/index`,
+        { withCredentials: true }
       );
 
       setManufacturers(manufacturersData.data);
@@ -108,6 +112,7 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         }
       );
       console.log(result.data);
@@ -239,6 +244,7 @@ const ReceiptFormContainer: React.FC<Props> = ({ receiptId }) => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         });
         sessionStorage.setItem("action", receiptId ? "Edit" : "Add");
         history.push("/receipts");

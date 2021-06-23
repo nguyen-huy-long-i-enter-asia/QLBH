@@ -41,6 +41,7 @@ const SearchModal: React.FC<Props> = ({ type, importList, setImportList }) => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         }
       );
       console.log(result.data);
@@ -71,6 +72,7 @@ const SearchModal: React.FC<Props> = ({ type, importList, setImportList }) => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       }
     );
     let inventory = 0;

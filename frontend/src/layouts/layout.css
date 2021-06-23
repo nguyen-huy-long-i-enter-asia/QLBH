@@ -30,7 +30,7 @@
 .page-title {
   display: flex;
   align-items: center;
-  width: 60%;
+  width: 100%;
 
   height: 5vh;
 }

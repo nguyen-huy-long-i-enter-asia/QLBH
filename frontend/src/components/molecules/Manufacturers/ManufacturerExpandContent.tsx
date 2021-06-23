@@ -43,7 +43,8 @@ const ManufacturerExpandContent: React.FC<Props> = ({
   useEffect(() => {
     const fetchTransactions = async () => {
       const result = await axios.get(
-        `${process.env.REACT_APP_SERVER}receipts/findRecentByManufacturer/${manufacturer.id}`
+        `${process.env.REACT_APP_SERVER}receipts/findRecentByManufacturer/${manufacturer.id}`,
+        { withCredentials: true }
       );
       if (transactions === undefined) {
         setTransactions(result.data);
@@ -51,22 +52,10 @@ const ManufacturerExpandContent: React.FC<Props> = ({
     };
     fetchTransactions();
   }, [isDisplay]);
-  //   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
-  //     const result = await axios.post(
-  //       `${process.env.REACT_APP_SERVER}products/delete`,
-  //       { id }
-  //     );
 
-  //     if (result.data.status === "success") {
-  //       // history.push("/products");
-  //       window.location.reload(false);
-  //     } else {
-  //       alert(result.data.status);
-  //     }
-  //   };
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     const url = `${process.env.REACT_APP_SERVER}manufacturers/delete/${manufacturer.id}`;
-    const result = await axios.get(url);
+    const result = await axios.get(url, { withCredentials: true });
     if (result.data.status === "success") {
       sessionStorage.setItem("action", "delete");
       window.location.reload(false);

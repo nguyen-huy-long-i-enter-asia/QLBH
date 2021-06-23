@@ -62,6 +62,7 @@ const ProductStatisticContainer: React.FC = () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       });
       const sellCountResult = await axios.post(
         sellCountUrl,
@@ -70,6 +71,7 @@ const ProductStatisticContainer: React.FC = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         }
       );
       console.log(incomeResult.data.map((item: any) => item.Name));

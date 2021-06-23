@@ -19,8 +19,14 @@ use Cake\ORM\Query;
  */
 class StoreController extends AppController
 {
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->loadComponent('MyAuth');
+    }
     public function index()
-    {   $this->loadModel('Products');
+    {
+        $this->loadModel('Products');
         $this->loadModel('ColorsProductsSizes');
         $this->loadModel("CategoriesProducts");
         $filterFunc = function ($product) {
@@ -190,9 +196,9 @@ class StoreController extends AppController
 
         $query = "Select distinct colors.id, colors.name
         From colors, colors_products_sizes
-        WHERE colors.id = colors_products_sizes.color_id 
+        WHERE colors.id = colors_products_sizes.color_id
         AND colors_products_sizes.product_id = ?";
-        
+
         $result = $connection->execute($query,[$id])->fetchAll('assoc');
         return $result;
     }
@@ -204,9 +210,9 @@ class StoreController extends AppController
 
         $query = "Select distinct sizes.id, sizes.name
         From sizes, colors_products_sizes
-        WHERE sizes.id = colors_products_sizes.size_id 
+        WHERE sizes.id = colors_products_sizes.size_id
         AND colors_products_sizes.product_id = ?";
-        
+
         $result = $connection->execute($query,[$id])->fetchAll('assoc');
         return $result;
     }
