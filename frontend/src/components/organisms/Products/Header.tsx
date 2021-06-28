@@ -15,7 +15,7 @@ type Props = {
     name: string;
   }[];
   productStatesList: {
-    id: string;
+    id: number;
     name: string;
   }[];
   position: string | undefined;

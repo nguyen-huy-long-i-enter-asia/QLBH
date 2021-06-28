@@ -59,6 +59,7 @@ type User = {
 };
 
 const LoginContainer: React.FC = () => {
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const history = useHistory();
@@ -81,7 +82,7 @@ const LoginContainer: React.FC = () => {
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setLoading(true);
     if (email !== "" && password !== "") {
       const formData = new FormData();
 
@@ -110,7 +111,7 @@ const LoginContainer: React.FC = () => {
           duration: 1500,
           isClosable: true,
         });
-
+        setLoading(false);
         // window.location.reload(false);
       }
     }
@@ -166,6 +167,7 @@ const LoginContainer: React.FC = () => {
           d="block"
           fontWeight="bold"
           size="lg"
+          disabled={!!loading}
         />
       </form>
     </Box>

@@ -54,7 +54,10 @@ type Props = {
       id: string;
       name: string;
     };
-    state: string;
+    product_state: {
+      id: number;
+      name: string;
+    };
     categories: {
       id: string;
       name: string;
@@ -62,7 +65,7 @@ type Props = {
   };
   productStatesList:
     | {
-        id: string;
+        id: number;
         name: string;
       }[]
     | undefined;
@@ -85,8 +88,8 @@ const ProductForm: React.FC<Props> = ({
   const [discount, setDiscount] = useState<string>(
     selectedProduct ? selectedProduct.discount : ""
   );
-  const [stateId, setStateId] = useState<string>(
-    selectedProduct ? selectedProduct.state : "1"
+  const [stateId, setStateId] = useState<number>(
+    selectedProduct ? selectedProduct.product_state.id : 1
   );
   const [originalPrice, setOriginalPrice] = useState<string>(
     selectedProduct ? selectedProduct.original_price : ""
@@ -146,7 +149,7 @@ const ProductForm: React.FC<Props> = ({
   const changeStateId = (e: React.FormEvent<HTMLSelectElement>) => {
     const { value } = e.currentTarget;
 
-    setStateId(value);
+    setStateId(parseInt(value, 10));
   };
   const changeOriginalPrice = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
@@ -196,7 +199,7 @@ const ProductForm: React.FC<Props> = ({
       formData.append("name", name);
       formData.append("manufacturer", manufacturer);
       formData.append("discount", discount);
-      formData.append("state_id", stateId);
+      formData.append("state_id", stateId.toString());
       formData.append("original_price", originalPrice);
       formData.append("sell_price", sellPrice);
       formData.append(

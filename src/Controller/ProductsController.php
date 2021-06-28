@@ -79,7 +79,7 @@ class ProductsController extends AppController
             // }else {
             //     $product['inventory'] = [];
             // }
-            
+
             //
 
             //Add Categories property to $product;
@@ -307,7 +307,21 @@ class ProductsController extends AppController
         return $response;
 
     }
+    public function stopSelling($id = null) {
+        $product= $this->Products->get($id);
+        $product->state_id = 3;
+        $this->Products->save($product);
+        if($this->Products->save($product)){
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "success"]));
+        }else {
+            $response = $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['status' => "fail"]));
 
+        }
+        return $response;
+
+    }
     /**
      * Delete method
      *

@@ -36,7 +36,7 @@ type ManufacturersList = {
 type ProductExpandContentProps = {
   categoriesList: CategoriesList | undefined;
   manufacturersList: ManufacturersList | undefined;
-  productStatesList: { id: string; name: string }[];
+  productStatesList: { id: number; name: string }[];
 };
 type Props = {
   product: {
@@ -51,7 +51,10 @@ type Props = {
       id: string;
       name: string;
     };
-    state: string;
+    product_state: {
+      id: number;
+      name: string;
+    };
     categories: {
       id: string;
       name: string;
@@ -83,9 +86,10 @@ const ProductExpandContent: React.FC<Props> = ({
     image,
     note,
     manufacturer,
-
+    product_state,
     categories,
   } = product;
+
   const fetchInventory = async () => {
     const result = await axios.get(
       `${process.env.REACT_APP_SERVER}products/getInventoryById/${product.id}`,
@@ -114,6 +118,24 @@ const ProductExpandContent: React.FC<Props> = ({
     } else {
       toast({
         title: `Delete Product fail`,
+
+        status: "error",
+        duration: 1500,
+        isClosable: true,
+      });
+    }
+  };
+  const stopSelling = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const result = await axios.post(
+      `${process.env.REACT_APP_SERVER}products/stopSelling/${id}`,
+      { withCredentials: true }
+    );
+    if (result.data.status === "success") {
+      sessionStorage.setItem("action", "edit");
+      window.location.reload(false);
+    } else {
+      toast({
+        title: `Edit Product Fail`,
 
         status: "error",
         duration: 1500,
@@ -225,14 +247,27 @@ const ProductExpandContent: React.FC<Props> = ({
             >
               Delete
             </Button>
-            <Button
-              className="button"
-              bgColor="#3399ff"
-              color="white"
-              m="0vh 1vw"
-            >
-              Stop Selling
-            </Button>
+            {product_state.id === 3 ? (
+              <Button
+                className="button"
+                bgColor="#3399ff"
+                color="white"
+                m="0vh 1vw"
+                onClick={stopSelling}
+              >
+                Start Selling
+              </Button>
+            ) : (
+              <Button
+                className="button"
+                bgColor="#3399ff"
+                color="white"
+                m="0vh 1vw"
+                onClick={stopSelling}
+              >
+                Stop Selling
+              </Button>
+            )}
           </Flex>
         </TabPanel>
         <TabPanel>

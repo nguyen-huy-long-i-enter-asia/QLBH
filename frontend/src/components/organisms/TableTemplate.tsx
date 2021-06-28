@@ -24,7 +24,7 @@ type ManufacturersList = {
 type ProductExpandContentProps = {
   categoriesList: CategoriesList;
   manufacturersList: ManufacturersList;
-  productStatesList: { id: string; name: string }[];
+  productStatesList: { id: number; name: string }[];
 };
 
 type ReceiptExpandContentProps = {

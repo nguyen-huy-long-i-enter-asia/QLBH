@@ -32,7 +32,7 @@ type Products = {
     name: string;
   };
   product_state: {
-    id: string;
+    id: number;
     name: string;
   };
   categories: {
@@ -51,7 +51,7 @@ const ProductListContainer: React.FC = () => {
   const [displayList, setDisplayList] = useState<any[]>([]);
   const [checkBoxFilters, setCheckBoxFilters] = useState<Filter[]>([]);
   const [categories, setCategories] = useState<CategoriesList>([]);
-  const [productStates, setProductStates] = useState([{ id: "0", name: "" }]);
+  const [productStates, setProductStates] = useState([{ id: 0, name: "" }]);
   const [manufacturers, setManufacturers] = useState<any>([]);
   const fields = [
     "id",
@@ -63,7 +63,6 @@ const ProductListContainer: React.FC = () => {
   const [sortState, setSortState] = useState(fields.map((item) => false));
   const toast = useToast();
   // Fetch ProductsList and CategoriesList, Manufacturers List
-  console.log(Cookies.get("email"));
   useEffect(() => {
     const fetchData = async () => {
       const productsData = await axios.get(
