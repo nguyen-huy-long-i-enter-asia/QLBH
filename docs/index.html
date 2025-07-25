@@ -1,16 +1,14 @@
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.3/swagger-ui.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.3/swagger-ui-bundle.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.3/swagger-ui-standalone-preset.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.3/swagger-ui-bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.3/swagger-ui-standalone-preset.js"></script>
 
 <script defer>
-  document.addEventListener('DOMContentLoaded', () => {
+  window.onload = () => {
     SwaggerUIBundle({
-      url: './swagger.yml',
+      url: '../swagger-spec.yml', // đường dẫn tới file YAML
       dom_id: '#swagger-ui',
       presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
       layout: "StandaloneLayout"
     });
-  });
+  };
 </script>
-
-<div id="swagger-ui"></div>
